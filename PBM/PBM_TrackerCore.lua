@@ -2690,18 +2690,7 @@ do
                 end
             end
         elseif event == "PLAYER_LOGIN" then
-            -- Position and show the minimap button now that SavedVars are loaded.
             self:UnregisterEvent("PLAYER_LOGIN")
-            if type(LichborneMinimapIconDB) ~= "table" then
-                LichborneMinimapIconDB = {}
-            end
-            if not LichborneMinimapIconDB.minimapPos then
-                LichborneMinimapIconDB.minimapPos = 225
-            end
-            PBM.LichborneUpdateMinimapPos()
-            if not LichborneMinimapIconDB.hide then
-                PBM.State.minimapBtn:Show()
-            end
         elseif event == "GET_ITEM_INFO_RECEIVED" then
             -- An item just entered the client cache; re-color any visible gear boxes
             -- whose link now resolves. This fixes imported data where GetItemInfo
