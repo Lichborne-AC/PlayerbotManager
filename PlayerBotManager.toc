@@ -1,0 +1,65 @@
+## Interface: 30300
+## Title: PlayerBot Manager
+## Notes: Manage and configure playerbot strategies, specs, and profiles.
+## Author: Lichborne
+## Version: 0.1
+## SavedVariables: LichborneTrackerDB, LichborneMinimapIconDB, PBMConfig
+
+# Libraries
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+
+# Frame definitions
+LichborneTracker.xml
+
+# PBM — Foundation (tracker core, load first)
+PBM\PBM_Constants.lua
+PBM\PBM_Database.lua
+PBM\PBM_GearScore.lua
+PBM\PBM_Needs.lua
+PBM\PBM_Sort.lua
+PBM\PBM_ExportImport.lua
+PBM\PBM_UI.lua
+PBM\PBM_ClassTabs.lua
+PBM\PBM_StratList.lua
+PBM\PBM_CharSheet.lua
+PBM\PBM_DeathKnight.lua
+PBM\PBM_Druid.lua
+PBM\PBM_Hunter.lua
+PBM\PBM_Mage.lua
+PBM\PBM_Paladin.lua
+PBM\PBM_Priest.lua
+PBM\PBM_Rogue.lua
+PBM\PBM_Shaman.lua
+PBM\PBM_Warlock.lua
+PBM\PBM_Warrior.lua
+PBM\PBM_Raid.lua
+PBM\PBM_Overview.lua
+PBM\PBM_BotSettings.lua
+PBM\PBM_Tab_Playerbots.lua
+PBM\PBM_Tab_LevelSync.lua
+PBM\PBM_Tab_Server.lua
+PBM\PBM_Tab_Notes.lua
+PBM\PBM_TopTabs.lua
+PBM\PBM_Inspect.lua
+PBM\PBM_Spec.lua
+PBM\PBM_Minimap.lua
+PBM\PBM_TrackerCore.lua
+
+# PBM — Control layer
+PBM\PBM_Engine.lua
+PBM\PBM_TalentData.lua
+PBM\PBM_Item.lua
+PBM\PBM_Spell.lua
+PBM\PBM_Colors.lua
+PBM\PBM_Config.lua
+PBM\PBM_Throttle.lua
+PBM\PBM_Commands.lua
+PBM\PBM_Notes.lua
+PBM\PBM_Core.lua
+PBM\PBM_Windows.lua
+
+# PBM — Modules
+PBM\PBM_MultibotPanel.lua

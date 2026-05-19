@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+  <Frame name="LichborneTrackerFrame" parent="UIParent"
+         frameStrata="DIALOG" hidden="true"
+         movable="true" clampedToScreen="true" enableMouse="true">
+    <Size x="1120" y="758"/>
+    <Anchors>
+      <Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="0"/>
+    </Anchors>
+    <Scripts>
+      <OnMouseDown>if button=="LeftButton" then this:StartMoving() end</OnMouseDown>
+      <OnMouseUp>this:StopMovingOrSizing()</OnMouseUp>
+    </Scripts>
+  </Frame>
+
+</Ui>
