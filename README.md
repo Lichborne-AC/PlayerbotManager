@@ -167,6 +167,12 @@ Special thanks to: **Dohtt**, **Scarecr0w12** — TheCGN.net, **Dreathean**, **R
 
 ---
 
+## Suggested Downloads
+
+* **[mod-levelsync](https://github.com/Lichborne-AC/mod-levelsync)** — AzerothCore server module that powers the LevelSync tab. Not required, but the LevelSync tab will have no effect without it.
+
+---
+
 ## Compatibility
 
 WoW 3.3.5a (build 12340) | AzerothCore | Playerbot Module
