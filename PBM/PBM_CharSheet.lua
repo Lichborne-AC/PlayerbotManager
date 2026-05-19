@@ -593,20 +593,12 @@ function PBM.CreateCharSheet(config)
     local noteColor = { 0.70, 0.70, 0.70, 1 }
     local noteX     = 138   -- clears the 115px ignored-spell-list (at x=15) + gap
 
-    local note3 = menu:CreateFontString(nil, "OVERLAY")
-    note3:SetFont(noteFont, noteSize, "OUTLINE")
-    note3:SetTextColor(unpack(noteColor))
-    note3:SetWordWrap(false)
-    note3:SetJustifyH("LEFT")
-    note3:SetPoint("BOTTOMLEFT", menu, "BOTTOMLEFT", noteX, 8)
-    note3:SetText("|cffFFD100Note:|r This section is not intended to replace Multibot. Its main purpose is to set templates, confirm strategies, and give a visual representation of your setup.")
-
     local note2 = menu:CreateFontString(nil, "OVERLAY")
     note2:SetFont(noteFont, noteSize, "OUTLINE")
     note2:SetTextColor(unpack(noteColor))
     note2:SetWordWrap(false)
     note2:SetJustifyH("LEFT")
-    note2:SetPoint("BOTTOMLEFT", note3, "TOPLEFT", 0, 4)
+    note2:SetPoint("BOTTOMLEFT", menu, "BOTTOMLEFT", noteX, 8)
     note2:SetText("|cffFFD100Note:|r During raid encounters, strategies are based on spec and are automatically overwritten. To change bot behavior, use a different template or spec.")
 
     local note1 = menu:CreateFontString(nil, "OVERLAY")

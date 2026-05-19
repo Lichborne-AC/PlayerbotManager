@@ -74,7 +74,7 @@ end)
 
 minimapBtn:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-    GameTooltip:AddLine("|cffC69B3ALichborne Gear Tracker|r")
+    GameTooltip:AddLine("|cffC69B3APlayerbot Manager|r")
     GameTooltip:AddLine("Click to open / close", 1, 1, 1)
     GameTooltip:AddLine("Drag to reposition", 0.7, 0.7, 0.7)
     GameTooltip:Show()
