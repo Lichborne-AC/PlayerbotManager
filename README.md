@@ -159,9 +159,11 @@ Use the Import/Export button to generate a text string of your current roster. C
 
 ## Credits
 
-Built for the Lichborne AzerothCore private server.
+Built for AzerothCore private servers.
 
-Special thanks to: **Dohtt**, **Scarecr0w12** — TheCGN.net, **Dreathean**, **Revision**, **crow**, and **ScoobyPwnsOnU** for feature suggestions, testing, and support.
+Special thanks to: **Dohtt**, **Scarecr0w12** — TheCGN.net, **Dreathean**, **Revision**, **Crow**, **LatChee**, **InvaderCanuck**, and **ScoobyPwnsOnU** for feature suggestions, testing, and support.
+
+Additional thanks to Wishmaster117 for Multibot, whose work laid the groundwork for several PBM systems, and to the Playerbots Discord community for their support.
 
 **Questions & Support:** lichborne.wow@proton.me | Discord: jared2219
 

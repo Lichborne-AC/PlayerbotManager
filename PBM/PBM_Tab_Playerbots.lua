@@ -73,16 +73,16 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     PBDivider(35, PB_ROW_TOP + 16, 220)
 
     local CLASS_DEFS = {
-        { name="Death Knight", cmd="dk",      icon=PB_ADDON.."addclass_deathknight.blp" },
-        { name="Druid",        cmd="druid",   icon=PB_ADDON.."addclass_druid.blp"       },
-        { name="Hunter",       cmd="hunter",  icon=PB_ADDON.."addclass_hunter.blp"      },
-        { name="Mage",         cmd="mage",    icon=PB_ADDON.."addclass_mage.blp"        },
-        { name="Paladin",      cmd="paladin", icon=PB_ADDON.."addclass_paladin.blp"     },
-        { name="Priest",       cmd="priest",  icon=PB_ADDON.."addclass_priest.blp"      },
-        { name="Rogue",        cmd="rogue",   icon=PB_ADDON.."addclass_rogue.blp"       },
-        { name="Shaman",       cmd="shaman",  icon=PB_ADDON.."addclass_shaman.blp"      },
-        { name="Warlock",      cmd="warlock", icon=PB_ADDON.."addclass_warlock.blp"     },
-        { name="Warrior",      cmd="warrior", icon=PB_ADDON.."addclass_warrior.blp"     },
+        { name="Death Knight", cmd="dk",      hex="C41F3B", icon=PB_ADDON.."addclass_deathknight.blp" },
+        { name="Druid",        cmd="druid",   hex="FF7D0A", icon=PB_ADDON.."addclass_druid.blp"       },
+        { name="Hunter",       cmd="hunter",  hex="ABD473", icon=PB_ADDON.."addclass_hunter.blp"      },
+        { name="Mage",         cmd="mage",    hex="3FC7EB", icon=PB_ADDON.."addclass_mage.blp"        },
+        { name="Paladin",      cmd="paladin", hex="F58CBA", icon=PB_ADDON.."addclass_paladin.blp"     },
+        { name="Priest",       cmd="priest",  hex="FFFFFF", icon=PB_ADDON.."addclass_priest.blp"      },
+        { name="Rogue",        cmd="rogue",   hex="FFF569", icon=PB_ADDON.."addclass_rogue.blp"       },
+        { name="Shaman",       cmd="shaman",  hex="0070DE", icon=PB_ADDON.."addclass_shaman.blp"      },
+        { name="Warlock",      cmd="warlock", hex="8787ED", icon=PB_ADDON.."addclass_warlock.blp"     },
+        { name="Warrior",      cmd="warrior", hex="C79C3B", icon=PB_ADDON.."addclass_warrior.blp"     },
     }
     local cy = PB_ROW_TOP + 24
     for _, cd in ipairs(CLASS_DEFS) do
@@ -91,7 +91,7 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
         cb:SetScript("OnClick", function() SendChatMessage(".playerbots bot addclass "..cap, "SAY") end)
         local cl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         cl:SetPoint("LEFT", cb, "RIGHT", 6, 0)
-        cl:SetText("|cffcccccc"..cd.name.."|r")
+        cl:SetText("|cff"..cd.hex..cd.name.."|r")
         cy = cy + PB_STEP
     end
 
@@ -106,7 +106,7 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
         function() ActionToGroup("selfbot on")  end,
         function() ActionToGroup("selfbot off") end)
     local sl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    sl:SetPoint("LEFT", selfbotBtn, "RIGHT", 6, 0); sl:SetText("|cffccccccSelfbot|r")
+    sl:SetPoint("LEFT", selfbotBtn, "RIGHT", 6, 0); sl:SetText("|cffC69B3ASelfbot|r")
     ry = ry + PB_STEP
 
     local gmBtn = PBIconBtn(296, ry, PB_ICON.."mail_gmicon",
@@ -115,7 +115,7 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
         function() ActionToGroup("gm on")  end,
         function() ActionToGroup("gm off") end)
     local gl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    gl:SetPoint("LEFT", gmBtn, "RIGHT", 6, 0); gl:SetText("|cffccccccGameMaster|r")
+    gl:SetPoint("LEFT", gmBtn, "RIGHT", 6, 0); gl:SetText("|cffC69B3AGameMaster|r")
     ry = ry + PB_STEP
 
     local rtscBtn = PBIconBtn(296, ry, PB_ICON.."ability_hunter_markedfordeath",
@@ -124,7 +124,7 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
         function() ActionToGroup("rtsc")       end,
         function() ActionToGroup("rtsc reset") end)
     local rl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    rl:SetPoint("LEFT", rtscBtn, "RIGHT", 6, 0); rl:SetText("|cffccccccRTSC|r")
+    rl:SetPoint("LEFT", rtscBtn, "RIGHT", 6, 0); rl:SetText("|cffC69B3ARTSC|r")
     ry = ry + PB_STEP
 
     local relBtn = PBIconBtn(296, ry, PB_ICON.."achievement_bg_xkills_avgraveyard",
@@ -133,7 +133,7 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
         function() ActionToGroup("release")    end,
         function() ActionToGroup("no release") end)
     local rll = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    rll:SetPoint("LEFT", relBtn, "RIGHT", 6, 0); rll:SetText("|cffccccccAuto Release|r")
+    rll:SetPoint("LEFT", relBtn, "RIGHT", 6, 0); rll:SetText("|cffC69B3AAuto Release|r")
     ry = ry + PB_STEP
 
     local statsBtn = PBIconBtn(296, ry, PB_ICON.."inv_scroll_08",
@@ -142,21 +142,21 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
         function() ActionToGroup("stats on")  end,
         function() ActionToGroup("stats off") end)
     local stl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    stl:SetPoint("LEFT", statsBtn, "RIGHT", 6, 0); stl:SetText("|cffccccccAuto Stats|r")
+    stl:SetPoint("LEFT", statsBtn, "RIGHT", 6, 0); stl:SetText("|cffC69B3AAuto Stats|r")
     ry = ry + PB_STEP
 
     local resetAIBtn = PBIconBtn(296, ry, PB_ICON.."inv_misc_tournaments_symbol_gnome",
         "Reset Bot AI", "Reset AI for targeted bot or entire group.")
     resetAIBtn:SetScript("OnClick", function() ActionToTargetOrGroup("reset botAI") end)
     local ral = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    ral:SetPoint("LEFT", resetAIBtn, "RIGHT", 6, 0); ral:SetText("|cffccccccReset Bot AI|r")
+    ral:SetPoint("LEFT", resetAIBtn, "RIGHT", 6, 0); ral:SetText("|cffC69B3AReset Bot AI|r")
     ry = ry + PB_STEP
 
     local resetActBtn = PBIconBtn(296, ry, PB_ICON.."inv_helmet_02",
         "Reset Action", "Reset actions for targeted bot or entire group.")
     resetActBtn:SetScript("OnClick", function() ActionToTargetOrGroup("reset") end)
     local rcl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    rcl:SetPoint("LEFT", resetActBtn, "RIGHT", 6, 0); rcl:SetText("|cffccccccReset Action|r")
+    rcl:SetPoint("LEFT", resetActBtn, "RIGHT", 6, 0); rcl:SetText("|cffC69B3AReset Action|r")
     ry = ry + PB_STEP
 
     -- ── Reset Instances sub-section ───────────────────────────
@@ -223,7 +223,7 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     local riyl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     riyl:SetPoint("LEFT", resetInstBtn, "RIGHT", 6, 0)
     riyl:SetJustifyH("LEFT")
-    riyl:SetText("|cffccccccReset Instances for entire group|r\n|cffFF8C00Requires mod-levelsync|r")
+    riyl:SetText("|cffffffffReset Instances for entire group|r\n|cffFF8C00Requires mod-levelsync|r")
     ry = ry + PB_STEP
 
     if not StaticPopupDialogs["PBM_RESET_INSTANCES_GM"] then
@@ -284,7 +284,7 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     local gmriyl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     gmriyl:SetPoint("LEFT", gmResetInstBtn, "RIGHT", 6, 0)
     gmriyl:SetJustifyH("LEFT")
-    gmriyl:SetText("|cffccccccGM Reset Instances for entire group|r\n|cffFF8C00Requires mod-levelsync|r\n|cffff4444Requires GM Access|r")
+    gmriyl:SetText("|cffffffffGM Reset Instances for entire group|r\n|cffFF8C00Requires mod-levelsync|r\n|cffff4444Requires GM Access|r")
 
     -- ── Column 3 – Command Reference (x = 560) ────────────────
     local CMD_X1    = 560

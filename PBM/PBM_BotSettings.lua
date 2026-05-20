@@ -140,16 +140,16 @@ function PBM.BuildBotSettingsFrame(parent, fl)
     MakeDivider(f, COL1_X, ROW_START + 16, 220, BL)
 
     local CLASS_DEFS = {
-        { name = "Death Knight", cmd = "dk",      icon = ADDON_PATH .. "addclass_deathknight.blp" },
-        { name = "Druid",        cmd = "druid",   icon = ADDON_PATH .. "addclass_druid.blp"       },
-        { name = "Hunter",       cmd = "hunter",  icon = ADDON_PATH .. "addclass_hunter.blp"      },
-        { name = "Mage",         cmd = "mage",    icon = ADDON_PATH .. "addclass_mage.blp"        },
-        { name = "Paladin",      cmd = "paladin", icon = ADDON_PATH .. "addclass_paladin.blp"     },
-        { name = "Priest",       cmd = "priest",  icon = ADDON_PATH .. "addclass_priest.blp"      },
-        { name = "Rogue",        cmd = "rogue",   icon = ADDON_PATH .. "addclass_rogue.blp"       },
-        { name = "Shaman",       cmd = "shaman",  icon = ADDON_PATH .. "addclass_shaman.blp"      },
-        { name = "Warlock",      cmd = "warlock", icon = ADDON_PATH .. "addclass_warlock.blp"     },
-        { name = "Warrior",      cmd = "warrior", icon = ADDON_PATH .. "addclass_warrior.blp"     },
+        { name = "Death Knight", cmd = "dk",      hex = "C41F3B", icon = ADDON_PATH .. "addclass_deathknight.blp" },
+        { name = "Druid",        cmd = "druid",   hex = "FF7D0A", icon = ADDON_PATH .. "addclass_druid.blp"       },
+        { name = "Hunter",       cmd = "hunter",  hex = "ABD473", icon = ADDON_PATH .. "addclass_hunter.blp"      },
+        { name = "Mage",         cmd = "mage",    hex = "3FC7EB", icon = ADDON_PATH .. "addclass_mage.blp"        },
+        { name = "Paladin",      cmd = "paladin", hex = "F58CBA", icon = ADDON_PATH .. "addclass_paladin.blp"     },
+        { name = "Priest",       cmd = "priest",  hex = "FFFFFF", icon = ADDON_PATH .. "addclass_priest.blp"      },
+        { name = "Rogue",        cmd = "rogue",   hex = "FFF569", icon = ADDON_PATH .. "addclass_rogue.blp"       },
+        { name = "Shaman",       cmd = "shaman",  hex = "0070DE", icon = ADDON_PATH .. "addclass_shaman.blp"      },
+        { name = "Warlock",      cmd = "warlock", hex = "8787ED", icon = ADDON_PATH .. "addclass_warlock.blp"     },
+        { name = "Warrior",      cmd = "warrior", hex = "C79C3B", icon = ADDON_PATH .. "addclass_warrior.blp"     },
     }
 
     local classRowY = ROW_START + 24
@@ -167,7 +167,7 @@ function PBM.BuildBotSettingsFrame(parent, fl)
 
         local cLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         cLabel:SetPoint("LEFT", classBtn, "RIGHT", 6, 0)
-        cLabel:SetText("|cffcccccc" .. cd.name .. "|r")
+        cLabel:SetText("|cff" .. cd.hex .. cd.name .. "|r")
 
         classRowY = classRowY + STEP
     end

@@ -1134,10 +1134,10 @@ local function OnFirstShow()
     orphanedBotsBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     local orphanedBotsLbl = orphanedBotsBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     orphanedBotsLbl:SetAllPoints(orphanedBotsBtn); orphanedBotsLbl:SetJustifyH("CENTER"); orphanedBotsLbl:SetJustifyV("MIDDLE")
-    orphanedBotsLbl:SetText("|cffd4af37Clean Up Bots|r")
+    orphanedBotsLbl:SetText("|cffd4af37Log Out Orphaned Bots|r")
     orphanedBotsBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(orphanedBotsBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Clean Up Bots", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("Log Out Orphaned Bots", 0.78, 0.61, 0.23)
         GameTooltip:AddLine("Logs out all bots in your Overview tab", 0.8, 0.8, 0.8)
         GameTooltip:AddLine("that are not currently in your", 0.8, 0.8, 0.8)
         GameTooltip:AddLine("group or raid.", 0.8, 0.8, 0.8)
@@ -1464,9 +1464,9 @@ local function OnFirstShow()
     end)
 
     local outputScroll = CreateFrame("ScrollingMessageFrame", "LichborneOutputMsgFrame", outputBox)
-    outputScroll:SetPoint("TOPLEFT", outputBox, "TOPLEFT", 4, -26)
+    outputScroll:SetPoint("TOPLEFT", outputBox, "TOPLEFT", 4, -20)
     outputScroll:SetPoint("BOTTOMRIGHT", outputBox, "BOTTOMRIGHT", -4, 4)
-    outputScroll:SetFontObject("GameFontNormalSmall")
+    outputScroll:SetFont("Fonts\\FRIZQT__.TTF", 9.5)
     outputScroll:SetJustifyH("LEFT")
     outputScroll:SetMaxLines(500)
     outputScroll:SetInsertMode("BOTTOM")
@@ -1808,7 +1808,7 @@ local function OnFirstShow()
         GameTooltip:AddLine("     quickly add bots for first time set up.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: |cffC69B3A+Add Target|r buttons are used for |cffC69B3ASingle|r scans.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: |cffC69B3A+Add Group|r buttons are used for |cffC69B3AGroup|r scans.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3AClean Up Bots|r removes bots currently not", 0.4, 0.8, 1)
+        GameTooltip:AddLine("TIP: |cffC69B3ALog Out Orphaned Bots|r removes bots currently not", 0.4, 0.8, 1)
         GameTooltip:AddLine("     in your group. (.playerbot bot remove)", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: |cffC69B3ADisband Group|r removes PlayerBots before", 0.4, 0.8, 1)
         GameTooltip:AddLine("     disbanding the group.", 0.4, 0.8, 1)
@@ -2018,7 +2018,7 @@ local function OnFirstShow()
 
     local optsTitleText = optionsPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     optsTitleText:SetPoint("CENTER", optsTitleBg, "CENTER", 0, 0)
-    optsTitleText:SetText("|cffC69B3ALichborne Gear Tracker|r")
+    optsTitleText:SetText("|cffC69B3APlayerbot Manager|r")
 
     local optsXBtn = CreateFrame("Button", nil, optionsPanel, "UIPanelCloseButton")
     optsXBtn:SetPoint("TOPRIGHT", optionsPanel, "TOPRIGHT", 4, 4)
@@ -2031,24 +2031,29 @@ local function OnFirstShow()
     optsTitleDiv:SetHeight(1)
     optsTitleDiv:SetTexture(0.78, 0.61, 0.23, 0.9)
 
-    -- Update tab button
-    local optsTabGeneral = CreateFrame("Button", nil, optionsPanel)
-    optsTabGeneral:SetPoint("TOPLEFT", optionsPanel, "TOPLEFT", 8, -40)
-    optsTabGeneral:SetSize(100, 24)
-    optsTabGeneral:SetFrameLevel(optionsPanel:GetFrameLevel() + 2)
-    optsTabGeneral:SetBackdrop({
-        bgFile="Interface\\ChatFrame\\ChatFrameBackground",
-        edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
-        tile=true, tileSize=16, edgeSize=8,
-        insets={left=2, right=2, top=2, bottom=2}
-    })
-    optsTabGeneral:SetBackdropColor(0.12, 0.16, 0.30, 1)
-    optsTabGeneral:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
-    optsTabGeneral:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-    local optsTabLbl = optsTabGeneral:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    optsTabLbl:SetAllPoints(optsTabGeneral)
-    optsTabLbl:SetJustifyH("CENTER")
-    optsTabLbl:SetText("|cffFFFFFFUpdate|r")
+    local function MakeOptsTab(label, x)
+        local btn = CreateFrame("Button", nil, optionsPanel)
+        btn:SetPoint("TOPLEFT", optionsPanel, "TOPLEFT", x, -40)
+        btn:SetSize(100, 24)
+        btn:SetFrameLevel(optionsPanel:GetFrameLevel() + 2)
+        btn:SetBackdrop({
+            bgFile="Interface\\ChatFrame\\ChatFrameBackground",
+            edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
+            tile=true, tileSize=16, edgeSize=8,
+            insets={left=2, right=2, top=2, bottom=2}
+        })
+        btn:SetBackdropColor(0.12, 0.16, 0.30, 1)
+        btn:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
+        btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+        local lbl = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        lbl:SetAllPoints(btn); lbl:SetJustifyH("CENTER")
+        lbl:SetText("|cffFFFFFF"..label.."|r")
+        btn.lbl = lbl
+        return btn
+    end
+
+    local optsTabGeneral = MakeOptsTab("Update",  8)
+    local optsTabCredits = MakeOptsTab("Credits", 112)
 
     -- Content area (the bordered box like DBM)
     local optsContentBox = CreateFrame("Frame", nil, optionsPanel)
@@ -2065,52 +2070,14 @@ local function OnFirstShow()
     optsContentBox:SetBackdropBorderColor(0.60, 0.60, 0.60, 0.8)
     -- ── Update tab content ────────────────────────────────────────────
 
-    -- Get latest version via Git clone
-    local updLabel1 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    updLabel1:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 10, -14)
-    updLabel1:SetText("|cffd4af37Get the latest version -- clone the repository with Git:|r")
-
-    local updBg1 = CreateFrame("Frame", nil, optsContentBox)
-    updBg1:SetPoint("TOPLEFT",  optsContentBox, "TOPLEFT",  8, -34)
-    updBg1:SetPoint("TOPRIGHT", optsContentBox, "TOPRIGHT", -8, -34)
-    updBg1:SetHeight(22)
-    updBg1:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",tile=true,tileSize=16,edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
-    updBg1:SetBackdropColor(0.02, 0.02, 0.06, 1)
-    updBg1:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.8)
-    updBg1:SetFrameLevel(optionsPanel:GetFrameLevel() + 2)
-
-    local updEdit1 = CreateFrame("EditBox", "LichborneUpdateCloneBox", updBg1)
-    updEdit1:SetPoint("TOPLEFT",     updBg1, "TOPLEFT",      4, -2)
-    updEdit1:SetPoint("BOTTOMRIGHT", updBg1, "BOTTOMRIGHT", -4,  2)
-    updEdit1:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
-    updEdit1:SetTextColor(1, 1, 1, 1)
-    updEdit1:SetAutoFocus(false)
-    updEdit1:EnableMouse(true)
-    updEdit1:SetText("git clone https://github.com/Lichborne-AC/LichborneTracker")
-    updEdit1:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
-
-    local updSelectBtn1 = CreateFrame("Button", nil, optsContentBox, "UIPanelButtonTemplate")
-    updSelectBtn1:SetSize(90, 22)
-    updSelectBtn1:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 8, -62)
-    updSelectBtn1:SetText("Select All")
-    updSelectBtn1:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
-    updSelectBtn1:SetScript("OnClick", function()
-        updEdit1:SetFocus()
-        updEdit1:HighlightText()
-    end)
-
-    local updHint1 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    updHint1:SetPoint("LEFT", updSelectBtn1, "RIGHT", 10, 0)
-    updHint1:SetText("|cffd4af37Push Select All then Ctrl+C to copy|r")
-
     -- Browse / download from GitHub
     local updLabel2 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    updLabel2:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 10, -96)
+    updLabel2:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 10, -14)
     updLabel2:SetText("|cffd4af37Browse or download from the GitHub repository:|r")
 
     local updBg2 = CreateFrame("Frame", nil, optsContentBox)
-    updBg2:SetPoint("TOPLEFT",  optsContentBox, "TOPLEFT",  8, -116)
-    updBg2:SetPoint("TOPRIGHT", optsContentBox, "TOPRIGHT", -8, -116)
+    updBg2:SetPoint("TOPLEFT",  optsContentBox, "TOPLEFT",  8, -34)
+    updBg2:SetPoint("TOPRIGHT", optsContentBox, "TOPRIGHT", -8, -34)
     updBg2:SetHeight(22)
     updBg2:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",tile=true,tileSize=16,edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
     updBg2:SetBackdropColor(0.02, 0.02, 0.06, 1)
@@ -2124,12 +2091,12 @@ local function OnFirstShow()
     updEdit2:SetTextColor(1, 1, 1, 1)
     updEdit2:SetAutoFocus(false)
     updEdit2:EnableMouse(true)
-    updEdit2:SetText("https://github.com/Lichborne-AC/LichborneTracker")
+    updEdit2:SetText("https://github.com/Lichborne-AC/PlayerbotManager")
     updEdit2:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
 
     local updSelectBtn2 = CreateFrame("Button", nil, optsContentBox, "UIPanelButtonTemplate")
     updSelectBtn2:SetSize(90, 22)
-    updSelectBtn2:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 8, -144)
+    updSelectBtn2:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 8, -62)
     updSelectBtn2:SetText("Select All")
     updSelectBtn2:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
     updSelectBtn2:SetScript("OnClick", function()
@@ -2140,6 +2107,111 @@ local function OnFirstShow()
     local updHint2 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     updHint2:SetPoint("LEFT", updSelectBtn2, "RIGHT", 10, 0)
     updHint2:SetText("|cffd4af37Push Select All then Ctrl+C to copy|r")
+
+    -- mod-levelsync repository
+    local updLabel3 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    updLabel3:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 10, -96)
+    updLabel3:SetText("|cffd4af37mod-levelsync (required for Level Sync tab):|r")
+
+    local updBg3 = CreateFrame("Frame", nil, optsContentBox)
+    updBg3:SetPoint("TOPLEFT",  optsContentBox, "TOPLEFT",  8, -116)
+    updBg3:SetPoint("TOPRIGHT", optsContentBox, "TOPRIGHT", -8, -116)
+    updBg3:SetHeight(22)
+    updBg3:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",tile=true,tileSize=16,edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
+    updBg3:SetBackdropColor(0.02, 0.02, 0.06, 1)
+    updBg3:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.8)
+    updBg3:SetFrameLevel(optionsPanel:GetFrameLevel() + 2)
+
+    local updEdit3 = CreateFrame("EditBox", "PBMUpdateLevelSyncBox", updBg3)
+    updEdit3:SetPoint("TOPLEFT",     updBg3, "TOPLEFT",      4, -2)
+    updEdit3:SetPoint("BOTTOMRIGHT", updBg3, "BOTTOMRIGHT", -4,  2)
+    updEdit3:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
+    updEdit3:SetTextColor(1, 1, 1, 1)
+    updEdit3:SetAutoFocus(false)
+    updEdit3:EnableMouse(true)
+    updEdit3:SetText("https://github.com/Lichborne-AC/mod-levelsync")
+    updEdit3:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
+
+    local updSelectBtn3 = CreateFrame("Button", nil, optsContentBox, "UIPanelButtonTemplate")
+    updSelectBtn3:SetSize(90, 22)
+    updSelectBtn3:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 8, -144)
+    updSelectBtn3:SetText("Select All")
+    updSelectBtn3:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
+    updSelectBtn3:SetScript("OnClick", function()
+        updEdit3:SetFocus()
+        updEdit3:HighlightText()
+    end)
+
+    local updHint3 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    updHint3:SetPoint("LEFT", updSelectBtn3, "RIGHT", 10, 0)
+    updHint3:SetText("|cffd4af37Push Select All then Ctrl+C to copy|r")
+
+    -- ── Credits tab content ───────────────────────────────────────────
+    local optsCreditsBox = CreateFrame("Frame", nil, optionsPanel)
+    optsCreditsBox:SetPoint("TOPLEFT",     optionsPanel, "TOPLEFT",     6, -66)
+    optsCreditsBox:SetPoint("BOTTOMRIGHT", optionsPanel, "BOTTOMRIGHT", -6, 48)
+    optsCreditsBox:SetFrameLevel(optionsPanel:GetFrameLevel() + 1)
+    optsCreditsBox:SetBackdrop({
+        bgFile="Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
+        tile=true, tileSize=16, edgeSize=8,
+        insets={left=3, right=3, top=3, bottom=3}
+    })
+    optsCreditsBox:SetBackdropColor(0.03, 0.04, 0.09, 1)
+    optsCreditsBox:SetBackdropBorderColor(0.60, 0.60, 0.60, 0.8)
+    optsCreditsBox:Hide()
+
+    local function CreditsLine(text, yOff, size, align)
+        local fs = optsCreditsBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        fs:SetPoint("TOPLEFT",  optsCreditsBox, "TOPLEFT",  12, yOff)
+        fs:SetPoint("TOPRIGHT", optsCreditsBox, "TOPRIGHT", -12, yOff)
+        fs:SetJustifyH(align or "LEFT")
+        if size then fs:SetFont("Fonts\\FRIZQT__.TTF", size) end
+        fs:SetText(text)
+        return fs
+    end
+    local function CreditsDivider(yOff)
+        local t = optsCreditsBox:CreateTexture(nil, "ARTWORK")
+        t:SetPoint("TOPLEFT",  optsCreditsBox, "TOPLEFT",  10, yOff)
+        t:SetPoint("TOPRIGHT", optsCreditsBox, "TOPRIGHT", -10, yOff)
+        t:SetHeight(1)
+        t:SetTexture(0.78, 0.61, 0.23, 0.4)
+    end
+
+    CreditsLine("|cffC69B3ACredits|r", -14, 14)
+    CreditsDivider(-34)
+    CreditsLine("|cffd4af37Special thanks to:|r", -60, nil, "CENTER")
+    CreditsLine("|cffffffffDohtt|r",                                 -74, nil, "CENTER")
+    CreditsLine("|cffffffffScarecr0w12 |cffaaaaaa- TheCGN.net|r",   -86, nil, "CENTER")
+    CreditsLine("|cffffffffDreathean|r",                             -98, nil, "CENTER")
+    CreditsLine("|cffffffffRevision|r",                             -110, nil, "CENTER")
+    CreditsLine("|cffffffffCrow|r",                                 -122, nil, "CENTER")
+    CreditsLine("|cffffffffLatChee|r",                              -134, nil, "CENTER")
+    CreditsLine("|cffffffffInvaderCanuck|r",                        -146, nil, "CENTER")
+    CreditsLine("|cffffffffScoobyPwnsOnU|r",                        -158, nil, "CENTER")
+    CreditsLine("|cffffffffAdditional thanks to Wishmaster117 for Multibot, whose work laid the groundwork|r", -202, nil, "CENTER")
+    CreditsLine("|cfffffffffor several PBM systems, and to the Playerbots Discord community for their support.|r", -216, nil, "CENTER")
+    CreditsDivider(-234)
+    CreditsLine("|cffd4af37Questions & Support:|r  lichborne.wow@proton.me  —  |cffd4af37Discord:|r jared2219", -244, nil, "CENTER")
+
+    -- ── Tab switching ─────────────────────────────────────────────────
+    local function SetOptsTab(which)
+        if which == "update" then
+            optsContentBox:Show()
+            optsCreditsBox:Hide()
+            optsTabGeneral:SetBackdropColor(0.20, 0.26, 0.48, 1)
+            optsTabCredits:SetBackdropColor(0.12, 0.16, 0.30, 1)
+        else
+            optsContentBox:Hide()
+            optsCreditsBox:Show()
+            optsTabGeneral:SetBackdropColor(0.12, 0.16, 0.30, 1)
+            optsTabCredits:SetBackdropColor(0.20, 0.26, 0.48, 1)
+        end
+    end
+    optsTabGeneral:SetScript("OnClick", function() SetOptsTab("update")  end)
+    optsTabCredits:SetScript("OnClick", function() SetOptsTab("credits") end)
+    SetOptsTab("update")
+
     -- Bottom divider
     local optsBottomDiv = optionsPanel:CreateTexture(nil, "OVERLAY")
     optsBottomDiv:SetPoint("BOTTOMLEFT",  optionsPanel, "BOTTOMLEFT",  6, 46)
@@ -2155,16 +2227,6 @@ local function OnFirstShow()
     optsCloseBtn:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
     optsCloseBtn:SetScript("OnClick", function() optionsPanel:Hide() end)
 
-    -- Apply button
-    local optsApplyBtn = CreateFrame("Button", nil, optionsPanel, "UIPanelButtonTemplate")
-    optsApplyBtn:SetPoint("RIGHT", optsCloseBtn, "LEFT", -6, 0)
-    optsApplyBtn:SetSize(80, 24)
-    optsApplyBtn:SetText("Apply")
-    optsApplyBtn:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
-    optsApplyBtn:SetScript("OnClick", function()
-        -- placeholder: will apply settings when populated
-    end)
-
     -- Settings button (rightmost of the button row)
     local settingsBtn = CreateFrame("Button", "LichborneSettingsBtn", f)
     settingsBtn:SetPoint("BOTTOMRIGHT", outputBox, "TOPRIGHT", 0, 7)
@@ -2179,7 +2241,7 @@ local function OnFirstShow()
     settingsBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(settingsBtn, "ANCHOR_TOP")
         GameTooltip:AddLine("Options", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Open the Lichborne options panel.", 1, 1, 1)
+        GameTooltip:AddLine("Open the Playerbot Manager options panel.", 1, 1, 1)
         GameTooltip:Show()
     end)
     settingsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2506,7 +2568,7 @@ local function BuildFrameBG()
     title:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -12)
     title:SetPoint("TOPRIGHT", f, "TOPRIGHT", -280, -12)
     title:SetJustifyH("LEFT")
-    title:SetText("|cffC69B3APlayerbot Manager|r  |cffffffff v1.0|r")
+    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.0|r")
     local closeBtn = CreateFrame("Button", "LichborneCloseBtn", f, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 2, 2)
     closeBtn:SetScript("OnClick", function() f:Hide() end)
