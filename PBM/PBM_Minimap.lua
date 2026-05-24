@@ -20,8 +20,8 @@ local miniButton = LibStub("LibDataBroker-1.1"):NewDataObject("PlayerBotManager"
     OnTooltipShow = function(tooltip)
         if not tooltip or not tooltip.AddLine then return end
         tooltip:AddLine("|cffC69B3APlayerbot Manager|r")
-        tooltip:AddLine("Left-click: Toggle Playerbot Manager", 1, 1, 1)
-        tooltip:AddLine("Drag: Reposition", 0.7, 0.7, 0.7)
+        tooltip:AddLine("Left-Click to Toggle", 1, 1, 1)
+        tooltip:AddLine("Drag to Reposition", 0.7, 0.7, 0.7)
     end,
 })
 

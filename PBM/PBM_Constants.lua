@@ -170,72 +170,9 @@ PBM.TAB_LABELS = {
     ["Warlock"]="Warlock",["Warrior"]="Warrior",["Raid"]="Raid",["Overview"]="Overview",
 }
 
-PBM.TIER_COLORS = {
-    [0]={r=0.20,g=0.60,b=0.80},  -- T0: Starting State silver-blue
-    [1]={r=0.70,g=0.36,b=0.00},  -- T1: Molten Core orange-brown
-    [2]={r=0.38,g=0.02,b=0.48},  -- T2: Onyxia deep violet
-    [3]={r=0.55,g=0.00,b=0.00},  -- T3: BWL/ZG dark red
-    [4]={r=0.18,g=0.49,b=0.20},  -- T4: Pre-AQ green
-    [5]={r=0.08,g=0.40,b=0.75},  -- T5: AQ War blue
-    [6]={r=0.42,g=0.10,b=0.54},  -- T6: Naxxramas purple
-    [7]={r=0.00,g=0.51,b=0.56},  -- T7: Dark Portal teal
-    [8]={r=0.52,g=0.42,b=0.00},  -- T8: Kara/Gruul/Mag gold
-    [9]={r=0.68,g=0.08,b=0.34},  -- T9: SSC/TK dark pink
-    [10]={r=0.33,g=0.43,b=0.48}, -- T10: Hyjal/BT slate
-    [11]={r=0.90,g=0.29,b=0.00}, -- T11: Zul'Aman orange-red
-    [12]={r=0.00,g=0.41,b=0.36}, -- T12: Sunwell dark teal
-    [13]={r=0.16,g=0.21,b=0.58}, -- T13: Naxx/EoE/OS navy
-    [14]={r=0.34,g=0.55,b=0.18}, -- T14: Ulduar lime
-    [15]={r=0.29,g=0.08,b=0.55}, -- T15: ToC deep purple
-    [16]={r=0.00,g=0.38,b=0.39}, -- T16: ICC dark cyan
-    [17]={r=0.53,g=0.06,b=0.31}, -- T17: Ruby Sanctum dark magenta
-}
-PBM.TIER_KEY_COLORS = {
-    -- Classic (T1-T7)
-    [1]={r=0.315,g=0.07,b=0.07}, [2]={r=0.315,g=0.07,b=0.07},
-    [3]={r=0.315,g=0.07,b=0.07}, [4]={r=0.315,g=0.07,b=0.07},
-    [5]={r=0.315,g=0.07,b=0.07}, [6]={r=0.315,g=0.07,b=0.07},
-    [7]={r=0.315,g=0.07,b=0.07},
-    -- TBC (T8-T13)
-    [8]={r=0.03,g=0.18,b=0.06},  [9]={r=0.03,g=0.18,b=0.06},
-    [10]={r=0.03,g=0.18,b=0.06}, [11]={r=0.03,g=0.18,b=0.06},
-    [12]={r=0.03,g=0.18,b=0.06}, [13]={r=0.03,g=0.18,b=0.06},
-    -- WotLK (T14-T17)
-    [14]={r=0.035,g=0.14,b=0.245},[15]={r=0.035,g=0.14,b=0.245},
-    [16]={r=0.035,g=0.14,b=0.245},[17]={r=0.035,g=0.14,b=0.245},
-}
-PBM.TIER_LABELS = {
-    [0]="T0 — Starting State",
-    [1]="T1 — Molten Core",              [2]="T2 — Onyxia",
-    [3]="T3 — BWL / ZG",                 [4]="T4 — Pre-AQ",
-    [5]="T5 — AQ War",                   [6]="T6 — Naxxramas",
-    [7]="T7 — Dark Portal",              [8]="T8 — Karazhan / Gruul / Mag",
-    [9]="T9 — Serpentshrine / Tempest Keep",   [10]="T10 — Hyjal Summit / Black Temple",
-    [11]="T11 — Zul'Aman",              [12]="T12 — Sunwell Plateau",
-    [13]="T13 — Naxx / EoE / Obsidian Sanctum", [14]="T14 — Ulduar",
-    [15]="T15 — Trial of the Crusader", [16]="T16 — Icecrown Citadel",
-    [17]="T17 — Ruby Sanctum",
-}
-
-PBM.TIER_TOOLTIP_RAIDS = {
-    [1]  = {"Molten Core"},
-    [2]  = {"Onyxia's Lair"},
-    [3]  = {"Blackwing Lair", "Zul'Gurub"},
-    [4]  = {"Ruins of Ahn'Qiraj", "Ahn'Qiraj (AQ40)"},
-    [5]  = {"World Event"},
-    [6]  = {"Naxxramas (Classic)"},
-    [7]  = {"World Event"},
-    [8]  = {"Karazhan", "Gruul's Lair", "Magtheridon's Lair"},
-    [9]  = {"Serpentshrine Cavern", "Tempest Keep"},
-    [10] = {"Mount Hyjal", "Black Temple"},
-    [11] = {"Zul'Aman"},
-    [12] = {"Sunwell Plateau"},
-    [13] = {"Naxxramas", "Eye of Eternity", "Obsidian Sanctum"},
-    [14] = {"Ulduar"},
-    [15] = {"Trial of the Crusader"},
-    [16] = {"Icecrown Citadel"},
-    [17] = {"Ruby Sanctum"},
-}
+-- Tier tables moved to IPTiersColor.lua (single source of truth).
+-- PBM.TIER_COLORS, TIER_KEY_COLORS, TIER_LABELS, TIER_SHORT,
+-- and TIER_TOOLTIP_RAIDS are all defined there.
 
 PBM.ROLE_DEFS = {
     {key="TNK", label="Tank",   color={r=0.20,g=0.60,b=1.00}, icon="Interface\\Icons\\Ability_Warrior_DefensiveStance"},
@@ -266,9 +203,9 @@ PBM.RAID_ABBR = {
     ["Trial of the Crusader 10"]="ToC10", ["Trial of the Crusader 25"]="ToC25",
     ["Trial of the Grand Crusader 10"]="ToGC10", ["Trial of the Grand Crusader 25"]="ToGC25",
     ["Icecrown Citadel 10"]="ICC10", ["Icecrown Citadel 25"]="ICC25",
-    ["ICC 10 Heroic"]="ICC10H", ["ICC 25 Heroic"]="ICC25H",
+    ["Icecrown Citadel 10 Heroic"]="ICC10H", ["Icecrown Citadel 25 Heroic"]="ICC25H",
     ["Ruby Sanctum 10"]="RS10", ["Ruby Sanctum 25"]="RS25",
-    ["N/A (5-Man)"]="5-Man",
+    ["N/A"]="N/A",
 }
 
 PBM.CLASS_ICONS = {

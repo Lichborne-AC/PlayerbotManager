@@ -1,9 +1,10 @@
 -- ============================================================
---  PBM_TopTabs.lua  |  Title-bar tabs: Playerbots / LevelSync / Notes
+--  PBM_TopTabs.lua  |  Title-bar tabs: Playerbots / Ind.Prog. / LevelSync / Notes
 --  Panel content is delegated to per-tab files:
---    PBM_Tab_Playerbots.lua  → PBM.BuildPlayerbotsPanel(panel, ctx)
---    PBM_Tab_LevelSync.lua   → PBM.BuildLevelSyncPanel(panel, ctx)
---    PBM_Tab_Notes.lua       → PBM.BuildNotesPanel(panel, ctx)
+--    PBM_Tab_Playerbots.lua             → PBM.BuildPlayerbotsPanel(panel, ctx)
+--    PBM_Tab_IndividualProgression.lua  → PBM.BuildIPProgressionPanel(panel, ctx)
+--    PBM_Tab_LevelSync.lua              → PBM.BuildLevelSyncPanel(panel, ctx)
+--    PBM_Tab_Notes.lua                  → PBM.BuildNotesPanel(panel, ctx)
 -- ============================================================
 PBM = PBM or {}
 PBM.State = PBM.State or {}
@@ -21,17 +22,20 @@ local BD_CELL = {
 }
 
 -- ── Tab definitions (colors match LT exactly) ─────────────────
+local IP_R, IP_G, IP_B = 0.78, 0.61, 0.23   -- gold (matches LevelSync)
+
 local BOTTOM_TABS = {
-    { id="Playerbots", label="Playerbots", r=PERI_R,  g=PERI_G,  b=PERI_B  },
-    { id="LevelSync",  label="LevelSync",  r=GOLD_R,  g=GOLD_G,  b=GOLD_B  },
-    { id="Notes",      label="Notes",      r=GOLD_R,  g=GOLD_G,  b=GOLD_B  },
+    { id="Playerbots",           label="Playerbots",  r=GOLD_R, g=GOLD_G, b=GOLD_B },
+    { id="IndividualProgression",label="Ind. Prog.",  r=GOLD_R, g=GOLD_G, b=GOLD_B },
+    { id="LevelSync",            label="LevelSync",   r=GOLD_R, g=GOLD_G, b=GOLD_B },
+    { id="Notes",                label="Notes",       r=GOLD_R, g=GOLD_G, b=GOLD_B },
 }
 
 -- ── Tab button layout (title bar row, right of Clear buttons) ─
-local TAB_W       = 83
+local TAB_W       = 100
 local TAB_H       = 26
-local TAB_STEP    = 84
-local TAB_START_X = 829
+local TAB_STEP    = 101
+local TAB_START_X = 675
 local TAB_START_Y = -7
 
 -- ── Content panel dimensions ──────────────────────────────────
@@ -107,7 +111,7 @@ local function MakeContentFrame(name, parent, fl, title, fullHeight, hr, hg, hb)
     local f = CreateFrame("Frame", name, parent)
     if fullHeight then
         f:SetPoint("TOPLEFT", parent, "TOPLEFT", FS_SIDE, CONTENT_Y)
-        f:SetSize(FULL_W, FULL_H)
+        f:SetSize(1090, FULL_H)
         f:SetFrameLevel(fl + 25)
         f:EnableMouse(true)
     else
@@ -137,6 +141,59 @@ local function MakeContentFrame(name, parent, fl, title, fullHeight, hr, hg, hb)
     hdrTitle:SetPoint("TOPRIGHT", hdr, "TOPRIGHT", 0, 0)
     hdrTitle:SetHeight(24); hdrTitle:SetJustifyH("CENTER"); hdrTitle:SetJustifyV("MIDDLE")
     hdrTitle:SetText(titleHex..title.."|r")
+
+    -- ── Header border (all panels) — top / left / right around the 24px header ──
+    -- pfl+2 renders above the header child frame (pfl+1)
+    do
+        local hbf = CreateFrame("Frame", nil, f)
+        hbf:SetPoint("TOPLEFT",  f, "TOPLEFT",  0, 0)
+        hbf:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0)
+        hbf:SetHeight(24)
+        hbf:SetFrameLevel(pfl + 2)
+
+        local hbTop = hbf:CreateTexture(nil, "OVERLAY")
+        hbTop:SetPoint("TOPLEFT",  hbf, "TOPLEFT",  0, 0)
+        hbTop:SetPoint("TOPRIGHT", hbf, "TOPRIGHT", 0, 0)
+        hbTop:SetHeight(1); hbTop:SetTexture(hr, hg, hb, 0.6)
+
+        local hbLeft = hbf:CreateTexture(nil, "OVERLAY")
+        hbLeft:SetPoint("TOPLEFT",    hbf, "TOPLEFT",    0, 0)
+        hbLeft:SetPoint("BOTTOMLEFT", hbf, "BOTTOMLEFT", 0, 0)
+        hbLeft:SetWidth(1); hbLeft:SetTexture(hr, hg, hb, 0.6)
+
+        local hbRight = hbf:CreateTexture(nil, "OVERLAY")
+        hbRight:SetPoint("TOPRIGHT",    hbf, "TOPRIGHT",    0, 0)
+        hbRight:SetPoint("BOTTOMRIGHT", hbf, "BOTTOMRIGHT", 0, 0)
+        hbRight:SetWidth(1); hbRight:SetTexture(hr, hg, hb, 0.6)
+    end
+
+    -- ── Outer border — fullHeight panels only (IP / LevelSync) ───
+    -- Must live at pfl+2 so it renders above the header child (pfl+1)
+    if fullHeight then
+        local bFrame = CreateFrame("Frame", nil, f)
+        bFrame:SetAllPoints(f)
+        bFrame:SetFrameLevel(pfl + 2)
+
+        local bTop = bFrame:CreateTexture(nil, "OVERLAY")
+        bTop:SetPoint("TOPLEFT",  bFrame, "TOPLEFT",  0,  0)
+        bTop:SetPoint("TOPRIGHT", bFrame, "TOPRIGHT", 0,  0)
+        bTop:SetHeight(1); bTop:SetTexture(hr, hg, hb, 0.6)
+
+        local bBot = bFrame:CreateTexture(nil, "OVERLAY")
+        bBot:SetPoint("BOTTOMLEFT",  bFrame, "BOTTOMLEFT",  0, 0)
+        bBot:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", 0, 0)
+        bBot:SetHeight(1); bBot:SetTexture(hr, hg, hb, 0.6)
+
+        local bLeft = bFrame:CreateTexture(nil, "OVERLAY")
+        bLeft:SetPoint("TOPLEFT",    bFrame, "TOPLEFT",    0, 0)
+        bLeft:SetPoint("BOTTOMLEFT", bFrame, "BOTTOMLEFT", 0, 0)
+        bLeft:SetWidth(1); bLeft:SetTexture(hr, hg, hb, 0.6)
+
+        local bRight = bFrame:CreateTexture(nil, "OVERLAY")
+        bRight:SetPoint("TOPRIGHT",    bFrame, "TOPRIGHT",    0, 0)
+        bRight:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", 0, 0)
+        bRight:SetWidth(1); bRight:SetTexture(hr, hg, hb, 0.6)
+    end
 
     f:Hide()
     return f
@@ -175,11 +232,17 @@ function PBM.BuildBottomTabs(parent, fl)
     }
 
     -- ── Playerbots panel ─────────────────────────────────────
-    local pbPanel = MakeContentFrame("PBMTabPanel_Playerbots", parent, fl, "Playerbots", false)
+    local pbPanel = MakeContentFrame("PBMTabPanel_Playerbots", parent, fl, "Playerbots", false, GOLD_R, GOLD_G, GOLD_B)
     PBM.State.bottomTabPanels["Playerbots"] = pbPanel
     PBM.BuildPlayerbotsPanel(pbPanel, ctx)
 
-    -- ── LevelSync panel (gold header, full height) ────────────
+    -- ── Individual Progression panel (full height, corrected width) ──
+    local ipPanel = MakeContentFrame("PBMTabPanel_IndividualProgression", parent, fl,
+                                     "Individual Progression", true, GOLD_R, GOLD_G, GOLD_B)
+    PBM.State.bottomTabPanels["IndividualProgression"] = ipPanel
+    PBM.BuildIPProgressionPanel(ipPanel, ctx)
+
+    -- ── LevelSync panel (full height, corrected width) ───────────
     local lsPanel = MakeContentFrame("PBMTabPanel_LevelSync", parent, fl, "LevelSync", true, GOLD_R, GOLD_G, GOLD_B)
     PBM.State.bottomTabPanels["LevelSync"] = lsPanel
     PBM.BuildLevelSyncPanel(lsPanel, ctx)
@@ -203,7 +266,7 @@ function PBM.BuildBottomTabs(parent, fl)
         btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
 
         local bottomLine = btn:CreateTexture(nil, "OVERLAY")
-        bottomLine:SetHeight(3); bottomLine:SetWidth(TAB_W - 4)
+        bottomLine:SetHeight(3); bottomLine:SetWidth(TAB_W)
         bottomLine:SetPoint("BOTTOM", btn, "BOTTOM", 0, 1)
         bottomLine:SetTexture(0, 0, 0, 0); btn.bottomLine = bottomLine
 

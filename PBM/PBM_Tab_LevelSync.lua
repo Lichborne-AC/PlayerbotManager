@@ -23,8 +23,8 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     local LS_CELL_GAP = 6;   local LS_GRID_TOP = -52; local LS_GRID_END = -396
     local LS_SLOT_CNT = 10;  local LS_ROW_H   = 12
     local LS_LVL_X    = 2;   local LS_LVL_W   = 20
-    local LS_NAM_X    = 26;  local LS_NAM_W   = 140
-    local LS_TIR_X    = 170; local LS_TIR_W   = 152
+    local LS_NAM_X    = 26;  local LS_NAM_W   = 110
+    local LS_TIR_X    = 140; local LS_TIR_W   = 180
     local LS_REM_X    = 326; local LS_REM_W   = 16
 
     -- ── Class colors (hex RGB strings, keyed by class name) ───
@@ -41,51 +41,7 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
         ["Druid"]        = "FF7D0A",
     }
 
-    -- ── Tier colors (LT canonical values) ────────────────────────
-    local LS_TIER_COLORS = {
-        [0]  = {r=0.20, g=0.60, b=0.80},
-        [1]  = {r=0.70, g=0.36, b=0.00},
-        [2]  = {r=0.62, g=0.15, b=0.75},
-        [3]  = {r=0.80, g=0.12, b=0.12},
-        [4]  = {r=0.18, g=0.49, b=0.20},
-        [5]  = {r=0.08, g=0.40, b=0.75},
-        [6]  = {r=0.85, g=0.55, b=0.20},
-        [7]  = {r=0.65, g=0.22, b=0.78},
-        [8]  = {r=0.00, g=0.51, b=0.56},
-        [9]  = {r=0.52, g=0.42, b=0.00},
-        [10] = {r=0.68, g=0.08, b=0.34},
-        [11] = {r=0.33, g=0.43, b=0.48},
-        [12] = {r=0.90, g=0.29, b=0.00},
-        [13] = {r=0.00, g=0.41, b=0.36},
-        [14] = {r=0.28, g=0.38, b=0.85},
-        [15] = {r=0.34, g=0.55, b=0.18},
-        [16] = {r=0.55, g=0.18, b=0.82},
-        [17] = {r=0.00, g=0.38, b=0.39},
-        [18] = {r=0.53, g=0.06, b=0.31},
-    }
-
-    -- ── Tier display strings (short, with leading number) ─────
-    local LS_TIER_SHORT = {
-        [0]  = "None",
-        [1]  = "1 - Molten Core",
-        [2]  = "2 - Onyxia",
-        [3]  = "3 - Blackwing Lair",
-        [4]  = "4 - Pre-Ahn'Qiraj",
-        [5]  = "5 - AQ War Effort",
-        [6]  = "6 - Ahn'Qiraj",
-        [7]  = "7 - Naxxramas",
-        [8]  = "8 - Pre-TBC",
-        [9]  = "9 - Kara/Gruul/Mag",
-        [10] = "10 - SSC/TK",
-        [11] = "11 - Hyjal/Black Temple",
-        [12] = "12 - Zul'Aman",
-        [13] = "13 - Sunwell",
-        [14] = "14 - Naxx/EoE/OS",
-        [15] = "15 - Ulduar",
-        [16] = "16 - Trial of the Crusader",
-        [17] = "17 - Icecrown Citadel",
-        [18] = "18 - Ruby Sanctum",
-    }
+    -- Tier colors and short names come from IPTiersColor.lua (PBM.TIER_COLORS / PBM.TIER_SHORT)
 
     -- ── Helper: 6-char hex string → r, g, b floats (0-1) ──────
     local function lsHexRGB(hex)
@@ -158,11 +114,11 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
             local tc = line:match("Total Characters: (%d+)")
             if tc then d.totalChars = tonumber(tc) end
 
-            local ls = line:match("Level sync: (%u+)")
-            if ls then d.levelSync = (ls == "ON") end
+            local ls = line:match("Level sync: (%a+)")
+            if ls then d.levelSync = (ls == "Available") end
 
-            local ps = line:match("Progression sync: (%u+)")
-            if ps then d.ipSync = (ps == "ON") end
+            local ps = line:match("Progression sync: (%a+)")
+            if ps then d.ipSync = (ps == "Available") end
 
             local accId = line:match("Account (%d+):")
             if accId then curAccount = tonumber(accId) end
@@ -460,15 +416,14 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
         GameTooltip:AddLine("   |cffd4af37.levelsync addchar <charname> <key>|r", 1, 1, 1)
         GameTooltip:AddLine("   The key is |cffff4444NOT|r required if you're adding your own account.", 1, 1, 1)
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("3. By default, |cff66ccfflevel sync and IP sync|r are |cffff4444AUTO-DISABLED|r when you", 1, 1, 1)
-        GameTooltip:AddLine("   when adding a new member. To turn on level sync and IP sync, use:", 1, 1, 1)
+        GameTooltip:AddLine("3. |cff66ccffLevel Sync|r and |cff66ccffIP Sync|r are |cffFF8C00toggle only|r. To toggle:", 1, 1, 1)
         GameTooltip:AddLine("   |cffd4af37.levelsync level on|r", 1, 1, 1)
         GameTooltip:AddLine("   |cffd4af37.levelsync IP on|r", 1, 1, 1)
+        GameTooltip:AddLine("   |cff44dd44Available|r indicates syncs are available.", 1, 1, 1)
+        GameTooltip:AddLine("   |cffdd4444Disabled|r indicates syncs are disabled.", 1, 1, 1)
+        GameTooltip:AddLine("   A |cffFF8C0010 second cooldown|r is applied after each sync.", 1, 1, 1)
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("4. |cffd4af37Sync|r happens automatically at |cff1eff00login, logout, toggle on.|r", 1, 1, 1)
-        GameTooltip:AddLine("   |cff66ccffIP|r syncs on toggle on / tier-up.", 1, 1, 1)
-        GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("5. Use |cff66ccffpool gold|r to drain your level sync group members'", 1, 1, 1)
+        GameTooltip:AddLine("4. Use |cff66ccffpool gold|r to drain your level sync group members'", 1, 1, 1)
         GameTooltip:AddLine("   wallets into yours:", 1, 1, 1)
         GameTooltip:AddLine("   |cffd4af37.levelsync money|r", 1, 1, 1)
         GameTooltip:Show()
@@ -538,16 +493,15 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     end
 
     MakeNote(NOTE_COL_A, 0,              "|cffd4af37UPWARD ONLY|r \226\128\148 Levels, XP, and IP tier are never lowered. Sub-max members get pulled up.")
-    MakeNote(NOTE_COL_A, -NOTE_STEP,     "|cffd4af37SESSION SYNC|r \226\128\148 Level/XP only syncs at login, logout, or toggle \226\128\148 not mid-session.")
-    MakeNote(NOTE_COL_A, -NOTE_STEP * 2, "|cffd4af37IP TIER|r \226\128\148 Tier bumps apply instantly to all members, online or offline.")
-    MakeNote(NOTE_COL_A, -NOTE_STEP * 3, "|cffd4af37NEW MEMBER|r \226\128\148 Auto-disables both syncs on join. Re-enable with level on / IP on.")
-    MakeNote(NOTE_COL_A, -NOTE_STEP * 4, "|cffd4af37COOLDOWN|r \226\128\148 10-sec shared cooldown covers level, IP, and money commands.")
+    MakeNote(NOTE_COL_A, -NOTE_STEP,     "|cffd4af37SESSION SYNC|r \226\128\148 Syncs must be explicitly triggered via toggle \226\128\148 they do not fire automatically.")
+    MakeNote(NOTE_COL_A, -NOTE_STEP * 2, "|cffd4af37IP TIER|r \226\128\148 Tier syncs must be triggered manually via the IP toggle.")
+    MakeNote(NOTE_COL_A, -NOTE_STEP * 3, "|cffd4af37COOLDOWN|r \226\128\148 10-sec shared cooldown covers level, IP, and money commands.")
+    MakeNote(NOTE_COL_A, -NOTE_STEP * 4, "|cffd4af37SECURITY KEY|r \226\128\148 Controls who can link to your account. Keep it private.")
 
     MakeNote(NOTE_COL_B, 0,              "|cffd4af37DEATH KNIGHTS|r \226\128\148 DK's can't pull up sub-55 levels/IP. Configurable server-side.")
-    MakeNote(NOTE_COL_B, -NOTE_STEP,     "|cffd4af37MONEY CMD|r \226\128\148 Toggle money pooling on/off. Pools group gold onto the caller.")
-    MakeNote(NOTE_COL_B, -NOTE_STEP * 2, "|cffd4af37SECURITY KEY|r \226\128\148 Controls who can link to your account. Keep it private.")
-    MakeNote(NOTE_COL_B, -NOTE_STEP * 3, "|cffd4af37GROUP LIMIT|r \226\128\148 Default cap is 6 accounts per group (up to 10 server-side).")
-    MakeNote(NOTE_COL_B, -NOTE_STEP * 4, "|cffd4af37UNBIND ALL|r \226\128\148 Uses the GM command to reset target instances. (Automated in the Playerbots tab)")
+    MakeNote(NOTE_COL_B, -NOTE_STEP,     "|cffd4af37MONEY POOL|r \226\128\148 Toggle money pooling on/off. Pools group gold onto the caller.")
+    MakeNote(NOTE_COL_B, -NOTE_STEP * 2, "|cffd4af37GROUP LIMIT|r \226\128\148 Default cap is 6 accounts per group (up to 10 server-side).")
+    MakeNote(NOTE_COL_B, -NOTE_STEP * 3, "|cffd4af37UNBIND ALL|r \226\128\148 Uses the GM command to reset target instances. (Automated in the Playerbots tab)")
 
     -- ── Bottom footer ──────────────────────────────────────────
     local lsFooter = lsPanel:CreateFontString(nil, "OVERLAY")
@@ -564,8 +518,8 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
         if d.inGroup then
             lsAccountsFS:SetText("Accounts: |cffd4af37"..d.accountsCur.."/"..d.accountsMax.."|r")
             lsTotalCharsFS:SetText("Characters: |cffd4af37"..d.totalChars.."|r")
-            lsLevelSyncFS:SetText("Level Sync: "..(d.levelSync and "|cff44dd44ON|r" or "|cffdd4444OFF|r"))
-            lsIpSyncFS:SetText("IP Sync: "..(d.ipSync and "|cff44dd44ON|r" or "|cffdd4444OFF|r"))
+            lsLevelSyncFS:SetText("Level Sync: "..(d.levelSync and "|cff44dd44Available|r" or "|cffdd4444Disabled|r"))
+            lsIpSyncFS:SetText("IP Sync: "..(d.ipSync and "|cff44dd44Available|r" or "|cffdd4444Disabled|r"))
         else
             lsAccountsFS:SetText("Accounts: —"); lsTotalCharsFS:SetText("Characters: —")
             lsLevelSyncFS:SetText("Level Sync: —"); lsIpSyncFS:SetText("IP Sync: —")
@@ -605,9 +559,9 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
                         cell.rows[r].nameFS:SetText(m.name)
                         cell.rows[r].lvlFS:SetTextColor(0.83, 0.69, 0.22)
                         cell.rows[r].lvlFS:SetText(tostring(m.level))
-                        local tc = LS_TIER_COLORS[m.tierNum] or LS_TIER_COLORS[0]
+                        local tc = PBM.TIER_COLORS[m.tierNum] or PBM.TIER_COLORS[0]
                         cell.rows[r].tierFS:SetTextColor(tc.r, tc.g, tc.b)
-                        cell.rows[r].tierFS:SetText(LS_TIER_SHORT[m.tierNum] or "None")
+                        cell.rows[r].tierFS:SetText(PBM.TIER_SHORT[m.tierNum] or "None")
                         cell.rows[r].removeBtn.charName = m.name
                         cell.rows[r].removeBtn:Show()
                         cell.rows[r].rowBtn.active = true

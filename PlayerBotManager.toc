@@ -2,7 +2,7 @@
 ## Title: PlayerBot Manager
 ## Notes: Manage and configure playerbot strategies, specs, and profiles.
 ## Author: Lichborne
-## Version: 0.1
+## Version: 1.1
 ## SavedVariables: LichborneTrackerDB, LichborneMinimapIconDB, PBMConfig
 
 # Libraries
@@ -16,6 +16,7 @@ LichborneTracker.xml
 
 # PBM — Foundation (tracker core, load first)
 PBM\PBM_Constants.lua
+PBM\IPTiersColor.lua
 PBM\PBM_Database.lua
 PBM\PBM_GearScore.lua
 PBM\PBM_Needs.lua
@@ -39,6 +40,7 @@ PBM\PBM_Raid.lua
 PBM\PBM_Overview.lua
 PBM\PBM_BotSettings.lua
 PBM\PBM_Tab_Playerbots.lua
+PBM\PBM_Tab_IndividualProgression.lua
 PBM\PBM_Tab_LevelSync.lua
 PBM\PBM_Tab_Server.lua
 PBM\PBM_Tab_Notes.lua

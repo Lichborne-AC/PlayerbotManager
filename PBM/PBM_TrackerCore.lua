@@ -138,7 +138,12 @@ local function OnFirstShow()
             PBM.RefreshRows()
         end)
     end
-    SH("#", PBM.DRAG_OFF, 18, "level", true)
+    do
+        local fs = hf:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        fs:SetPoint("TOPLEFT", hf, "TOPLEFT", PBM.DRAG_OFF, 0)
+        fs:SetSize(18, 20); fs:SetJustifyH("CENTER"); fs:SetJustifyV("MIDDLE")
+        fs:SetText("|cffd4af37#|r")
+    end
     local specHdr = hf:CreateTexture(nil, "OVERLAY")
     specHdr:SetPoint("LEFT", hf, "LEFT", PBM.SPEC_OFF + 1, 0)
     specHdr:SetSize(PBM.COL_SPEC_W - 2, 18)
@@ -150,7 +155,7 @@ local function OnFirstShow()
     local needsProfHdrFs = hf:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     needsProfHdrFs:SetPoint("LEFT", hf, "LEFT", PBM.NEEDS_OFF+2, 0)
     needsProfHdrFs:SetWidth(PBM.COL_NEEDS_W-4); needsProfHdrFs:SetJustifyH("CENTER")
-    needsProfHdrFs:SetText("|cffd4af37Need|r")
+    needsProfHdrFs:SetText("|cffd4af37Prof|r")
     PBM.State.needsProfHdrLabel = needsProfHdrFs
     for g, a in ipairs(PBM.SLOT_ABBR) do SH(a, PBM.GEAR_OFF+(g-1)*PBM.COL_GEAR_W, PBM.COL_GEAR_W, "gear_"..g, true) end
 
@@ -270,7 +275,7 @@ local function OnFirstShow()
     -- ── Info/Help label (between last filter and help icons) ──────
     local infoHelpLbl = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     infoHelpLbl:SetJustifyH("LEFT")
-    infoHelpLbl:SetText("|cffC69B3AInfo/Help:|r")
+    infoHelpLbl:SetText("|cffC69B3AHelp:|r")
 
     -- ── Admin label (between overview help icon and import button) ─
     local adminLbl = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -1110,23 +1115,21 @@ local function OnFirstShow()
     end)
 
     local loginBtn = MakeSimpleBtn("LichborneLoginBtn", "|cffd4af37Log in All Bots|r",
-        0.1, 0.6, 0.2, 335, 92,
+        0.1, 0.6, 0.2, 335, 110,
         155, {{"Log in All Bots",0.78,0.61,0.23},{".playerbots bot add *",0.8,0.8,0.8}})
-    loginBtn:SetHeight(39)
     loginBtn:SetScript("OnClick", function() SendChatMessage(".playerbots bot add *", "PARTY") end)
 
     local logoutBtn = MakeSimpleBtn("LichborneLogoutBtn", "|cffd4af37Log Out All Bots|r",
-        0.90, 0.20, 0.20, 335, 50,
+        0.90, 0.20, 0.20, 335, 76,
         155, {{"Log Out All Bots",0.78,0.61,0.23},{".playerbots bot remove *",0.8,0.8,0.8}})
-    logoutBtn:SetHeight(39)
     logoutBtn:SetScript("OnClick", function() SendChatMessage(".playerbots bot remove *", "PARTY") end)
 
     -- ── Remove Orphaned Bots button ────────────────────────────
     -- Sends .playerbots bot remove <name> for every character in the Overview tab roster
     -- Used when bots are still logged in but player has left the group
     local orphanedBotsBtn = CreateFrame("Button", "LichborneOrphanedBotsBtn", f)
-    orphanedBotsBtn:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 335, 134)
-    orphanedBotsBtn:SetSize(155, 39)
+    orphanedBotsBtn:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 335, 42)
+    orphanedBotsBtn:SetSize(155, 29)
     orphanedBotsBtn:SetFrameLevel(fl + 12)
     orphanedBotsBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
     orphanedBotsBtn:SetBackdropColor(0.90*0.30, 0.20*0.30, 0.20*0.30, 1)
@@ -1134,10 +1137,10 @@ local function OnFirstShow()
     orphanedBotsBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     local orphanedBotsLbl = orphanedBotsBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     orphanedBotsLbl:SetAllPoints(orphanedBotsBtn); orphanedBotsLbl:SetJustifyH("CENTER"); orphanedBotsLbl:SetJustifyV("MIDDLE")
-    orphanedBotsLbl:SetText("|cffd4af37Log Out Orphaned Bots|r")
+    orphanedBotsLbl:SetText("|cffd4af37Remove Orphaned Bots|r")
     orphanedBotsBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(orphanedBotsBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Log Out Orphaned Bots", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("Remove Orphaned Bots", 0.78, 0.61, 0.23)
         GameTooltip:AddLine("Logs out all bots in your Overview tab", 0.8, 0.8, 0.8)
         GameTooltip:AddLine("that are not currently in your", 0.8, 0.8, 0.8)
         GameTooltip:AddLine("group or raid.", 0.8, 0.8, 0.8)
@@ -1216,9 +1219,110 @@ local function OnFirstShow()
             orphanIdx = orphanIdx + 1
         end)
     end)
+
+    -- ── +Add Group IP Tiers button ─────────────────────────────
+    local ipTiersBtn = CreateFrame("Button", "LichborneIPTiersBtn", f)
+    ipTiersBtn:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 335, 144)
+    ipTiersBtn:SetSize(155, 29)
+    ipTiersBtn:SetFrameLevel(fl + 12)
+    ipTiersBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
+    ipTiersBtn:SetBackdropColor(0.10*0.35, 0.40*0.35, 0.70*0.35, 1)
+    ipTiersBtn:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
+    ipTiersBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    local ipTiersLbl = ipTiersBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    ipTiersLbl:SetAllPoints(ipTiersBtn); ipTiersLbl:SetJustifyH("CENTER"); ipTiersLbl:SetJustifyV("MIDDLE")
+    ipTiersLbl:SetText("|cffd4af37+ Add IP Tiers|r")
+    ipTiersBtn:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(ipTiersBtn, "ANCHOR_TOP")
+        GameTooltip:AddLine("+ Add IP Tiers", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("Adds Individual Progression Tiers.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine("To display tiers, enable |cffd4af37Show IP Tiers|r in the filter bar.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine("Tier is shown in the number column next to each character.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine("Requires |cffFF8C00mod-Individual-Progression|r", 0.8, 0.8, 0.8)
+        GameTooltip:Show()
+    end)
+    ipTiersBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+    -- CHAT_MSG_SYSTEM listener: parses "Progression Level for <Name> = <N>" from .ip get
+    PBM.State.ipQueryActive = false
+    local ipEventFrame = CreateFrame("Frame", "LichborneIPEventFrame")
+    ipEventFrame:RegisterEvent("CHAT_MSG_SYSTEM")
+    ipEventFrame:SetScript("OnEvent", function(_, _, msg)
+        if not PBM.State.ipQueryActive then return end
+        local clean = msg:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+        local name, tierStr = clean:match("Progression Level for (%S+) = (%d+)")
+        if name and tierStr then
+            local num = tonumber(tierStr)
+            if num and num >= 0 and num <= 18 then
+                if not LichborneTrackerDB.ipData then LichborneTrackerDB.ipData = {} end
+                LichborneTrackerDB.ipData[name:lower()] = num
+                if PBM.State.LBFilter.showIP then
+                    PBM.RefreshRows()
+                    if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
+                    if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
+                end
+            end
+        end
+    end)
+
+    ipTiersBtn:SetScript("OnClick", function()
+        SetScanActive(true)
+        LichborneAddStatus:SetText("Adding group members first...")
+        AddGroupMembers(function(added, skipped)
+            SetScanActive(false)
+            -- Always include self, then add group members (deduped)
+            local selfName = UnitName("player")
+            local seen = {}
+            local members = {}
+            local function addMember(name)
+                if name and name ~= "" and not seen[name:lower()] then
+                    seen[name:lower()] = true
+                    members[#members+1] = name
+                end
+            end
+            addMember(selfName)
+            if GetNumRaidMembers() > 0 then
+                for i = 1, GetNumRaidMembers() do addMember(UnitName("raid"..i)) end
+            elseif GetNumPartyMembers() > 0 then
+                for i = 1, GetNumPartyMembers() do addMember(UnitName("party"..i)) end
+            end
+            if #members == 0 then
+                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444Could not determine any targets.|r") end
+                return
+            end
+            if not LichborneTrackerDB.ipData then LichborneTrackerDB.ipData = {} end
+            PBM.State.ipQueryActive = true
+            if LichborneAddStatus then
+                LichborneAddStatus:SetText("|cffd4af37Added "..added.." new, skipped "..skipped..". Querying IP tiers...|r")
+            end
+            local idx = 1
+            local wait = 0
+            local ipQueryFrame = CreateFrame("Frame")
+            ipQueryFrame:SetScript("OnUpdate", function(_, elapsed)
+                wait = wait + elapsed
+                if wait < 0.2 then return end
+                wait = 0
+                if idx > #members then
+                    ipQueryFrame:SetScript("OnUpdate", nil)
+                    PBM.State.ipQueryActive = false
+                    if LichborneAddStatus then
+                        LichborneAddStatus:SetText("|cff44ff44IP Tier query complete ("..#members.." members).|r")
+                    end
+                    return
+                end
+                local name = members[idx]
+                SendChatMessage(".ip get "..name, "SAY")
+                if LichborneAddStatus then
+                    LichborneAddStatus:SetText("|cffd4af37Querying IP: |r"..name.." ("..idx.."/"..#members..")")
+                end
+                idx = idx + 1
+            end)
+        end)
+    end)
+
     local disbandBtn = CreateFrame("Button", "LichborneDisbandBtn", f)
     disbandBtn:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 335, 8)
-    disbandBtn:SetSize(155, 39)
+    disbandBtn:SetSize(155, 29)
     disbandBtn:SetFrameLevel(fl + 12)
     disbandBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
     disbandBtn:SetBackdropColor(0.90*0.30, 0.20*0.30, 0.20*0.30, 1)
@@ -1235,75 +1339,43 @@ local function OnFirstShow()
     end)
     disbandBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-    -- Confirmation dialog
-    local disbConfirm = CreateFrame("Frame", nil, UIParent)
-    disbConfirm:SetSize(260, 80)
-    disbConfirm:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-    disbConfirm:SetFrameStrata("FULLSCREEN_DIALOG")
-    disbConfirm:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
-    disbConfirm:SetBackdropColor(0.04, 0.06, 0.13, 0.98)
-    disbConfirm:SetBackdropBorderColor(0.90, 0.20, 0.20, 1)
-    disbConfirm:Hide()
-
-    local disbText = disbConfirm:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    disbText:SetPoint("TOP", disbConfirm, "TOP", 0, -12)
-    disbText:SetText("|cffd4af37Disband Group?|r")
-    local disbSub = disbConfirm:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    disbSub:SetPoint("TOP", disbText, "BOTTOM", 0, -4)
-    disbSub:SetText("|cffaaaaaaRemoves all bots and leaves the group.|r")
-
-    local disbYes = CreateFrame("Button", nil, disbConfirm)
-    disbYes:SetSize(100, 22); disbYes:SetPoint("BOTTOMLEFT", disbConfirm, "BOTTOMLEFT", 12, 10)
-    disbYes:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
-    disbYes:SetBackdropColor(0.32, 0.07, 0.07, 1); disbYes:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
-    disbYes:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-    local disbYesLbl = disbYes:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    disbYesLbl:SetAllPoints(disbYes); disbYesLbl:SetJustifyH("CENTER")
-    disbYesLbl:SetText("|cffd4af37Yes, Disband|r")
-
-    local disbNo = CreateFrame("Button", nil, disbConfirm)
-    disbNo:SetSize(100, 22); disbNo:SetPoint("BOTTOMRIGHT", disbConfirm, "BOTTOMRIGHT", -12, 10)
-    disbNo:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
-    disbNo:SetBackdropColor(0.08, 0.10, 0.18, 1); disbNo:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
-    disbNo:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-    local disbNoLbl = disbNo:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    disbNoLbl:SetAllPoints(disbNo); disbNoLbl:SetJustifyH("CENTER")
-    disbNoLbl:SetText("|cffd4af37Cancel|r")
-
-    disbNo:SetScript("OnClick", function() disbConfirm:Hide() end)
-
-    disbYes:SetScript("OnClick", function()
-        disbConfirm:Hide()
-        PBM.SetButtonsLocked(true)
-        -- Also lock Stop and Invite Raid/Group during disband
-        local function lockExtra(locked)
-            for _, n in ipairs({"LichborneStopInspectBtn","LichborneInviteRaidBtn","LichborneInviteGroupBtn","LichborneStopInviteBtn"}) do
-                local b = _G[n]
-                if b then
-                    if locked then b:Disable(); b:SetAlpha(0.35)
-                    else b:Enable(); b:SetAlpha(1.0) end
+    -- Confirmation dialog for Disband Group (standard WoW dialog)
+    if not StaticPopupDialogs["PBM_DISBAND_GROUP"] then
+        StaticPopupDialogs["PBM_DISBAND_GROUP"] = {
+            text = "Disband Group?\n\nRemoves all bots and leaves the group.\n|cffff4444This cannot be undone.|r",
+            button1 = "Yes, Disband",
+            button2 = "Cancel",
+            OnAccept = function()
+                PBM.SetButtonsLocked(true)
+                local function lockExtra(locked)
+                    for _, n in ipairs({"LichborneStopInspectBtn","LichborneInviteRaidBtn","LichborneInviteGroupBtn","LichborneStopInviteBtn"}) do
+                        local b = _G[n]
+                        if b then
+                            if locked then b:Disable(); b:SetAlpha(0.35)
+                            else b:Enable(); b:SetAlpha(1.0) end
+                        end
+                    end
                 end
-            end
-        end
-        lockExtra(true)
-        LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Disbanding group...|r", 1, 0.85, 0)
-        SendChatMessage(".playerbots bot remove *", "SAY")
-        local waited = 0
-        local disbFrame = CreateFrame("Frame")
-        disbFrame:SetScript("OnUpdate", function(_, elapsed)
-            waited = waited + elapsed
-            if waited < 1.0 then return end
-            LeaveParty()
-            PBM.SetButtonsLocked(false)
-            lockExtra(false)
-            LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Group disbanded.|r", 1, 0.85, 0)
-            disbFrame:SetScript("OnUpdate", nil)
-        end)
-    end)
-
+                lockExtra(true)
+                LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Disbanding group...|r", 1, 0.85, 0)
+                SendChatMessage(".playerbots bot remove *", "SAY")
+                local waited = 0
+                local disbFrame = CreateFrame("Frame")
+                disbFrame:SetScript("OnUpdate", function(_, elapsed)
+                    waited = waited + elapsed
+                    if waited < 1.0 then return end
+                    LeaveParty()
+                    PBM.SetButtonsLocked(false)
+                    lockExtra(false)
+                    LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Group disbanded.|r", 1, 0.85, 0)
+                    disbFrame:SetScript("OnUpdate", nil)
+                end)
+            end,
+            timeout = 0, whileDead = true, hideOnEscape = true,
+        }
+    end
     disbandBtn:SetScript("OnClick", function()
-        disbConfirm:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-        disbConfirm:Show()
+        StaticPopup_Show("PBM_DISBAND_GROUP")
     end)
 
     -- ── Top-row strategy buttons + upcoming placeholder ──────────
@@ -1801,14 +1873,15 @@ local function OnFirstShow()
         GameTooltip:AddLine(" ", 1, 1, 1)
         GameTooltip:AddLine("1. Add your PlayerBots to the group.", 0.9, 0.9, 0.9)
         GameTooltip:AddLine("2. Click |cff4488FF+Full Group Scan|r to |cffC69B3Aadd bots,|r gear score", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   |cffC69B3A(GS)|r, |cffC69B3AiLvL|r, |cffC69B3Agear,|r and |cffC69B3Aspecialization|r to the tracker.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("   |cffC69B3A(GS)|r, |cffC69B3AiLvL|r, |cffC69B3Agear,|r |cffC69B3Aspecialization,|r and", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("   |cffC69B3APlayerbot Strategies|r to the tracker.", 0.9, 0.9, 0.9)
         GameTooltip:AddLine("   Allow 4-5 minutes for a complete scan.", 1, 0.55, 0.0)
         GameTooltip:AddLine(" ", 1, 1, 1)
         GameTooltip:AddLine("TIP: Use |cffC69B3A.playerbot bot addaccount <account>|r to", 0.4, 0.8, 1)
         GameTooltip:AddLine("     quickly add bots for first time set up.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: |cffC69B3A+Add Target|r buttons are used for |cffC69B3ASingle|r scans.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: |cffC69B3A+Add Group|r buttons are used for |cffC69B3AGroup|r scans.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3ALog Out Orphaned Bots|r removes bots currently not", 0.4, 0.8, 1)
+        GameTooltip:AddLine("TIP: |cffC69B3ARemove Orphaned Bots|r removes bots currently not", 0.4, 0.8, 1)
         GameTooltip:AddLine("     in your group. (.playerbot bot remove)", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: |cffC69B3ADisband Group|r removes PlayerBots before", 0.4, 0.8, 1)
         GameTooltip:AddLine("     disbanding the group.", 0.4, 0.8, 1)
@@ -1897,8 +1970,8 @@ local function OnFirstShow()
         GameTooltip:AddLine("   Gear only updates after a scan, not on equip.", 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
         GameTooltip:AddLine("TIP: Click any column header to |cffC69B3ASort|r.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Use the |cffC69B3ANeed|r cell to flag which gear slot", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     a character needs to upgrade.", 0.4, 0.8, 1)
+        GameTooltip:AddLine("TIP: Use the |cffC69B3AProf|r cell to track a character's", 0.4, 0.8, 1)
+        GameTooltip:AddLine("     profession.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: You can change the spec by clicking the icon.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: Click |cff00cc00[+]|r on a PlayerBot row to add to the", 0.4, 0.8, 1)
         GameTooltip:AddLine("     |cffC69B3ARaid Tab|r.  Right-click |cffFF6600[+]|r to remove.", 0.4, 0.8, 1)
@@ -1907,13 +1980,51 @@ local function OnFirstShow()
         GameTooltip:AddLine("TIP: Use |cff66CCFFDelete Character|r |cffff3333[x]|r to remove", 0.4, 0.8, 1)
         GameTooltip:AddLine("     PlayerBots from your tracker.", 0.4, 0.8, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffC69B3ANote:|r Some |cff00cc00<Random Enchantment>|r gear cannot", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     be displayed correctly, due to client limitations.", 0.4, 0.8, 1)
+        GameTooltip:AddLine("|cffC69B3ANote:|r Some |cff00cc00<Random Enchantment>|r gear may", 0.4, 0.8, 1)
+        GameTooltip:AddLine("     not display correctly.", 0.4, 0.8, 1)
         GameTooltip:AddLine("|cffC69B3ANote:|r Some items may display with a 0 Gear Score.", 0.4, 0.8, 1)
         GameTooltip:AddLine("     Such as PvP gear.", 0.4, 0.8, 1)
         GameTooltip:Show()
     end)
     classHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+    -- ── Setting up Playerbots help button ─────────────────────────
+    local setupHelpBtn = CreateFrame("Button", "LichborneSetupHelpBtn", f)
+    setupHelpBtn:SetPoint("RIGHT", classHelpBtn, "LEFT", -2, 0)
+    setupHelpBtn:SetSize(24, 24)
+    setupHelpBtn:SetFrameLevel(fl + 12)
+    setupHelpBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    local setupHelpIcon = setupHelpBtn:CreateTexture(nil, "OVERLAY")
+    setupHelpIcon:SetPoint("CENTER", setupHelpBtn, "CENTER", 0, 0)
+    setupHelpIcon:SetSize(22, 22)
+    setupHelpIcon:SetTexture("Interface\\Icons\\inv_gizmo_06")
+    setupHelpBtn:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(setupHelpBtn, "ANCHOR_LEFT")
+        GameTooltip:AddLine("SETTING UP PLAYERBOTS", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("|cffd4af37Linking Accounts|r", 1, 1, 1)
+        GameTooltip:AddLine("Linking sets you as the |cffFF8C00owner|r of bots on other accounts.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("|cffff4444Requires:|r  AiPlayerbot.AllowTrustedAccountBots = 1", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("  |cff69CCF0.playerbots account setKey <key>|r", 1, 1, 1)
+        GameTooltip:AddLine("  |cff69CCF0.playerbots account link <acct> <key>|r", 1, 1, 1)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("|cffFF8C00Altbots|r", 1, 1, 1)
+        GameTooltip:AddLine("Characters you create on your account (or a linked", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("account) that you log in as bots. You control them,", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("party with them, and they persist.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("They follow their own IP progression tier.", 1, 0.55, 0.0)
+        GameTooltip:AddLine("  |cff69CCF0.playerbots bot add <name>|r", 1, 1, 1)
+        GameTooltip:AddLine("  |cff69CCF0.playerbots bot addaccount <account>|r", 1, 1, 1)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("|cffFF8C00Rndbots|r", 1, 1, 1)
+        GameTooltip:AddLine("Server-generated bots that populate the world", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("automatically. No manual setup needed.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("They follow the group leader's IP tier.", 1, 0.55, 0.0)
+        GameTooltip:AddLine("  |cff69CCF0.playerbots bot addclass <class>|r", 1, 1, 1)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("|cffd4af37GitHub:|r  github.com/mod-playerbots/mod-playerbots", 0.6, 0.6, 0.6)
+        GameTooltip:Show()
+    end)
+    setupHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
     -- ── Overview Tab help button ──────────────────────────────────
     local overviewHelpBtn = CreateFrame("Button", "LichborneOverviewHelpBtn", f)
@@ -1940,8 +2051,8 @@ local function OnFirstShow()
         GameTooltip:AddLine("   |cffC69B3APage|r dropdown in the header to view overflow.", 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
         GameTooltip:AddLine("TIP: Click any column header to |cffC69B3ASort|r.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Use the |cffC69B3ANeed|r cell to mark which slot a", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     PlayerBot needs an upgrade.", 0.4, 0.8, 1)
+        GameTooltip:AddLine("TIP: Use the |cffC69B3AProf|r cell to track a character's", 0.4, 0.8, 1)
+        GameTooltip:AddLine("     profession.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: Use Delete Character |cffff3333[x]|r to remove", 0.4, 0.8, 1)
         GameTooltip:AddLine("     PlayerBots from your tracker.", 0.4, 0.8, 1)
         GameTooltip:Show()
@@ -1979,15 +2090,67 @@ local function OnFirstShow()
         GameTooltip:AddLine("Instead of toggling strategies one by one, use", 0.9, 0.9, 0.9)
         GameTooltip:AddLine("|cffC69B3ATemplates|r — pre-built strategy sets optimized", 0.9, 0.9, 0.9)
         GameTooltip:AddLine("for each spec and role.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("Templates are found in each |cffC69B3AClass Tab|r — click the", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("|cffC69B3A?|r or |cffC69B3ASpec icon|r in the top-left of the tab.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("Templates are found in each |cffC69B3AClass Tab|r — click |cffC69B3A?|r", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("or the |cffC69B3ASpec icon|r in the top-left of the tab.", 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
         GameTooltip:AddLine("TIP: Always set strategies via a |cffC69B3ATemplate|r first,", 0.4, 0.8, 1)
         GameTooltip:AddLine("     then fine-tune individual strategies if needed.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: Bots retain their strategies between sessions.", 0.4, 0.8, 1)
+        GameTooltip:AddLine("TIP: |cffC69B3ACO|r is Combat Strategies.", 0.4, 0.8, 1)
+        GameTooltip:AddLine("TIP: |cffC69B3ANC|r is Non-Combat Strategies.", 0.4, 0.8, 1)
         GameTooltip:Show()
     end)
     bookHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+    -- ── LevelSync help button ─────────────────────────────────────
+    local levelSyncHelpBtn = CreateFrame("Button", "LichborneLevelSyncHelpBtn", f)
+    levelSyncHelpBtn:SetPoint("RIGHT", bookHelpBtn, "LEFT", -2, 0)
+    levelSyncHelpBtn:SetSize(24, 24)
+    levelSyncHelpBtn:SetFrameLevel(fl + 12)
+    levelSyncHelpBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    local levelSyncHelpIcon = levelSyncHelpBtn:CreateTexture(nil, "OVERLAY")
+    levelSyncHelpIcon:SetPoint("CENTER", levelSyncHelpBtn, "CENTER", 0, 0)
+    levelSyncHelpIcon:SetSize(22, 22)
+    levelSyncHelpIcon:SetTexture("Interface\\Icons\\inv_misc_groupneedmore")
+    levelSyncHelpBtn:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(levelSyncHelpBtn, "ANCHOR_LEFT")
+        GameTooltip:AddLine("LEVELSYNC", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("This was added for my personal server to give players", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("the ability to run a full raid without leveling 40+", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("characters. It is designed for |cffFF8C00large altbot setups|r.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("LevelSync is a shortcut to set your characters'", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("IP levels and tiers automatically across accounts.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("|cffff4444Level sync and IP sync are not recommended for all players.|r", 1, 1, 1)
+        GameTooltip:AddLine("|cffff4444Use at your own risk.  Double check entries before toggles.|r", 1, 1, 1)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("|cffd4af37Toggle Only|r", 1, 1, 1)
+        GameTooltip:AddLine("LevelSync must first be enabled by the server, then", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("toggled by the player. It will not fire until both", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("conditions are met. Syncs do not run automatically", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("— you must enter the toggle command to fire each sync.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("  |cff69CCF0.levelsync level on|r  /  |cff69CCF0.levelsync IP on|r", 1, 1, 1)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("|cffd4af37Reset Instances|r", 1, 1, 1)
+        GameTooltip:AddLine("The unbindall command loops through every member", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("of your group or raid and resets their instances", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("one by one with a short delay between each.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("  |cff69CCF0.levelsync unbindall <name>|r", 1, 1, 1)
+        GameTooltip:AddLine("Use the |cffd4af37Playerbots Tab|r to run this for the whole group.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("|cffd4af37Pool Gold|r", 1, 1, 1)
+        GameTooltip:AddLine("Collects all gold from every member of your level", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("sync group and transfers it to the caller.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("  |cff69CCF0.levelsync money|r", 1, 1, 1)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("To learn how to use LevelSync, see the", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("|cffd4af37LevelSync Tab|r in this addon.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("|cffd4af37GitHub:|r  github.com/Lichborne-AC/mod-levelsync", 0.6, 0.6, 0.6)
+        GameTooltip:Show()
+    end)
+    levelSyncHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
     -- Options panel (DBM-style, Update tab)
     local optionsPanel = CreateFrame("Frame", "LichborneOptionsPanel", UIParent)
@@ -2052,8 +2215,142 @@ local function OnFirstShow()
         return btn
     end
 
-    local optsTabGeneral = MakeOptsTab("Update",  8)
-    local optsTabCredits = MakeOptsTab("Credits", 112)
+    local optsTabOptions = MakeOptsTab("Options", 8)
+    local optsTabGeneral = MakeOptsTab("Links",  112)
+    local optsTabCredits = MakeOptsTab("Credits", 216)
+
+    -- ── Options tab content ───────────────────────────────────────────
+    local optsOptionsBox = CreateFrame("Frame", nil, optionsPanel)
+    optsOptionsBox:SetPoint("TOPLEFT",     optionsPanel, "TOPLEFT",    6, -66)
+    optsOptionsBox:SetPoint("BOTTOMRIGHT", optionsPanel, "BOTTOMRIGHT", -6, 48)
+    optsOptionsBox:SetFrameLevel(optionsPanel:GetFrameLevel() + 1)
+    optsOptionsBox:SetBackdrop({
+        bgFile="Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
+        tile=true, tileSize=16, edgeSize=8,
+        insets={left=3, right=3, top=3, bottom=3}
+    })
+    optsOptionsBox:SetBackdropColor(0.03, 0.04, 0.09, 1)
+    optsOptionsBox:SetBackdropBorderColor(0.60, 0.60, 0.60, 0.8)
+    optsOptionsBox:Hide()
+
+    -- Forward reference: assigned after confirmAll is created below
+    if not StaticPopupDialogs["PBM_CLEAR_ALL_DATA"] then
+        StaticPopupDialogs["PBM_CLEAR_ALL_DATA"] = {
+            text = "|cffd4af37Clear All Data|r\n\nThis permanently deletes ALL tracked characters,\ngear data, raid rosters, and the Overview list.\n|cffff4444This cannot be undone.|r",
+            button1 = "Yes, Clear All",
+            button2 = "Cancel",
+            OnAccept = function()
+                LichborneTrackerDB.rows        = {}
+                LichborneTrackerDB.raidRosters = {}
+                LichborneTrackerDB.needs       = {}
+                LichborneTrackerDB.profs       = {}
+                LichborneTrackerDB.botNotes    = {}
+                LichborneTrackerDB.allGroups   = {A={}, B={}, C={}}
+                for _, g in ipairs({"A", "B", "C"}) do
+                    for i = 1, 60 do
+                        LichborneTrackerDB.allGroups[g][i] = {name="",cls="",spec="",gs=0,realGs=0}
+                    end
+                end
+                LichborneTrackerDB.raidName  = "N/A (5-Man)"
+                LichborneTrackerDB.raidSize  = 5
+                LichborneTrackerDB.raidTier  = 0
+                LichborneTrackerDB.raidGroup = "A"
+                LichborneOutput("|cffC69B3ALichborne:|r |cffff4444All data wiped.|r", 1, 0.5, 0.5)
+                PBM.RefreshRows()
+                if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
+                if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
+            end,
+            timeout      = 0,
+            whileDead    = true,
+            hideOnEscape = true,
+        }
+    end
+
+    local _optShowConfirmAll = function() StaticPopup_Show("PBM_CLEAR_ALL_DATA") end
+
+    do
+        local OPT_FL    = optionsPanel:GetFrameLevel() + 2
+        local OPT_FONT  = "Fonts\\FRIZQT__.TTF"
+        local OPT_GR, OPT_GG, OPT_GB = 0.78, 0.61, 0.23
+        local OPT_MX    = 14
+        local OPT_BTN_H = 26
+
+        local optSecHdr = optsOptionsBox:CreateFontString(nil, "OVERLAY")
+        optSecHdr:SetFont(OPT_FONT, 11, "OUTLINE")
+        optSecHdr:SetPoint("TOPLEFT", optsOptionsBox, "TOPLEFT", OPT_MX, -14)
+        optSecHdr:SetTextColor(OPT_GR, OPT_GG, OPT_GB)
+        optSecHdr:SetText("Data Management")
+
+        local optSecDiv = optsOptionsBox:CreateTexture(nil, "ARTWORK")
+        optSecDiv:SetPoint("TOPLEFT",  optsOptionsBox, "TOPLEFT",  OPT_MX + 116, -20)
+        optSecDiv:SetPoint("TOPRIGHT", optsOptionsBox, "TOPRIGHT", -OPT_MX,      -20)
+        optSecDiv:SetHeight(1)
+        optSecDiv:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+        optSecDiv:SetVertexColor(OPT_GR, OPT_GG, OPT_GB, 0.5)
+
+        local function OptActionBtn(yTop, label, desc, r, g, b, clickFn)
+            local btn = CreateFrame("Button", nil, optsOptionsBox)
+            btn:SetPoint("TOPLEFT",  optsOptionsBox, "TOPLEFT",  OPT_MX, yTop)
+            btn:SetPoint("TOPRIGHT", optsOptionsBox, "TOPRIGHT", -OPT_MX, yTop)
+            btn:SetHeight(OPT_BTN_H)
+            btn:SetFrameLevel(OPT_FL)
+            btn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
+            btn:SetBackdropColor(r, g, b, 1)
+            btn:SetBackdropBorderColor(OPT_GR, OPT_GG, OPT_GB, 0.85)
+            btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+            local lbl = btn:CreateFontString(nil, "OVERLAY")
+            lbl:SetFont(OPT_FONT, 10, "OUTLINE")
+            lbl:SetAllPoints(btn); lbl:SetJustifyH("CENTER"); lbl:SetJustifyV("MIDDLE")
+            lbl:SetText("|cffd4af37"..label.."|r")
+            local dfs = optsOptionsBox:CreateFontString(nil, "OVERLAY")
+            dfs:SetFont(OPT_FONT, 9, "OUTLINE")
+            dfs:SetPoint("TOPLEFT",  optsOptionsBox, "TOPLEFT",  OPT_MX + 4, yTop - OPT_BTN_H - 3)
+            dfs:SetPoint("TOPRIGHT", optsOptionsBox, "TOPRIGHT", -OPT_MX,    yTop - OPT_BTN_H - 3)
+            dfs:SetJustifyH("CENTER")
+            dfs:SetTextColor(0.72, 0.72, 0.72)
+            dfs:SetText(desc)
+            btn:SetScript("OnClick", clickFn)
+        end
+
+        OptActionBtn(-34,
+            "Export Data",
+            "Export all tracked character and raid data to a string.  Click Select All, then Ctrl+C to copy.",
+            0.04, 0.07, 0.14,
+            function()
+                if exportPopup:IsShown() then exportPopup:Hide(); return end
+                if _G["LichborneImportPopup"] then _G["LichborneImportPopup"]:Hide() end
+                optionsPanel:Hide()
+                local blob = PBM.LB_ExportDB()
+                expEditBox:SetText(blob)
+                expEditBox:SetFocus(); expEditBox:HighlightText()
+                exportPopup:Show()
+                LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Export ready — click Select All, then press Ctrl+C.|r")
+            end)
+
+        OptActionBtn(-104,
+            "Import Data",
+            "Load tracker data from a previously exported string.  Paste the export string and click Import.",
+            0.04, 0.07, 0.14,
+            function()
+                if importPopup:IsShown() then importPopup:Hide(); return end
+                if _G["LichborneExportPopup"] then _G["LichborneExportPopup"]:Hide() end
+                optionsPanel:Hide()
+                impEditBox:SetText("")
+                impShowNormal()
+                impEditBox:SetFocus()
+                importPopup:Show()
+            end)
+
+        OptActionBtn(-174,
+            "Clear All Data",
+            "|cffff6666Permanently deletes ALL tracked characters, gear data,\nraid rosters, and the Overview list.  This cannot be undone.|r",
+            0.22, 0.03, 0.03,
+            function()
+                optionsPanel:Hide()
+                _optShowConfirmAll()
+            end)
+    end
 
     -- Content area (the bordered box like DBM)
     local optsContentBox = CreateFrame("Frame", nil, optionsPanel)
@@ -2068,83 +2365,102 @@ local function OnFirstShow()
     })
     optsContentBox:SetBackdropColor(0.03, 0.04, 0.09, 1)
     optsContentBox:SetBackdropBorderColor(0.60, 0.60, 0.60, 0.8)
-    -- ── Update tab content ────────────────────────────────────────────
+    -- ── Links tab content (scrollable) ───────────────────────────────
+    local LNK_GOLD_R, LNK_GOLD_G, LNK_GOLD_B = 0.78, 0.61, 0.23
+    local lnkFL = optionsPanel:GetFrameLevel()
 
-    -- Browse / download from GitHub
-    local updLabel2 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    updLabel2:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 10, -14)
-    updLabel2:SetText("|cffd4af37Browse or download from the GitHub repository:|r")
-
-    local updBg2 = CreateFrame("Frame", nil, optsContentBox)
-    updBg2:SetPoint("TOPLEFT",  optsContentBox, "TOPLEFT",  8, -34)
-    updBg2:SetPoint("TOPRIGHT", optsContentBox, "TOPRIGHT", -8, -34)
-    updBg2:SetHeight(22)
-    updBg2:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",tile=true,tileSize=16,edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
-    updBg2:SetBackdropColor(0.02, 0.02, 0.06, 1)
-    updBg2:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.8)
-    updBg2:SetFrameLevel(optionsPanel:GetFrameLevel() + 2)
-
-    local updEdit2 = CreateFrame("EditBox", "LichborneUpdateRepoBox", updBg2)
-    updEdit2:SetPoint("TOPLEFT",     updBg2, "TOPLEFT",      4, -2)
-    updEdit2:SetPoint("BOTTOMRIGHT", updBg2, "BOTTOMRIGHT", -4,  2)
-    updEdit2:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
-    updEdit2:SetTextColor(1, 1, 1, 1)
-    updEdit2:SetAutoFocus(false)
-    updEdit2:EnableMouse(true)
-    updEdit2:SetText("https://github.com/Lichborne-AC/PlayerbotManager")
-    updEdit2:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
-
-    local updSelectBtn2 = CreateFrame("Button", nil, optsContentBox, "UIPanelButtonTemplate")
-    updSelectBtn2:SetSize(90, 22)
-    updSelectBtn2:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 8, -62)
-    updSelectBtn2:SetText("Select All")
-    updSelectBtn2:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
-    updSelectBtn2:SetScript("OnClick", function()
-        updEdit2:SetFocus()
-        updEdit2:HighlightText()
+    local linksScroll = CreateFrame("ScrollFrame", "PBMLinksScrollFrame", optsContentBox)
+    linksScroll:SetPoint("TOPLEFT",     optsContentBox, "TOPLEFT",      4,  -4)
+    linksScroll:SetPoint("BOTTOMRIGHT", optsContentBox, "BOTTOMRIGHT", -22,  4)
+    linksScroll:SetFrameLevel(lnkFL + 2)
+    linksScroll:EnableMouseWheel(true)
+    linksScroll:SetScript("OnMouseWheel", function(self, delta)
+        local new = math.max(0, math.min(self:GetVerticalScrollRange(), self:GetVerticalScroll() - delta * 40))
+        self:SetVerticalScroll(new)
     end)
 
-    local updHint2 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    updHint2:SetPoint("LEFT", updSelectBtn2, "RIGHT", 10, 0)
-    updHint2:SetText("|cffd4af37Push Select All then Ctrl+C to copy|r")
+    local linksChild = CreateFrame("Frame", nil, linksScroll)
+    linksChild:SetSize(920, 600)
+    linksScroll:SetScrollChild(linksChild)
 
-    -- mod-levelsync repository
-    local updLabel3 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    updLabel3:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 10, -96)
-    updLabel3:SetText("|cffd4af37mod-levelsync (required for Level Sync tab):|r")
-
-    local updBg3 = CreateFrame("Frame", nil, optsContentBox)
-    updBg3:SetPoint("TOPLEFT",  optsContentBox, "TOPLEFT",  8, -116)
-    updBg3:SetPoint("TOPRIGHT", optsContentBox, "TOPRIGHT", -8, -116)
-    updBg3:SetHeight(22)
-    updBg3:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",tile=true,tileSize=16,edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
-    updBg3:SetBackdropColor(0.02, 0.02, 0.06, 1)
-    updBg3:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.8)
-    updBg3:SetFrameLevel(optionsPanel:GetFrameLevel() + 2)
-
-    local updEdit3 = CreateFrame("EditBox", "PBMUpdateLevelSyncBox", updBg3)
-    updEdit3:SetPoint("TOPLEFT",     updBg3, "TOPLEFT",      4, -2)
-    updEdit3:SetPoint("BOTTOMRIGHT", updBg3, "BOTTOMRIGHT", -4,  2)
-    updEdit3:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
-    updEdit3:SetTextColor(1, 1, 1, 1)
-    updEdit3:SetAutoFocus(false)
-    updEdit3:EnableMouse(true)
-    updEdit3:SetText("https://github.com/Lichborne-AC/mod-levelsync")
-    updEdit3:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
-
-    local updSelectBtn3 = CreateFrame("Button", nil, optsContentBox, "UIPanelButtonTemplate")
-    updSelectBtn3:SetSize(90, 22)
-    updSelectBtn3:SetPoint("TOPLEFT", optsContentBox, "TOPLEFT", 8, -144)
-    updSelectBtn3:SetText("Select All")
-    updSelectBtn3:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
-    updSelectBtn3:SetScript("OnClick", function()
-        updEdit3:SetFocus()
-        updEdit3:HighlightText()
+    -- Scrollbar
+    local linksBar = CreateFrame("Slider", "PBMLinksScrollBar", optsContentBox, "UIPanelScrollBarTemplate")
+    linksBar:SetPoint("TOPLEFT",    linksScroll, "TOPRIGHT",    4, -16)
+    linksBar:SetPoint("BOTTOMLEFT", linksScroll, "BOTTOMRIGHT", 4,  16)
+    linksBar:SetMinMaxValues(0, 1)
+    linksBar:SetValueStep(1)
+    linksBar:SetScript("OnValueChanged", function(self, value)
+        linksScroll:SetVerticalScroll(value)
+    end)
+    linksBar:SetValue(0)
+    linksBar:SetFrameLevel(lnkFL + 3)
+    linksScroll:SetScript("OnScrollRangeChanged", function(self, _, yrange)
+        local range = math.max(yrange or 0, 1)
+        linksBar:SetMinMaxValues(0, range)
+        linksBar:SetValue(self:GetVerticalScroll())
+    end)
+    linksScroll:SetScript("OnVerticalScroll", function(self, offset)
+        linksBar:SetValue(offset)
     end)
 
-    local updHint3 = optsContentBox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    updHint3:SetPoint("LEFT", updSelectBtn3, "RIGHT", 10, 0)
-    updHint3:SetText("|cffd4af37Push Select All then Ctrl+C to copy|r")
+    local function LnkSep(y)
+        local t = linksChild:CreateTexture(nil, "ARTWORK")
+        t:SetPoint("TOPLEFT",  linksChild, "TOPLEFT",  10, y)
+        t:SetPoint("TOPRIGHT", linksChild, "TOPRIGHT", -10, y)
+        t:SetHeight(2)
+        t:SetTexture(LNK_GOLD_R, LNK_GOLD_G, LNK_GOLD_B, 0.7)
+    end
+
+    local function LnkEntry(label, url, y, ebName)
+        local lbl = linksChild:CreateFontString(nil, "OVERLAY")
+        lbl:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE")
+        lbl:SetPoint("TOPLEFT", linksChild, "TOPLEFT", 10, y)
+        lbl:SetText("|cffd4af37"..label.."|r")
+
+        local bg = CreateFrame("Frame", nil, linksChild)
+        bg:SetPoint("TOPLEFT",  linksChild, "TOPLEFT",  8, y - 20)
+        bg:SetPoint("TOPRIGHT", linksChild, "TOPRIGHT", -8, y - 20)
+        bg:SetHeight(22)
+        bg:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",tile=true,tileSize=16,edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
+        bg:SetBackdropColor(0.02, 0.02, 0.06, 1)
+        bg:SetBackdropBorderColor(LNK_GOLD_R, LNK_GOLD_G, LNK_GOLD_B, 0.8)
+        bg:SetFrameLevel(lnkFL + 3)
+
+        local eb = CreateFrame("EditBox", ebName, bg)
+        eb:SetPoint("TOPLEFT",     bg, "TOPLEFT",      4, -2)
+        eb:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -4,  2)
+        eb:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
+        eb:SetTextColor(1, 1, 1, 1)
+        eb:SetAutoFocus(false)
+        eb:EnableMouse(true)
+        eb:SetText(url)
+        eb:SetFrameLevel(lnkFL + 4)
+
+        local btn = CreateFrame("Button", nil, linksChild, "UIPanelButtonTemplate")
+        btn:SetSize(90, 22)
+        btn:SetPoint("TOPLEFT", linksChild, "TOPLEFT", 8, y - 48)
+        btn:SetText("Select All")
+        btn:SetFrameLevel(lnkFL + 4)
+        btn:SetScript("OnClick", function() eb:SetFocus(); eb:HighlightText() end)
+
+        local hint = linksChild:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        hint:SetPoint("LEFT", btn, "RIGHT", 10, 0)
+        hint:SetText("|cffd4af37Ctrl+C to copy|r")
+
+        return y - 76  -- bottom y of this entry (label16 + box22 + btn22 + gap16)
+    end
+
+    local cy = -14
+    cy = LnkEntry("PlayerBot Manager:",                                    "https://github.com/Lichborne-AC/PlayerbotManager",           cy, "LichborneUpdateRepoBox")
+    LnkSep(cy - 10); cy = cy - 30
+    cy = LnkEntry("mod-playerbots:",            "https://github.com/mod-playerbots/mod-playerbots",           cy, "PBMUpdatePlayerbotsBox")
+    LnkSep(cy - 10); cy = cy - 30
+    cy = LnkEntry("mod-levelsync:",             "https://github.com/Lichborne-AC/mod-levelsync",              cy, "PBMUpdateLevelSyncBox")
+    LnkSep(cy - 10); cy = cy - 30
+    cy = LnkEntry("mod-individual-progression:", "https://github.com/ZhengPeiRu21/mod-individual-progression", cy, "PBMUpdateIndivProgBox")
+    LnkSep(cy - 10); cy = cy - 30
+    cy = LnkEntry("Multibot:",  "https://github.com/Wishmaster117/MultiBot-Chatless",         cy, "PBMUpdateMultibotBox")
+    linksChild:SetHeight(math.abs(cy) + 20)
 
     -- ── Credits tab content ───────────────────────────────────────────
     local optsCreditsBox = CreateFrame("Frame", nil, optionsPanel)
@@ -2189,28 +2505,34 @@ local function OnFirstShow()
     CreditsLine("|cffffffffLatChee|r",                              -134, nil, "CENTER")
     CreditsLine("|cffffffffInvaderCanuck|r",                        -146, nil, "CENTER")
     CreditsLine("|cffffffffScoobyPwnsOnU|r",                        -158, nil, "CENTER")
-    CreditsLine("|cffffffffAdditional thanks to Wishmaster117 for Multibot, whose work laid the groundwork|r", -202, nil, "CENTER")
-    CreditsLine("|cfffffffffor several PBM systems, and to the Playerbots Discord community for their support.|r", -216, nil, "CENTER")
-    CreditsDivider(-234)
-    CreditsLine("|cffd4af37Questions & Support:|r  lichborne.wow@proton.me  —  |cffd4af37Discord:|r jared2219", -244, nil, "CENTER")
+    CreditsLine("|cffffffffGrimfeather|r",                          -170, nil, "CENTER")
+    CreditsLine("|cffffffffKeleborn|r",                             -182, nil, "CENTER")
+    CreditsLine("|cffffffffPortions of PBM's character menu code were derived from Wishmaster117's Multibot.|r", -226, nil, "CENTER")
+    CreditsLine("|cffffffffThank you for the work.|r", -240, nil, "CENTER")
+    CreditsDivider(-258)
+    CreditsLine("|cffd4af37Questions & Support:|r  lichborne.wow@proton.me  —  |cffd4af37Discord:|r jared2219", -280, nil, "CENTER")
 
     -- ── Tab switching ─────────────────────────────────────────────────
     local function SetOptsTab(which)
-        if which == "update" then
+        optsOptionsBox:Hide(); optsContentBox:Hide(); optsCreditsBox:Hide()
+        optsTabOptions:SetBackdropColor(0.12, 0.16, 0.30, 1)
+        optsTabGeneral:SetBackdropColor(0.12, 0.16, 0.30, 1)
+        optsTabCredits:SetBackdropColor(0.12, 0.16, 0.30, 1)
+        if which == "options" then
+            optsOptionsBox:Show()
+            optsTabOptions:SetBackdropColor(0.20, 0.26, 0.48, 1)
+        elseif which == "update" then
             optsContentBox:Show()
-            optsCreditsBox:Hide()
             optsTabGeneral:SetBackdropColor(0.20, 0.26, 0.48, 1)
-            optsTabCredits:SetBackdropColor(0.12, 0.16, 0.30, 1)
         else
-            optsContentBox:Hide()
             optsCreditsBox:Show()
-            optsTabGeneral:SetBackdropColor(0.12, 0.16, 0.30, 1)
             optsTabCredits:SetBackdropColor(0.20, 0.26, 0.48, 1)
         end
     end
+    optsTabOptions:SetScript("OnClick", function() SetOptsTab("options") end)
     optsTabGeneral:SetScript("OnClick", function() SetOptsTab("update")  end)
     optsTabCredits:SetScript("OnClick", function() SetOptsTab("credits") end)
-    SetOptsTab("update")
+    SetOptsTab("options")
 
     -- Bottom divider
     local optsBottomDiv = optionsPanel:CreateTexture(nil, "OVERLAY")
@@ -2240,8 +2562,8 @@ local function OnFirstShow()
     settingsIcon:SetTexture("Interface\\Icons\\Trade_Engineering")
     settingsBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(settingsBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Options", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Open the Playerbot Manager options panel.", 1, 1, 1)
+        GameTooltip:AddLine("Menu", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("Open the Playerbot Manager menu.", 1, 1, 1)
         GameTooltip:Show()
     end)
     settingsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2255,6 +2577,9 @@ local function OnFirstShow()
         end
     end)
 
+    -- Forward-declare both update functions so each OnClick can reference the other
+    local UpdateGroupFilterBtn, UpdateHideRaidBtn
+
     -- Group filter button: pvp icon swaps red/green with filter state
     local groupFilterBtn = CreateFrame("Button", "LichborneGroupFilterBtn", f)
     groupFilterBtn:SetSize(24, 24)
@@ -2266,7 +2591,7 @@ local function OnFirstShow()
     gfIcon:SetPoint("CENTER", groupFilterBtn, "CENTER", 0, 0)
     gfIcon:SetSize(22, 22)
     gfIcon:SetTexture("Interface\\Icons\\Achievement_pvp_h_02")  -- red = off
-    local function UpdateGroupFilterBtn()
+    UpdateGroupFilterBtn = function()
         if PBM.State.LBFilter.groupActive then
             gfIcon:SetTexture("Interface\\Icons\\Achievement_pvp_g_02")
         else
@@ -2282,6 +2607,12 @@ local function OnFirstShow()
     groupFilterBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
     groupFilterBtn:SetScript("OnClick", function()
         PBM.State.LBFilter.groupActive = not PBM.State.LBFilter.groupActive
+        LichborneTrackerDB.groupActive = PBM.State.LBFilter.groupActive
+        if PBM.State.LBFilter.groupActive then
+            PBM.State.LBFilter.hideRaid = false
+            LichborneTrackerDB.hideRaid = false
+            UpdateHideRaidBtn()
+        end
         UpdateGroupFilterBtn()
         PBM.RefreshRows()
         if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
@@ -2300,7 +2631,7 @@ local function OnFirstShow()
     hrIcon:SetSize(22, 22)
     hrIcon:SetTexture("Interface\\Icons\\Achievement_pvp_h_12")  -- red = off (raid members visible)
     hideRaidBtn:SetPoint("LEFT", groupFilterBtn, "RIGHT", 2, 0)
-    local function UpdateHideRaidBtn()
+    UpdateHideRaidBtn = function()
         if PBM.State.LBFilter.hideRaid then
             hrIcon:SetTexture("Interface\\Icons\\Achievement_pvp_g_12")
             hideRaidBtn:SetBackdropColor(0.05, 0.35, 0.10, 1)
@@ -2318,13 +2649,20 @@ local function OnFirstShow()
     hideRaidBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
     hideRaidBtn:SetScript("OnClick", function()
         PBM.State.LBFilter.hideRaid = not PBM.State.LBFilter.hideRaid
+        LichborneTrackerDB.hideRaid = PBM.State.LBFilter.hideRaid
+        if PBM.State.LBFilter.hideRaid then
+            PBM.State.LBFilter.groupActive = false
+            LichborneTrackerDB.groupActive = false
+            UpdateGroupFilterBtn()
+        end
         UpdateHideRaidBtn()
         PBM.RefreshRows()
         if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
     end)
     UpdateHideRaidBtn()
 
-    -- ── Filter button 2 ────────────────────────────────────────
+    -- ── Filter button 2 — Show Level ──────────────────────────
+    local UpdateIPBtn  -- forward declared; assigned after filterBtn3 is created
     local filterBtn2 = CreateFrame("Button", "LichborneFilterBtn2", f)
     filterBtn2:SetSize(24, 24)
     filterBtn2:SetFrameLevel(fl + 12)
@@ -2354,11 +2692,59 @@ local function OnFirstShow()
     filterBtn2:SetScript("OnClick", function()
         PBM.State.LBFilter.showLevel = not PBM.State.LBFilter.showLevel
         LichborneTrackerDB.showLevel = PBM.State.LBFilter.showLevel
+        if PBM.State.LBFilter.showLevel and PBM.State.LBFilter.showIP then
+            PBM.State.LBFilter.showIP = false
+            LichborneTrackerDB.showIP = false
+            if UpdateIPBtn then UpdateIPBtn() end
+        end
         UpdateLevelBtn()
         PBM.RefreshRows()
         if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
+        if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
     end)
     UpdateLevelBtn()
+
+    -- ── Filter button 3 — Show IP Tiers ───────────────────────
+    local filterBtn3 = CreateFrame("Button", "LichborneFilterBtn3", f)
+    filterBtn3:SetSize(24, 24)
+    filterBtn3:SetFrameLevel(fl + 12)
+    filterBtn3:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",tile=true,tileSize=16,insets={left=0,right=0,top=0,bottom=0}})
+    filterBtn3:SetBackdropColor(0.05, 0.08, 0.18, 1)
+    filterBtn3:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    local fb3Icon = filterBtn3:CreateTexture(nil, "OVERLAY")
+    fb3Icon:SetPoint("CENTER", filterBtn3, "CENTER", 0, 0)
+    fb3Icon:SetSize(22, 22)
+    fb3Icon:SetTexture("Interface\\Icons\\Achievement_pvp_h_15")  -- off by default
+    filterBtn3:SetPoint("LEFT", filterBtn2, "RIGHT", 2, 0)
+
+    UpdateIPBtn = function()
+        if PBM.State.LBFilter.showIP then
+            fb3Icon:SetTexture("Interface\\Icons\\Achievement_pvp_g_15")
+        else
+            fb3Icon:SetTexture("Interface\\Icons\\Achievement_pvp_h_15")
+        end
+    end
+    filterBtn3:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(filterBtn3, "ANCHOR_TOP")
+        GameTooltip:AddLine("Show IP Tiers", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("Replaces row numbers with IP tier (1-18)", 0.7, 0.7, 0.7)
+        GameTooltip:Show()
+    end)
+    filterBtn3:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    filterBtn3:SetScript("OnClick", function()
+        PBM.State.LBFilter.showIP = not PBM.State.LBFilter.showIP
+        LichborneTrackerDB.showIP = PBM.State.LBFilter.showIP
+        if PBM.State.LBFilter.showIP and PBM.State.LBFilter.showLevel then
+            PBM.State.LBFilter.showLevel = false
+            LichborneTrackerDB.showLevel = false
+            UpdateLevelBtn()
+        end
+        UpdateIPBtn()
+        PBM.RefreshRows()
+        if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
+        if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
+    end)
+    UpdateIPBtn()
 
     -- ── Tier Key visibility toggle button ────────────────────────────
     local tierKeyFrames = {}
@@ -2393,7 +2779,7 @@ local function OnFirstShow()
     end
     tierKeyToggleBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(tierKeyToggleBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Tier Key", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("|cffC69B3AIndividual Progression Tiers|r", 1, 1, 1)
         GameTooltip:AddLine("Show or hide the tier key bar.", 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
@@ -2425,20 +2811,20 @@ local function OnFirstShow()
     table.insert(tierKeyFrames, tierKeyAllBtn)
     tierKeyAllBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(tierKeyAllBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Tier Key", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("|cffC69B3AIndividual Progression Tiers|r", 1, 1, 1)
         GameTooltip:AddLine("Level 60 Raids", 0.85, 0.85, 0.85)
-        for t = 1, 6 do
-            local c = PBM.TIER_COLORS[t]
+        for t = 0, 6 do
+            local c = PBM.TIER_COLORS[t] or {r=0.6,g=0.6,b=0.6}
             GameTooltip:AddLine("  "..(PBM.TIER_LABELS[t] or ("T"..t)), c.r, c.g, c.b)
         end
         GameTooltip:AddLine("Level 70 Raids", 0.85, 0.85, 0.85)
         for t = 7, 12 do
-            local c = PBM.TIER_COLORS[t]
+            local c = PBM.TIER_COLORS[t] or {r=0.6,g=0.6,b=0.6}
             GameTooltip:AddLine("  "..(PBM.TIER_LABELS[t] or ("T"..t)), c.r, c.g, c.b)
         end
         GameTooltip:AddLine("Level 80 Raids", 0.85, 0.85, 0.85)
-        for t = 13, 17 do
-            local c = PBM.TIER_COLORS[t]
+        for t = 13, 18 do
+            local c = PBM.TIER_COLORS[t] or {r=0.6,g=0.6,b=0.6}
             GameTooltip:AddLine("  "..(PBM.TIER_LABELS[t] or ("T"..t)), c.r, c.g, c.b)
         end
         GameTooltip:Show()
@@ -2452,30 +2838,34 @@ local function OnFirstShow()
     UpdateTierKeyToggleBtn()
 
     -- Full right-side chain (left to right):
-    --   Filters: | [filter icons] | Info/Help: | [tier key] | [help icons] | Admin: | << >> | settings
-    exportBtn:ClearAllPoints()
-    exportBtn:SetPoint("RIGHT", settingsBtn, "LEFT", -2, 0)
-    importBtn:ClearAllPoints()
-    importBtn:SetPoint("RIGHT", exportBtn, "LEFT", -2, 0)
-    adminLbl:SetPoint("RIGHT", importBtn, "LEFT", -4, 0)
+    --   Filters: | [group] | [hideRaid] | [level] | [IP] | Help: | [tier key] | [help icons] | Admin: | settings
+    exportBtn:Hide()
+    importBtn:Hide()
+    adminLbl:SetPoint("RIGHT", settingsBtn, "LEFT", -4, 0)
+    levelSyncHelpBtn:ClearAllPoints()
+    levelSyncHelpBtn:SetPoint("RIGHT", adminLbl, "LEFT", -2, 0)
     bookHelpBtn:ClearAllPoints()
-    bookHelpBtn:SetPoint("RIGHT", adminLbl, "LEFT", -2, 0)
+    bookHelpBtn:SetPoint("RIGHT", levelSyncHelpBtn, "LEFT", -2, 0)
     overviewHelpBtn:ClearAllPoints()
     overviewHelpBtn:SetPoint("RIGHT", bookHelpBtn, "LEFT", -2, 0)
     raidHelpBtn:ClearAllPoints()
     raidHelpBtn:SetPoint("RIGHT", overviewHelpBtn, "LEFT", -2, 0)
     classHelpBtn:ClearAllPoints()
     classHelpBtn:SetPoint("RIGHT", raidHelpBtn, "LEFT", -2, 0)
+    setupHelpBtn:ClearAllPoints()
+    setupHelpBtn:SetPoint("RIGHT", classHelpBtn, "LEFT", -2, 0)
     helpBtn:ClearAllPoints()
-    helpBtn:SetPoint("RIGHT", classHelpBtn, "LEFT", -2, 0)
-    -- Tier key sits inside Info/Help section, immediately left of first help icon
+    helpBtn:SetPoint("RIGHT", setupHelpBtn, "LEFT", -2, 0)
+    -- Tier key sits inside Help section, immediately left of first help icon
     tkLabel:Hide()
     tierKeyAllBtn:ClearAllPoints()
     tierKeyAllBtn:SetPoint("RIGHT", helpBtn, "LEFT", -2, 0)
     infoHelpLbl:SetPoint("RIGHT", tierKeyAllBtn, "LEFT", -4, 0)
-    -- Filters: immediately left of Info/Help label, uniform 2px gaps throughout
+    -- Filters: immediately left of Help label, uniform 2px gaps throughout
+    filterBtn3:ClearAllPoints()
+    filterBtn3:SetPoint("RIGHT", infoHelpLbl, "LEFT", -2, 0)
     filterBtn2:ClearAllPoints()
-    filterBtn2:SetPoint("RIGHT", infoHelpLbl, "LEFT", -2, 0)
+    filterBtn2:SetPoint("RIGHT", filterBtn3, "LEFT", -2, 0)
     hideRaidBtn:ClearAllPoints()
     hideRaidBtn:SetPoint("RIGHT", filterBtn2, "LEFT", -2, 0)
     groupFilterBtn:ClearAllPoints()
@@ -2568,7 +2958,7 @@ local function BuildFrameBG()
     title:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -12)
     title:SetPoint("TOPRIGHT", f, "TOPRIGHT", -280, -12)
     title:SetJustifyH("LEFT")
-    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.0|r")
+    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.1|r")
     local closeBtn = CreateFrame("Button", "LichborneCloseBtn", f, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 2, 2)
     closeBtn:SetScript("OnClick", function() f:Hide() end)
@@ -2650,43 +3040,10 @@ local function BuildFrameBG()
         end
     )
 
-    -- Confirm: Clear all raid rosters only
-    local confirmRaids = MakeDangerConfirm(
-        "⚠  Wipe All Raid Rosters?",
-        "This clears every raid roster (all tiers, raids,\nand groups A/B/C). Characters remain in class tabs.",
-        function()
-            LichborneTrackerDB.raidRosters = {}
-            LichborneTrackerDB.botNotes = {}
-            LichborneOutput("|cffC69B3ALichborne:|r |cffff9900All raid rosters cleared.|r", 1, 0.7, 0)
-            if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
-            if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
-        end
-    )
-
-    -- Clear Raids button (now on LEFT)
-    local clrRaidsBtn = CreateFrame("Button", nil, f)
-    clrRaidsBtn:SetSize(100, 20)
-    clrRaidsBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -415, -8)
-    clrRaidsBtn:SetFrameLevel(f:GetFrameLevel()+10)
-    clrRaidsBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
-    clrRaidsBtn:SetBackdropColor(0.30,0.04,0.04,1); clrRaidsBtn:SetBackdropBorderColor(0.78,0.61,0.23,0.9)
-    clrRaidsBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
-    local clrRaidsLbl=clrRaidsBtn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall"); clrRaidsLbl:SetAllPoints(clrRaidsBtn); clrRaidsLbl:SetJustifyH("CENTER")
-    clrRaidsLbl:SetText("|cffd4af37Clear Raids|r")
-    clrRaidsBtn:SetScript("OnEnter",function()
-        GameTooltip:SetOwner(clrRaidsBtn,"ANCHOR_BOTTOM")
-        GameTooltip:AddLine("Clear All Raid Rosters",1,0.5,0.5)
-        GameTooltip:AddLine("Wipes every raid group across all tiers.",0.8,0.8,0.8)
-        GameTooltip:AddLine("Character data is NOT affected.",0.6,0.8,0.6)
-        GameTooltip:Show()
-    end)
-    clrRaidsBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
-    clrRaidsBtn:SetScript("OnClick",function() confirmRaids:Show() end)
-
     -- Clear All button
     local clrAllBtn = CreateFrame("Button", nil, f)
     clrAllBtn:SetSize(100, 20)
-    clrAllBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -311, -8)
+    clrAllBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -450, -8)
     clrAllBtn:SetFrameLevel(f:GetFrameLevel()+10)
     clrAllBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
     clrAllBtn:SetBackdropColor(0.30,0.04,0.04,1); clrAllBtn:SetBackdropBorderColor(0.78,0.61,0.23,0.9)
@@ -2695,14 +3052,17 @@ local function BuildFrameBG()
     clrAllLbl:SetText("|cffd4af37Clear All Data|r")
     clrAllBtn:SetScript("OnEnter",function()
         GameTooltip:SetOwner(clrAllBtn,"ANCHOR_BOTTOM")
-        GameTooltip:AddLine("Wipe Entire Database",1,0.3,0.3)
-        GameTooltip:AddLine("Permanently deletes ALL characters,",0.8,0.8,0.8)
-        GameTooltip:AddLine("gear data, raid rosters, and the Overview list.",0.8,0.8,0.8)
-        GameTooltip:AddLine("|cffff4444This cannot be undone.|r",1,0.4,0.4)
+        GameTooltip:AddLine("|cffff2020Clear All Data|r",1,1,1)
+        GameTooltip:AddLine("Deletes ALL characters, gear data,",0.8,0.8,0.8)
+        GameTooltip:AddLine("raid rosters, and the Overview list.",0.8,0.8,0.8)
+        GameTooltip:AddLine("|cffFF8C00Does not clear LevelSync data.|r",1,1,1)
+        GameTooltip:AddLine("|cffff2020This cannot be undone.|r",1,1,1)
         GameTooltip:Show()
     end)
     clrAllBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
     clrAllBtn:SetScript("OnClick",function() confirmAll:Show() end)
+    clrAllBtn:Hide()
+
     PBM.DBG("|cff44ff44OnFirstShow complete|r PBM.State.rowFrames=|cffffff88"..#PBM.State.rowFrames.."|r PBM.State.raidRowFrames=|cffffff88"..#PBM.State.raidRowFrames.."|r PBM.State.overviewRowFrames=|cffffff88"..(PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames or 0).."|r")
 end
 
@@ -2731,6 +3091,12 @@ do
             PBM.State.LBFilter.showTierKey = LichborneTrackerDB.showTierKey
             if LichborneTrackerDB.showLevel == nil then LichborneTrackerDB.showLevel = false end
             PBM.State.LBFilter.showLevel = LichborneTrackerDB.showLevel
+            if LichborneTrackerDB.showIP == nil then LichborneTrackerDB.showIP = false end
+            PBM.State.LBFilter.showIP = LichborneTrackerDB.showIP
+            if LichborneTrackerDB.groupActive == nil then LichborneTrackerDB.groupActive = false end
+            PBM.State.LBFilter.groupActive = LichborneTrackerDB.groupActive
+            if LichborneTrackerDB.hideRaid == nil then LichborneTrackerDB.hideRaid = false end
+            PBM.State.LBFilter.hideRaid = LichborneTrackerDB.hideRaid
             -- Repair all raid rosters: fill any nil/missing slots
             if LichborneTrackerDB and LichborneTrackerDB.raidRosters then
                 for key, roster in pairs(LichborneTrackerDB.raidRosters) do

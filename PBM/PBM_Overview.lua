@@ -286,14 +286,26 @@ PBM.RefreshOverviewRows = function()
             end
         end
 
-        -- Role slot display (top 2 from botNotes by priority, T/H/D/A)
+        -- Role slot display (top 2 from botNotes, sorted T→H→D→A)
         if rf.roleSlots then
             local botNE = hasData and LichborneTrackerDB.botNotes
                           and LichborneTrackerDB.botNotes[(data.name or ""):lower()]
-            local roles = botNE and botNE.roles or {}
+            local rawRoles = botNE and botNE.roles or {}
+            local roles = {}
+            for _, r in ipairs(rawRoles) do
+                if PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[r] then
+                    roles[#roles+1] = r
+                end
+            end
+            local isTank = false
+            for _, r in ipairs(roles) do if r == "T" then isTank = true; break end end
+            local roleOrder = isTank and { T=1, A=2, D=3, H=4 } or { T=1, H=2, D=3, A=4 }
+            table.sort(roles, function(a, b)
+                return (roleOrder[a] or 9) < (roleOrder[b] or 9)
+            end)
             for si = 1, 2 do
                 local tex = rf.roleSlots[si]
-                local icon = roles[si] and PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[roles[si]]
+                local icon = roles[si] and PBM.NOTES_ROLE_ICONS[roles[si]]
                 if tex then
                     if icon then tex:SetTexture(icon); tex:SetAlpha(1.0)
                     else tex:SetAlpha(0) end
@@ -332,7 +344,15 @@ PBM.RefreshOverviewRows = function()
         end
         -- Row number
         if rf.numLbl then
-            if PBM.State.LBFilter.showLevel then
+            if PBM.State.LBFilter.showIP then
+                local ipVal = hasData and LichborneTrackerDB.ipData and LichborneTrackerDB.ipData[(data.name or ""):lower()]
+                if ipVal then
+                    rf.numLbl:SetText(tostring(ipVal))
+                    rf.numLbl:SetTextColor(0.83, 0.69, 0.22)
+                else
+                    rf.numLbl:SetText("")
+                end
+            elseif PBM.State.LBFilter.showLevel then
                 if hasData and (data.level or 0) > 0 then
                     rf.numLbl:SetText(tostring(data.level))
                     rf.numLbl:SetTextColor(0.83, 0.69, 0.22)
@@ -626,7 +646,7 @@ function PBM.BuildOverviewFrame(parent, fl)
                     PBM.RefreshOverviewRows()
                 end)
             end
-            ASH("#",0,14,"level",true)
+            H("#",0,14)
             ASH("Spec",14,48,"spec",false)
             ASH("Name",60,128,"name",false)
             ASH("iLvL",189,38,"ilvl",true)
@@ -735,9 +755,10 @@ function PBM.BuildOverviewFrame(parent, fl)
             local tierStr = tier > 0 and ("T"..tier) or "T0"
             local grp = LichborneTrackerDB.raidGroup or "A"
             GameTooltip:SetOwner(ar,"ANCHOR_RIGHT")
-            GameTooltip:AddLine("+ Add to Raid", 0.3, 1.0, 0.3)
-            GameTooltip:AddLine(tierStr.."  "..raidAbbr.."  Group "..grp, 1, 0.85, 0)
-            GameTooltip:AddLine("Right-click to remove.", 0.5, 0.5, 0.5)
+            GameTooltip:AddLine("|cff44ff44+ Add to Raid|r", 1, 1, 1)
+            GameTooltip:AddLine("Adds to the Raid tab.", 0.7, 0.7, 0.7)
+            GameTooltip:AddLine("|cff44ff44Left-click to add to raid.|r", 1, 1, 1)
+            GameTooltip:AddLine("|cffff2020Right-click to remove.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         ar:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -751,8 +772,8 @@ function PBM.BuildOverviewFrame(parent, fl)
         ag:SetScript("OnEnter",function()
             GameTooltip:SetOwner(ag,"ANCHOR_RIGHT")
             GameTooltip:AddLine("|cff44eeff> Invite to Group|r",1,1,1)
-            GameTooltip:AddLine("Left-click to invite to group.",0.7,0.7,0.7)
-            GameTooltip:AddLine("Right-click to remove.",0.7,0.4,0.4)
+            GameTooltip:AddLine("|cff44ff44Left-click to invite to group.|r",1,1,1)
+            GameTooltip:AddLine("|cffff2020Right-click to remove.|r",1,1,1)
             GameTooltip:Show()
         end)
         ag:SetScript("OnLeave",function() GameTooltip:Hide() end)

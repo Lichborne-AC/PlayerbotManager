@@ -2,7 +2,7 @@
 
 **A World of Warcraft WotLK 3.3.5a Addon for AzerothCore Private Servers that tracks gear score, iLvL, gear slots, specs, strategies, and raid composition for your entire playerbot roster.**
 
-**Version 1.0**
+**Version 1.1**
 
 
 ## Installation
@@ -118,6 +118,18 @@ Master view of all tracked characters across all classes — 3 columns of 20 row
 * Invite to Group (left-click >) and Kick from Group (right-click >) per row
 * Delete characters directly
 * Count bar shows totals across all pages
+
+---
+
+## Individual Progression Tab
+
+Requires the **mod-individual-progression** server module ([github.com/ZhengPeiRu21/mod-individual-progression](https://github.com/ZhengPeiRu21/mod-individual-progression)).
+
+Displays a full tier reference table showing each progression tier, its raids, level cap, final boss, and what it unlocks. Hover any tier row for a detailed tooltip.
+
+### + Add IP Tiers button
+
+A new **+ Add IP Tiers** button in the bottom bar reads the current IP tier of every tracked character and writes it into the tracker automatically. This lets you see at a glance where each bot sits in the progression system without having to check each character individually.
 
 ---
 

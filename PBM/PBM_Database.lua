@@ -25,6 +25,7 @@ if not LichborneTrackerDB.allGroups then
 end
 if not LichborneTrackerDB.allGroup then LichborneTrackerDB.allGroup = "A" end
 if not LichborneTrackerDB.botNotes then LichborneTrackerDB.botNotes = {} end
+if not LichborneTrackerDB.ipData then LichborneTrackerDB.ipData = {} end
 
 -- Legacy migration: allRows → allGroups
 if LichborneTrackerDB.allRows then
@@ -40,6 +41,7 @@ end
 PBM.State.LBFilter = PBM.State.LBFilter or {
     groupActive = false,
     showLevel   = false,
+    showIP      = false,
     hideRaid    = false,
     showTierKey = true,
 }

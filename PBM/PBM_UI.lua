@@ -16,6 +16,7 @@ PBM.State.LOCKABLE_BUTTONS = {
     "LichborneLogoutBtn",
     "LichborneMaintBtn",
     "LichborneOrphanedBotsBtn",
+    "LichborneIPTiersBtn",
     "LichborneTargetStrategiesBtn",
     "LichborneGroupStrategiesBtn",
 }

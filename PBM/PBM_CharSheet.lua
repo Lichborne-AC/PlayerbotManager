@@ -564,7 +564,7 @@ function PBM.CreateCharSheet(config)
 
     -- ── onStatsResponse ───────────────────────────────────────────────────────
     menu.onStatsResponse = function(sender, msg)
-        local gold = msg:match("(%d+)g")
+        local gold = msg:match("(%d+)g") or msg:match("(%d+), %d+/%d+ Bag")
         local bag  = msg:match("(%d+/%d+) Bag")
         local dur  = msg:match("(%d+)%% %(")
         menu.statLine1:SetText(gold and ("|cffFFD100" .. gold .. "g|r") or "")
@@ -613,6 +613,13 @@ function PBM.CreateCharSheet(config)
     note0:SetJustifyH("LEFT")
     note0:SetPoint("BOTTOMLEFT", note1, "TOPLEFT", 0, 4)
     note0:SetText("|cffFFD100Note:|r For quick setup, use the Templates menu in the top-left corner of each character tab. This will automatically configure both talents and strategies for you.")
+
+    local stratNoteLabel = menu:CreateFontString(nil, "OVERLAY")
+    stratNoteLabel:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+    stratNoteLabel:SetText("|cffff4444** Strategies are subject to change.|r")
+    stratNoteLabel:SetPoint("BOTTOMLEFT",  menu, "BOTTOMLEFT",   8, 52)
+    stratNoteLabel:SetPoint("BOTTOMRIGHT", menu, "BOTTOMRIGHT", -8, 52)
+    stratNoteLabel:SetJustifyH("CENTER")
 
     -- ── CO ! / NC ! Reset buttons (above notes) ──────────────────────────────
     local RESET_BOX_BD = {

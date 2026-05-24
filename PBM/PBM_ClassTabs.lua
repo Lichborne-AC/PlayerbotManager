@@ -664,8 +664,9 @@ function PBM.BuildRows(parent, yStart)
         arb:SetScript("OnEnter", function()
             GameTooltip:SetOwner(arb, "ANCHOR_RIGHT")
             GameTooltip:AddLine("|cff44ff44+ Add to Raid|r", 1, 1, 1)
-            GameTooltip:AddLine("Adds to the Raid planner tab.", 0.7, 0.7, 0.7)
-            GameTooltip:AddLine("Right-click to remove.", 0.5, 0.5, 0.5)
+            GameTooltip:AddLine("Adds to the Raid tab.", 0.7, 0.7, 0.7)
+            GameTooltip:AddLine("|cff44ff44Left-click to add to raid.|r", 1, 1, 1)
+            GameTooltip:AddLine("|cffff2020Right-click to remove.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         arb:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -683,8 +684,8 @@ function PBM.BuildRows(parent, yStart)
         agb:SetScript("OnEnter", function()
             GameTooltip:SetOwner(agb, "ANCHOR_RIGHT")
             GameTooltip:AddLine("|cff44eeff> Invite to Group|r", 1, 1, 1)
-            GameTooltip:AddLine("Left-click to invite to group.", 0.7, 0.7, 0.7)
-            GameTooltip:AddLine("Right-click to remove from bots.", 0.7, 0.4, 0.4)
+            GameTooltip:AddLine("|cff44ff44Left-click to invite to group.|r", 1, 1, 1)
+            GameTooltip:AddLine("|cffff2020Right-click to remove.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         agb:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -799,7 +800,15 @@ function PBM.RefreshRows()
 
             -- Row number / level
             if row.numLbl then
-                if PBM.State.LBFilter.showLevel then
+                if PBM.State.LBFilter.showIP then
+                    local ipVal = (data.name and data.name ~= "") and LichborneTrackerDB.ipData and LichborneTrackerDB.ipData[data.name:lower()]
+                    if ipVal then
+                        row.numLbl:SetText(tostring(ipVal))
+                        row.numLbl:SetTextColor(0.83, 0.69, 0.22)
+                    else
+                        row.numLbl:SetText("")
+                    end
+                elseif PBM.State.LBFilter.showLevel then
                     if (data.level or 0) > 0 then
                         row.numLbl:SetText(tostring(data.level))
                         row.numLbl:SetTextColor(0.83, 0.69, 0.22)

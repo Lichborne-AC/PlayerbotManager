@@ -57,6 +57,7 @@ function PBM.RefreshRaidRows()
                         data.spec = classRow.spec
                     end
                     data.realGs = classRow.realGs or 0
+                    data.level  = classRow.level  or 0
                     break
                 end
             end
@@ -97,7 +98,9 @@ function PBM.RefreshRaidRows()
                         visRoles[#visRoles+1] = r
                     end
                 end
-                local roleOrder = { T=1, H=2, D=3, A=4 }
+                local isTank = false
+                for _, r in ipairs(visRoles) do if r == "T" then isTank = true; break end end
+                local roleOrder = isTank and { T=1, A=2, D=3, H=4 } or { T=1, H=2, D=3, A=4 }
                 table.sort(visRoles, function(a, b)
                     return (roleOrder[a] or 9) < (roleOrder[b] or 9)
                 end)
@@ -184,6 +187,31 @@ function PBM.RefreshRaidRows()
             local c = PBM.CLASS_COLORS[data.cls]
             if c then rf.nameBox:SetTextColor(c.r, c.g, c.b)
             else rf.nameBox:SetTextColor(0.9, 0.95, 1.0) end
+        end
+
+        -- Row number / level display
+        if rf.rowNum then
+            if PBM.State.LBFilter.showIP then
+                local ipVal = data.name and data.name ~= "" and LichborneTrackerDB.ipData and LichborneTrackerDB.ipData[data.name:lower()]
+                if ipVal then
+                    rf.rowNum:SetText(tostring(ipVal))
+                    rf.rowNum:SetTextColor(0.83, 0.69, 0.22)
+                else
+                    rf.rowNum:SetText("-")
+                    rf.rowNum:SetTextColor(0.55, 0.55, 0.55)
+                end
+            elseif PBM.State.LBFilter.showLevel then
+                if data.name and data.name ~= "" and (data.level or 0) > 0 then
+                    rf.rowNum:SetText(tostring(data.level))
+                    rf.rowNum:SetTextColor(0.83, 0.69, 0.22)
+                else
+                    rf.rowNum:SetText("-")
+                    rf.rowNum:SetTextColor(0.55, 0.55, 0.55)
+                end
+            else
+                rf.rowNum:SetText(tostring(i))
+                rf.rowNum:SetTextColor(0.55, 0.55, 0.55)
+            end
         end
 
         -- iLvl (read-only)
@@ -331,13 +359,13 @@ function PBM.BuildRaidFrame(parent, fl)
     -- Raid definitions: tier -> list of {name, size}
     local RAID_DEFS = {
         [0]  = {{"N/A (5-Man)",5}},
-        [1]  = {{"Molten Core",40}},
-        [2]  = {{"Onyxia's Lair",40}},
-        [3]  = {{"Blackwing Lair",40},{"Zul'Gurub",20}},
-        [4]  = {{"Ruins of Ahn'Qiraj",20},{"Ahn'Qiraj (AQ40)",40}},
-        [5]  = {{"World Event",5}},
+        [1]  = {{"Molten Core",40},{"Onyxia's Lair",40}},
+        [2]  = {{"Blackwing Lair",40}},
+        [3]  = {{"Zul'Gurub",20}},
+        [4]  = {{"Ruins of Ahn'Qiraj",20}},
+        [5]  = {{"Ahn'Qiraj 40",40}},
         [6]  = {{"Naxxramas (Classic)",40}},
-        [7]  = {{"World Event",5}},
+        [7]  = {{"Dark Portal Opening",40}},
         [8]  = {{"Karazhan",10},{"Gruul's Lair",25},{"Magtheridon's Lair",25}},
         [9]  = {{"Serpentshrine Cavern",25},{"Tempest Keep",25}},
         [10] = {{"Mount Hyjal",25},{"Black Temple",25}},
@@ -346,8 +374,9 @@ function PBM.BuildRaidFrame(parent, fl)
         [13] = {{"Naxxramas 10",10},{"Naxxramas 25",25},{"Eye of Eternity 10",10},{"Eye of Eternity 25",25},{"Obsidian Sanctum 10",10},{"Obsidian Sanctum 25",25}},
         [14] = {{"Ulduar 10",10},{"Ulduar 25",25}},
         [15] = {{"Trial of the Crusader 10",10},{"Trial of the Crusader 25",25},{"Trial of the Grand Crusader 10",10},{"Trial of the Grand Crusader 25",25}},
-        [16] = {{"Icecrown Citadel 10",10},{"Icecrown Citadel 25",25},{"ICC 10 Heroic",10},{"ICC 25 Heroic",25}},
+        [16] = {{"Icecrown Citadel 10",10},{"Icecrown Citadel 25",25},{"Icecrown Citadel 10 Heroic",10},{"Icecrown Citadel 25 Heroic",25}},
         [17] = {{"Ruby Sanctum 10",10},{"Ruby Sanctum 25",25}},
+        [18] = {{"N/A",40}},
     }
 
     -- Init raid selection state
@@ -385,10 +414,10 @@ function PBM.BuildRaidFrame(parent, fl)
 
     -- ── Tier label + dropdown ──────────────────────────────────
     local tierLbl = tierBar:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    tierLbl:SetPoint("LEFT",tierBar,"LEFT",100,0)
+    tierLbl:SetPoint("LEFT",tierBar,"LEFT",6,0)
     tierLbl:SetText("|cffC69B3ATier:|r")
 
-    local tierDD = MakeDD("LichborneRaidTierDrop", 200)
+    local tierDD = MakeDD("LichborneRaidTierDrop", 300)
     tierDD:SetPoint("LEFT",tierLbl,"RIGHT",6,0)
 
     local raidDD = MakeDD("LichborneRaidRaidDrop", 220)
@@ -412,12 +441,18 @@ function PBM.BuildRaidFrame(parent, fl)
         raidDD.lbl:SetText(h..raidName.."|r  |cffaaaaaa("..raidSize..")|r  v")
     end
 
+    -- Raid-tab-only label override: T0 = "5-Man" instead of shared table value
+    local function RaidTierLabel(t)
+        if t == 0 then return "T0 — 5-Man" end
+        return PBM.TIER_LABELS[t] or ("T"..t)
+    end
+
     local function UpdateTierDD()
         local t = LichborneTrackerDB.raidTier or 1
         local colorKey = t
         local c = PBM.TIER_COLORS[colorKey]
         local hex = c and string.format("|cff%02x%02x%02x",math.floor(c.r*255),math.floor(c.g*255),math.floor(c.b*255)) or "|cffffffff"
-        local label = (PBM.TIER_LABELS[t] or ""):match("^T%d+ %— (.+)") or ""
+        local label = (RaidTierLabel(t)):match("^T%d+ %— (.+)") or ""
         tierDD.lbl:SetText(hex.."T"..t.."  "..label.."  v|r")
         UpdateTierBar()
         UpdateRaidDD(hex)
@@ -433,14 +468,14 @@ function PBM.BuildRaidFrame(parent, fl)
     -- Tier dropdown menu
     local tierDDMenu = CreateFrame("Frame","LichborneRaidTierMenu",UIParent)
     tierDDMenu:SetFrameStrata("TOOLTIP")
-    tierDDMenu:SetSize(260, 18*22+8)
+    tierDDMenu:SetSize(300, 19*22+8)
     tierDDMenu:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
     tierDDMenu:SetBackdropColor(0.04,0.06,0.12,0.98)
     tierDDMenu:SetBackdropBorderColor(0.78,0.61,0.23,1)
     tierDDMenu:Hide()
-    for t=0,17 do
+    for t=0,18 do
         local mb = CreateFrame("Button",nil,tierDDMenu)
-        mb:SetSize(256,20); mb:SetPoint("TOPLEFT",tierDDMenu,"TOPLEFT",2,-2-(t)*22)
+        mb:SetSize(296,20); mb:SetPoint("TOPLEFT",tierDDMenu,"TOPLEFT",2,-2-(t)*22)
         local mbbg=mb:CreateTexture(nil,"BACKGROUND"); mbbg:SetAllPoints(mb)
         local colorKey2 = t
         local c=PBM.TIER_COLORS[colorKey2]; if not c then c={r=0.1,g=0.1,b=0.1} end
@@ -448,7 +483,7 @@ function PBM.BuildRaidFrame(parent, fl)
         mb:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
         local mblbl=mb:CreateFontString(nil,"OVERLAY","GameFontNormalSmall"); mblbl:SetAllPoints(mb); mblbl:SetJustifyH("CENTER")
         local hex=string.format("|cff%02x%02x%02x",math.floor(c.r*255),math.floor(c.g*255),math.floor(c.b*255))
-        mblbl:SetText(hex..(PBM.TIER_LABELS[t] or ("T"..t)).."|r")
+        mblbl:SetText(hex..RaidTierLabel(t).."|r")
         mb:SetScript("OnClick",function()
             LichborneTrackerDB.raidTier = t
             UpdateTierDD()
@@ -484,7 +519,7 @@ function PBM.BuildRaidFrame(parent, fl)
             local mb = CreateFrame("Button",nil,raidDDMenu)
             mb:SetSize(256,20); mb:SetPoint("TOPLEFT",raidDDMenu,"TOPLEFT",2,-2-(idx-1)*22)
             local mbbg=mb:CreateTexture(nil,"BACKGROUND"); mbbg:SetAllPoints(mb)
-            local ck=PBM.TIER_COLORS[(t==0) and 18 or t] or PBM.TIER_COLORS[1]; local c=ck; mbbg:SetTexture(c.r*0.25,c.g*0.25,c.b*0.25,1)
+            local ck=PBM.TIER_COLORS[t] or PBM.TIER_COLORS[1]; local c=ck; mbbg:SetTexture(c.r*0.25,c.g*0.25,c.b*0.25,1)
             mb:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
             local mblbl=mb:CreateFontString(nil,"OVERLAY","GameFontNormalSmall"); mblbl:SetAllPoints(mb); mblbl:SetJustifyH("CENTER")
             mblbl:SetText("|cffffffff"..rd[1].."|r  |cffaaaaaa("..rd[2].." players)|r")
@@ -559,13 +594,53 @@ function PBM.BuildRaidFrame(parent, fl)
         else groupDDMenu:ClearAllPoints(); groupDDMenu:SetPoint("TOPLEFT",groupDD,"BOTTOMLEFT",0,-2); groupDDMenu:Show() end
     end)
 
-    -- ── Copy / Paste roster buttons ────────────────────────────
+    -- ── Copy / Paste / Clear roster buttons ────────────────────────────
     local rosterClipboard = nil       -- session-only clipboard
     local clipboardLabel  = nil       -- human-readable source label e.g. "T1 Molten Core (A)"
 
+    -- ── Clear ALL raids button (far right) ──────────────────────────────
+    local clearAllRaidsBtn = CreateFrame("Button", nil, tierBar)
+    clearAllRaidsBtn:SetSize(70, 20); clearAllRaidsBtn:SetFrameLevel(fl + 12)
+    clearAllRaidsBtn:SetPoint("RIGHT", tierBar, "RIGHT", -4, 0)
+    clearAllRaidsBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
+    clearAllRaidsBtn:SetBackdropColor(0.25,0.04,0.04,1); clearAllRaidsBtn:SetBackdropBorderColor(0.8,0.1,0.1,0.9)
+    clearAllRaidsBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
+    local clearAllRaidsLbl = clearAllRaidsBtn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
+    clearAllRaidsLbl:SetAllPoints(clearAllRaidsBtn); clearAllRaidsLbl:SetJustifyH("CENTER"); clearAllRaidsLbl:SetJustifyV("MIDDLE")
+    clearAllRaidsLbl:SetText("|cffd4af37Clear All|r")
+    clearAllRaidsBtn:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(clearAllRaidsBtn, "ANCHOR_BOTTOM")
+        GameTooltip:AddLine("Clear All Raid Rosters", 1, 0.15, 0.15)
+        GameTooltip:AddLine("Wipes every raid group across all tiers.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine("Character data is NOT affected.", 0.2, 1.0, 0.4)
+        GameTooltip:Show()
+    end)
+    clearAllRaidsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+    -- Clear ALL raids confirm popup (standard WoW dialog)
+    if not StaticPopupDialogs["PBM_CLEAR_ALL_RAIDS"] then
+        StaticPopupDialogs["PBM_CLEAR_ALL_RAIDS"] = {
+            text = "Wipe All Raid Rosters?\n\nClears every tier, raid, and group roster.\n|cff33ff66Character data is NOT affected.|r\n|cffff4444This cannot be undone.|r",
+            button1 = "Yes, Wipe All",
+            button2 = "Cancel",
+            OnAccept = function()
+                LichborneTrackerDB.raidRosters = {}
+                LichborneTrackerDB.botNotes    = {}
+                LichborneOutput("|cffC69B3APlayerbot Manager:|r |cffff9900All raid rosters cleared.|r", 1, 0.7, 0)
+                if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
+                if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
+            end,
+            timeout      = 0,
+            whileDead    = true,
+            hideOnEscape = true,
+        }
+    end
+    clearAllRaidsBtn:SetScript("OnClick", function() StaticPopup_Show("PBM_CLEAR_ALL_RAIDS") end)
+
+    -- ── Copy button ──────────────────────────────────────────────────────
     local copyBtn = CreateFrame("Button", nil, tierBar)
     copyBtn:SetSize(55, 20); copyBtn:SetFrameLevel(fl + 12)
-    copyBtn:SetPoint("RIGHT", tierBar, "RIGHT", -70, 0)
+    copyBtn:SetPoint("RIGHT", clearBtn, "LEFT", -4, 0)
     copyBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
     copyBtn:SetBackdropColor(0.10,0.08,0.02,1); copyBtn:SetBackdropBorderColor(0.78,0.61,0.23,0.9)
     copyBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
@@ -574,7 +649,7 @@ function PBM.BuildRaidFrame(parent, fl)
     copyLbl:SetText("|cffd4af37Copy|r")
     copyBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(copyBtn,"ANCHOR_BOTTOM")
-        GameTooltip:AddLine("Copy Roster",1,1,1)
+        GameTooltip:AddLine("|cffd4af37Copy Roster|r",1,1,1)
         GameTooltip:AddLine("Copies the current roster to clipboard.",0.8,0.8,0.8)
         GameTooltip:Show()
     end)
@@ -591,7 +666,7 @@ function PBM.BuildRaidFrame(parent, fl)
     pasteLbl:SetText("|cffd4af37Paste|r")
     pasteBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(pasteBtn,"ANCHOR_BOTTOM")
-        GameTooltip:AddLine("Paste Roster",1,1,1)
+        GameTooltip:AddLine("|cffd4af37Paste Roster|r",1,1,1)
         if clipboardLabel then
             GameTooltip:AddLine("Clipboard: "..clipboardLabel,0.8,0.8,0.8)
         end
@@ -702,10 +777,10 @@ function PBM.BuildRaidFrame(parent, fl)
         pasteConfirm:Show()
     end)
 
-    -- Clear All button
+    -- Clear this raid button
     local clearBtn = CreateFrame("Button", nil, tierBar)
     clearBtn:SetSize(60, 20)
-    clearBtn:SetPoint("RIGHT", tierBar, "RIGHT", -4, 0)
+    clearBtn:SetPoint("RIGHT", clearAllRaidsBtn, "LEFT", -4, 0)
     clearBtn:SetFrameLevel(fl + 12)
     clearBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
     clearBtn:SetBackdropColor(0.25,0.04,0.04,1)
@@ -717,62 +792,42 @@ function PBM.BuildRaidFrame(parent, fl)
     clearBtn:SetScript("OnEnter",function()
         local raidName = LichborneTrackerDB and LichborneTrackerDB.raidName or "N/A (5-Man)"
         GameTooltip:SetOwner(clearBtn,"ANCHOR_BOTTOM")
-        GameTooltip:AddLine("Clear This Raid (All Groups)",1,1,1)
+        GameTooltip:AddLine("|cffff4444Clear this Raid|r |cffd4af37(All Groups)|r",1,1,1)
         GameTooltip:AddLine("Removes all characters from "..raidName,0.8,0.8,0.8)
-        GameTooltip:AddLine("across Groups A, B, and C.",0.7,0.7,0.7)
+        GameTooltip:AddLine("across |cffd4af37A, B, and C|r.",0.8,0.8,0.8)
         GameTooltip:Show()
     end)
     clearBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
 
-    -- Confirm popup for Clear All
-    local confirmFrame = CreateFrame("Frame","LichborneRaidClearConfirm",UIParent)
-    confirmFrame:SetSize(400,100)
-    confirmFrame:SetPoint("CENTER",UIParent,"CENTER",0,0)
-    confirmFrame:SetFrameStrata("FULLSCREEN_DIALOG")
-    confirmFrame:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=16,insets={left=3,right=3,top=3,bottom=3}})
-    confirmFrame:SetBackdropColor(0.04,0.06,0.13,0.98)
-    confirmFrame:SetBackdropBorderColor(0.78,0.61,0.23,1)
-    confirmFrame:Hide()
-    local confText = confirmFrame:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    confText:SetPoint("TOP",confirmFrame,"TOP",0,-12)
-    confText:SetWidth(380); confText:SetJustifyH("CENTER")
-    confText:SetText("|cffC69B3AClear this raid?|r")
-    local confSub = confirmFrame:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    confSub:SetPoint("TOP",confText,"BOTTOM",0,-4)
-    confSub:SetText("|cffaaaaaa Clears Groups A, B, and C. Cannot be undone.|r")
-    local yesBtn = CreateFrame("Button",nil,confirmFrame)
-    yesBtn:SetSize(100,24); yesBtn:SetPoint("BOTTOMLEFT",confirmFrame,"BOTTOMLEFT",16,10)
-    yesBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
-    yesBtn:SetBackdropColor(0.25,0.04,0.04,1); yesBtn:SetBackdropBorderColor(0.8,0.1,0.1,0.9)
-    yesBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
-    local yesLbl=yesBtn:CreateFontString(nil,"OVERLAY","GameFontNormal"); yesLbl:SetAllPoints(yesBtn); yesLbl:SetJustifyH("CENTER"); yesLbl:SetText("|cffff4444Yes, Clear|r")
-    yesBtn:SetScript("OnClick",function()
-        local raidName = LichborneTrackerDB.raidName or "N/A (5-Man)"
-        if not LichborneTrackerDB.raidRosters then LichborneTrackerDB.raidRosters = {} end
-        for _, g in ipairs({"A","B","C"}) do
-            local key = raidName .. "_" .. g
-            LichborneTrackerDB.raidRosters[key] = {}
-            for i = 1, PBM.MAX_RAID_SLOTS do
-                LichborneTrackerDB.raidRosters[key][i] = {name="",cls="",spec="",gs=0,realGs=0,role="",notes=""}
-            end
-        end
-        PBM.RefreshRaidRows()
-        if PBM.RefreshOverviewRows then PBM.RefreshOverviewRows() end
-        confirmFrame:Hide()
-    end)
-    local noBtn = CreateFrame("Button",nil,confirmFrame)
-    noBtn:SetSize(100,24); noBtn:SetPoint("BOTTOMRIGHT",confirmFrame,"BOTTOMRIGHT",-16,10)
-    noBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
-    noBtn:SetBackdropColor(0.04,0.15,0.04,1); noBtn:SetBackdropBorderColor(0.1,0.7,0.1,0.9)
-    noBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
-    local noLbl=noBtn:CreateFontString(nil,"OVERLAY","GameFontNormal"); noLbl:SetAllPoints(noBtn); noLbl:SetJustifyH("CENTER"); noLbl:SetText("|cff44ff44Cancel|r")
-    noBtn:SetScript("OnClick",function() confirmFrame:Hide() end)
+    -- Reanchor copyBtn now that clearBtn exists
+    copyBtn:ClearAllPoints()
+    copyBtn:SetPoint("RIGHT", clearBtn, "LEFT", -4, 0)
 
-    clearBtn:SetScript("OnClick",function()
+    -- Confirm popup for Clear (single raid, standard WoW dialog)
+    if not StaticPopupDialogs["PBM_CLEAR_RAID"] then
+        StaticPopupDialogs["PBM_CLEAR_RAID"] = {
+            text = "Clear |cffd4af37%s|r?\n\nClears Groups A, B, and C.\n|cffff4444Cannot be undone.|r",
+            button1 = "Yes, Clear",
+            button2 = "Cancel",
+            OnAccept = function()
+                local raidName = LichborneTrackerDB and LichborneTrackerDB.raidName or "N/A (5-Man)"
+                if not LichborneTrackerDB.raidRosters then LichborneTrackerDB.raidRosters = {} end
+                for _, g in ipairs({"A","B","C"}) do
+                    local key = raidName .. "_" .. g
+                    LichborneTrackerDB.raidRosters[key] = {}
+                    for i = 1, PBM.MAX_RAID_SLOTS do
+                        LichborneTrackerDB.raidRosters[key][i] = {name="",cls="",spec="",gs=0,realGs=0,role="",notes=""}
+                    end
+                end
+                PBM.RefreshRaidRows()
+                if PBM.RefreshOverviewRows then PBM.RefreshOverviewRows() end
+            end,
+            timeout = 0, whileDead = true, hideOnEscape = true,
+        }
+    end
+    clearBtn:SetScript("OnClick", function()
         local raidName = LichborneTrackerDB and LichborneTrackerDB.raidName or "N/A (5-Man)"
-        confText:SetText("|cffC69B3AClear |cffd4af37"..raidName.."|cffC69B3A?|r")
-        confirmFrame:SetPoint("CENTER",UIParent,"CENTER",0,0)
-        confirmFrame:Show()
+        StaticPopup_Show("PBM_CLEAR_RAID", raidName)
     end)
 
     -- Column headers row
@@ -974,7 +1029,7 @@ function PBM.BuildRaidFrame(parent, fl)
             GameTooltip:SetOwner(db, "ANCHOR_RIGHT")
             GameTooltip:AddLine("Remove from Raid", 1, 0.3, 0.3)
             GameTooltip:AddLine("Clears this slot in the raid roster.", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("Character remains in the tracker.", 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffFF8C00Character remains in the tracker.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         db:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -989,8 +1044,8 @@ function PBM.BuildRaidFrame(parent, fl)
         invb:SetScript("OnEnter", function()
             GameTooltip:SetOwner(invb, "ANCHOR_RIGHT")
             GameTooltip:AddLine("|cff44eeff> Invite to Group|r", 1,1,1)
-            GameTooltip:AddLine("Left-click to invite to group.", 0.7,0.7,0.7)
-            GameTooltip:AddLine("Right-click to remove.", 0.7,0.4,0.4)
+            GameTooltip:AddLine("|cff44ff44Left-click to invite to group.|r", 1,1,1)
+            GameTooltip:AddLine("|cffff2020Right-click to remove.|r", 1,1,1)
             GameTooltip:Show()
         end)
         invb:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1201,10 +1256,21 @@ function PBM.BuildRaidFrame(parent, fl)
                 end
 
             elseif phase == "raid_pause" then
+                -- Raid conversion just happened; remove slot6 bot so we can re-add cleanly
                 if waitTime < 1.0 then return end
                 if slot6Name then
-                    InviteUnit(slot6Name)
-                    LichborneOutput("|cffC69B3ALichborne:|r Native invite "..GetClassHex(slot6Name)..slot6Name.."|r...",1,0.85,0)
+                    SendChatMessage(".playerbots bot remove "..slot6Name, "SAY")
+                    LichborneOutput("|cffC69B3ALichborne:|r Logging out "..GetClassHex(slot6Name)..slot6Name.."|r for clean raid invite...",1,0.85,0)
+                end
+                waitTime = 0
+                phase = "slot6_readd"
+
+            elseif phase == "slot6_readd" then
+                -- Bot is logged out; now re-add into the already-converted raid
+                if waitTime < 1.0 then return end
+                if slot6Name then
+                    SendChatMessage(".playerbots bot add "..slot6Name, "SAY")
+                    LichborneOutput("|cffC69B3ALichborne:|r Re-adding "..GetClassHex(slot6Name)..slot6Name.."|r to raid...",1,0.85,0)
                     slot6Name = nil
                 end
                 waitTime = 0
