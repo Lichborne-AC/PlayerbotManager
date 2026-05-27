@@ -4,7 +4,7 @@
 
 **Version 1.1**
 
-## Note: No other mods/addons are required to use Playerbot Manager
+Note: No other mods/addons are required to use Playerbot Manager
 
 ## Installation
 
