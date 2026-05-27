@@ -4,11 +4,12 @@
 
 **Version 1.1**
 
-Note: No other mods/addons are required to use Playerbot Manager
 
 ## Installation
 
 ### Option 1 — Git Clone (recommended, stays updated)
+
+Note: No other mods/addons are required to use Playerbot Manager
 
 Navigate to your AddOns folder and run:
 
