@@ -10,16 +10,7 @@
 
 ### Show/Hide Tab
 
-A dedicated **Show/Hide** tab in the addon Options panel lets you control which sections are visible per bot row:
-
-* **Playerbots Tab** — toggle the main class tracker tab
-* **Ind. Prog. Tab** — toggle the Individual Progression tab
-* **LevelSync Tab** — toggle the LevelSync tab
-* **Notes Tab** — toggle the Notes tab
-* **+Add IP Tiers (button)** — show or hide the IP Tiers scan button in the bottom bar
-* **Hide All** — hides all sections at once
-
-Changes take effect immediately without a reload.
+A dedicated **Show/Hide** tab in the addon Options panel lets you control which sections are visible per bot row. Changes take effect immediately without a reload.
 
 ### Druid Overhaul
 
