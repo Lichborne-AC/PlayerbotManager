@@ -2,10 +2,11 @@
 
 **A World of Warcraft WotLK 3.3.5a Addon for AzerothCore Private Servers that tracks gear score, iLvL, gear slots, specs, strategies, and raid composition for your entire playerbot roster.**
 
-**Version 1.1**
+**Version 1.2**
 
 
 ## Installation
+Note: No other mods/addons are required to use Playerbot Manager
 
 ### Option 1 — Git Clone (recommended, stays updated)
 
@@ -61,6 +62,29 @@ Strategy replies from bots are filtered out of regular chat and shown in the add
 | 3 | Orange | tank assist, dps assist, pull, cc… |
 | 4 | Dark gold | loot, gather, food… |
 | 5 | Per-strategy | boost, avoid aoe, stealth, potions, formation… |
+
+### Show/Hide Tab
+
+A dedicated **Show/Hide** tab in the addon Options panel lets you control which sections are visible per bot row:
+
+* **Playerbots Tab** — toggle the main class tracker tab
+* **Ind. Prog. Tab** — toggle the Individual Progression tab
+* **LevelSync Tab** — toggle the LevelSync tab
+* **Notes Tab** — toggle the Notes tab
+* **+Add IP Tiers (button)** — show or hide the IP Tiers scan button in the bottom bar
+* **Hide All** — hides all sections at once
+
+Changes take effect immediately without a reload.
+
+### Druid Overhaul
+
+The Druid character sheet has been significantly expanded:
+
+* **Tranquility** — dedicated strategy button for the Tranquility healing cooldown
+* **Blanketing** — Blanketing Rejuvenation raid-wide HoT strategy
+* **Feral Charge** — Feral Charge combat strategy for melee/bear specs
+* **Restoration** fixed — the Resto spec button and strategy list now correctly use the `resto` key that the server sends, resolving a long-standing issue where the button would not light up when Restoration was active
+* Role notes for Resto Druids now correctly display `[Rest]` in the Raid and Overview tabs
 
 ### Bottom Controls
 
