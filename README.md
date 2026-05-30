@@ -4,30 +4,32 @@
 
 **Version 1.2**
 
+---
 
-## Installation
-Note: No other mods/addons are required to use Playerbot Manager
+## Recent Changes — v1.2 (May 30, 2026)
 
-### Option 1 — Git Clone (recommended, stays updated)
+### Show/Hide Tab
 
-Navigate to your AddOns folder and run:
+A dedicated **Show/Hide** tab in the addon Options panel lets you control which sections are visible per bot row:
 
-```
-git clone https://github.com/Lichborne-AC/PlayerBotManager
-```
+* **Playerbots Tab** — toggle the main class tracker tab
+* **Ind. Prog. Tab** — toggle the Individual Progression tab
+* **LevelSync Tab** — toggle the LevelSync tab
+* **Notes Tab** — toggle the Notes tab
+* **+Add IP Tiers (button)** — show or hide the IP Tiers scan button in the bottom bar
+* **Hide All** — hides all sections at once
 
-To update later just run `git pull` inside the PlayerBotManager folder.
+Changes take effect immediately without a reload.
 
-### Option 2 — Manual Install
+### Druid Overhaul
 
-1. Download the latest zip from the Releases page
-2. Extract and drag the PlayerBotManager folder into:
+The Druid character sheet has been significantly expanded:
 
-   World of Warcraft/Interface/AddOns/
-
-3. Launch WoW and type `/pmb` or click the minimap button
-
-   **Requirements:** WoW 3.3.5a (WotLK) | AzerothCore | Playerbot module
+* **Tranquility** — dedicated strategy button for the Tranquility healing cooldown
+* **Blanketing** — Blanketing Rejuvenation raid-wide HoT strategy
+* **Feral Charge** — Feral Charge combat strategy for melee/bear specs
+* **Restoration** fixed — the Resto spec button and strategy list now correctly use the `resto` key that the server sends, resolving a long-standing issue where the button would not light up when Restoration was active
+* Role notes for Resto Druids now correctly display `[Rest]` in the Raid and Overview tabs
 
 ---
 
@@ -62,29 +64,6 @@ Strategy replies from bots are filtered out of regular chat and shown in the add
 | 3 | Orange | tank assist, dps assist, pull, cc… |
 | 4 | Dark gold | loot, gather, food… |
 | 5 | Per-strategy | boost, avoid aoe, stealth, potions, formation… |
-
-### Show/Hide Tab
-
-A dedicated **Show/Hide** tab in the addon Options panel lets you control which sections are visible per bot row:
-
-* **Playerbots Tab** — toggle the main class tracker tab
-* **Ind. Prog. Tab** — toggle the Individual Progression tab
-* **LevelSync Tab** — toggle the LevelSync tab
-* **Notes Tab** — toggle the Notes tab
-* **+Add IP Tiers (button)** — show or hide the IP Tiers scan button in the bottom bar
-* **Hide All** — hides all sections at once
-
-Changes take effect immediately without a reload.
-
-### Druid Overhaul
-
-The Druid character sheet has been significantly expanded:
-
-* **Tranquility** — dedicated strategy button for the Tranquility healing cooldown
-* **Blanketing** — Blanketing Rejuvenation raid-wide HoT strategy
-* **Feral Charge** — Feral Charge combat strategy for melee/bear specs
-* **Restoration** fixed — the Resto spec button and strategy list now correctly use the `resto` key that the server sends, resolving a long-standing issue where the button would not light up when Restoration was active
-* Role notes for Resto Druids now correctly display `[Rest]` in the Raid and Overview tabs
 
 ### Bottom Controls
 
@@ -190,6 +169,32 @@ Built-in UI for the mod-levelsync server module. Communicates via `.levelsync` s
 ### Importing / Exporting Characters
 
 Use the Import/Export button to generate a text string of your current roster. Copy it and import it on another account to transfer your tracked characters and gear data.
+
+---
+
+## Installation
+Note: No other mods/addons are required to use Playerbot Manager
+
+### Option 1 — Git Clone (recommended, stays updated)
+
+Navigate to your AddOns folder and run:
+
+```
+git clone https://github.com/Lichborne-AC/PlayerBotManager
+```
+
+To update later just run `git pull` inside the PlayerBotManager folder.
+
+### Option 2 — Manual Install
+
+1. Download the latest zip from the Releases page
+2. Extract and drag the PlayerBotManager folder into:
+
+   World of Warcraft/Interface/AddOns/
+
+3. Launch WoW and type `/pmb` or click the minimap button
+
+   **Requirements:** WoW 3.3.5a (WotLK) | AzerothCore | Playerbot module
 
 ---
 
