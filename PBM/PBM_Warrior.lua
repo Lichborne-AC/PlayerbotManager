@@ -141,8 +141,6 @@ function PBM.OpenWarriorMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Arms|r |cff999999- |r|cffC79C6Earms|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Arms DPS|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffC79C6EMortal Strike, Overpower, Slam,|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffC79C6EHeroic Strike, Rend.|r", 1, 1, 1)
                 GameTooltip:AddLine("|cffFF4444Mutually exclusive with Fury, Protection.|r", 1, 1, 1)
             end)
         LichborneWarriorMenu.treeArmsBtn = treeArmsBtn
@@ -152,8 +150,6 @@ function PBM.OpenWarriorMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Fury|r |cff999999- |r|cffC79C6Efury|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Fury DPS|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffC79C6EWhirlwind, Bloodthirst, Slam,|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffC79C6EHeroic Strike, Execute.|r", 1, 1, 1)
                 GameTooltip:AddLine("|cffFF4444Mutually exclusive with Arms, Protection.|r", 1, 1, 1)
             end)
         LichborneWarriorMenu.treeFuryBtn = treeFuryBtn
@@ -163,11 +159,6 @@ function PBM.OpenWarriorMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Protection|r |cff999999- |r|cffC79C6Etank|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Protection tank|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Defensive Stance|r. Threat rotation:", 1, 1, 1)
-                GameTooltip:AddLine("|cffC79C6EDevastate, Shield Slam, Revenge,|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffC79C6EHeroic Strike, Thunder Clap.|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Defensive CDs:|r |cffC79C6EShield Wall,|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffC79C6ELast Stand, Spell Reflection.|r", 1, 1, 1)
                 GameTooltip:AddLine("|cffFF4444Mutually exclusive with Arms, Fury.|r", 1, 1, 1)
             end)
         LichborneWarriorMenu.treeTankBtn = treeTankBtn
@@ -179,12 +170,10 @@ function PBM.OpenWarriorMenu(row)
         MakeWideBox(CENTER_X - math.floor(aoeBoxW / 2), aoeBoxY, aoeBoxW, "AoE")
 
         local treeDpsAoeBtn = MakeTreeBtn(CENTER_X - 13, aoeIconY,
-            "Interface\\Icons\\Spell_Shadow_RainOfFire",
+            "Interface\\Icons\\Spell_Frost_IceStorm",
             function()
                 GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cffC79C6Eaoe|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffC79C6EWhirlwind, Cleave, Bladestorm,|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffC79C6EThunder Clap, Rend|r on all targets.", 1, 1, 1)
             end)
         LichborneWarriorMenu.treeDpsAoeBtn = treeDpsAoeBtn
 

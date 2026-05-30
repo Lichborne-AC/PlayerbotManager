@@ -196,10 +196,7 @@ function PBM.OpenPaladinMenu(row)
 
         tHeal:SetScript("OnEnter", function(s) TT(s,
             "|cffffcc00Heal|r |cff999999- |r|cffF58CBAheal|r |cffee4433CO|r",
-            "|cffffcc00Holy healer|r",
-            "|cffF58CBAFlash of Light, Holy Light,|r",
-            "|cffF58CBABeacon of Light, Sacred Shield,|r",
-            "|cffF58CBADivine Favor, Lay on Hands.|r")
+            "|cffffcc00Holy healer|r")
         end); tHeal:SetScript("OnLeave", TL)
 
         tHealerDps:SetScript("OnEnter", function(s) TT(s,
@@ -216,11 +213,7 @@ function PBM.OpenPaladinMenu(row)
 
         tTank:SetScript("OnEnter", function(s) TT(s,
             "|cffffcc00Tank|r |cff999999- |r|cffF58CBAtank|r |cffee4433CO|r",
-            "|cffffcc00Protection tank|r",
-            "|cffffcc00Righteous Fury|r for Holy threat. Rotation:",
-            "|cffF58CBAShield of Righteousness, Holy Shield,|r",
-            "|cffF58CBAAvenger's Shield, Consecration,|r",
-            "|cffF58CBAHammer of the Righteous.|r")
+            "|cffffcc00Protection tank|r")
         end); tTank:SetScript("OnLeave", TL)
 
         tTankAssist:SetScript("OnEnter", function(s) TT(s,
@@ -231,10 +224,7 @@ function PBM.OpenPaladinMenu(row)
 
         tDps:SetScript("OnEnter", function(s) TT(s,
             "|cffffcc00Retribution|r |cff999999- |r|cffF58CBAdps|r |cffee4433CO|r",
-            "|cffffcc00Retribution DPS|r",
-            "|cffF58CBAJudgment, Crusader Strike,|r",
-            "|cffF58CBADivine Storm, Consecration,|r",
-            "|cffF58CBAHammer of Wrath.|r")
+            "|cffffcc00Retribution DPS|r")
         end); tDps:SetScript("OnLeave", TL)
 
         tDpsAssist:SetScript("OnEnter", function(s) TT(s,
@@ -245,9 +235,7 @@ function PBM.OpenPaladinMenu(row)
 
         tDpsAoe:SetScript("OnEnter", function(s) TT(s,
             "|cffffcc00DPS AoE|r |cff999999- |r|cffff8000dps aoe|r |cffffcc00CO|r",
-            "|cffffcc00Cross-role AoE mode|r",
-            "|cffF58CBAConsecration, Divine Storm,|r",
-            "|cffF58CBAHammer of the Righteous, Holy Wrath.|r")
+            "|cffffcc00Cross-role AoE mode|r")
         end); tDpsAoe:SetScript("OnLeave", TL)
 
         -- CO aura tooltips

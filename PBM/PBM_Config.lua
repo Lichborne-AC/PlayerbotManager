@@ -35,6 +35,10 @@ function PBM.InitConfig()
         end
     end
 
+    if not PBMConfig.hiddenTabs then
+        PBMConfig.hiddenTabs = {}
+    end
+
 end
 
 function PBM.SaveFramePos(key, frame)

@@ -68,7 +68,7 @@ _coreFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
                 local coSet = {}
                 for token in rest:gmatch("[^,]+") do
                     local trimmed = token:match("^%s*(.-)%s*$")
-                    if trimmed ~= "" then coSet[trimmed] = true end
+                    if trimmed ~= "" then coSet[trimmed:lower()] = true end
                 end
                 join.coSet = coSet
                 PBM.SendToBot("nc ?", sender)
@@ -79,7 +79,7 @@ _coreFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
                 local ncSet = {}
                 for token in rest:gmatch("[^,]+") do
                     local trimmed = token:match("^%s*(.-)%s*$")
-                    if trimmed ~= "" then ncSet[trimmed] = true end
+                    if trimmed ~= "" then ncSet[trimmed:lower()] = true end
                 end
                 local coSet = join.coSet or {}
                 PBM.State.joinPending[sender] = nil
@@ -165,7 +165,7 @@ _coreFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
         local activeSet = {}
         for token in rest:gmatch("[^,]+") do
             local trimmed = token:match("^%s*(.-)%s*$")
-            if trimmed ~= "" then activeSet[trimmed] = true end
+            if trimmed ~= "" then activeSet[trimmed:lower()] = true end
         end
 
         -- Single unified path: always route through lastQueriedMenu + lastStratType.

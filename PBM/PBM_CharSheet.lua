@@ -506,12 +506,12 @@ function PBM.CreateCharSheet(config)
     treePvpBtn.state = false
     treePvpBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
     treePvpBtn:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+        GameTooltip:SetOwner(self, "ANCHOR_TOP")
         GameTooltip:SetFrameLevel(menu:GetFrameLevel() + 20)
         GameTooltip:ClearLines()
-        GameTooltip:SetText("|cffffff00PvP|r |cff999999- |r|cffee4433pvp|r |cffffcc00NC|r")
-        GameTooltip:AddLine("|cffffff00PvP combat mode|r", 1, 1, 1)
-        GameTooltip:AddLine("Activates PvP-optimized combat strategy.", 1, 1, 1)
+        GameTooltip:SetText("|cffffff00PvP|r |cff999999- |r|cffee4433PvP|r |cffffcc00NC|r")
+        GameTooltip:AddLine("Activates player targeting.", 1, 1, 1)
+        GameTooltip:AddLine("Rotations are unchanged.", 1, 1, 1)
         GameTooltip:Show()
     end)
     treePvpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -557,8 +557,8 @@ function PBM.CreateCharSheet(config)
         local level   = msg:match("%((%d+) lvl%)")
         local name    = menu.botName or sender
         local function cap(s) return s and (s:sub(1,1):upper() .. s:sub(2)) or "?" end
-        menu.whoLine1:SetText("|cffFFFF55" .. (level or "?") .. "|r |cff" .. classHex .. name .. "|r")
-        menu.whoLine2:SetText("|cffFFFFFF" .. cap(race) .. "|r |cff" .. classHex .. cap(class) .. "|r")
+        menu.whoLine1:SetText("|cff" .. classHex .. name .. "|r")
+        menu.whoLine2:SetText("|cffFFD100" .. (level or "?") .. "|r |cffFFFFFF" .. cap(race) .. "|r |cff" .. classHex .. cap(class) .. "|r")
         menu.whoLine3:SetText("|cffFFFFFF" .. cap(spec) .. "|r |cffFFD100(" .. (talents or "?") .. ")|r")
     end
 

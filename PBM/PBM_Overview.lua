@@ -286,23 +286,9 @@ PBM.RefreshOverviewRows = function()
             end
         end
 
-        -- Role slot display (top 2 from botNotes, sorted T→H→D→A)
+        -- Role slot display (shared logic with Raid tab via PBM.GetSortedVisRoles)
         if rf.roleSlots then
-            local botNE = hasData and LichborneTrackerDB.botNotes
-                          and LichborneTrackerDB.botNotes[(data.name or ""):lower()]
-            local rawRoles = botNE and botNE.roles or {}
-            local roles = {}
-            for _, r in ipairs(rawRoles) do
-                if PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[r] then
-                    roles[#roles+1] = r
-                end
-            end
-            local isTank = false
-            for _, r in ipairs(roles) do if r == "T" then isTank = true; break end end
-            local roleOrder = isTank and { T=1, A=2, D=3, H=4 } or { T=1, H=2, D=3, A=4 }
-            table.sort(roles, function(a, b)
-                return (roleOrder[a] or 9) < (roleOrder[b] or 9)
-            end)
+            local roles = hasData and PBM.GetSortedVisRoles(data.name) or {}
             for si = 1, 2 do
                 local tex = rf.roleSlots[si]
                 local icon = roles[si] and PBM.NOTES_ROLE_ICONS[roles[si]]

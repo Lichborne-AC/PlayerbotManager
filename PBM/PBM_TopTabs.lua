@@ -96,6 +96,44 @@ function PBM.ActivateBottomTab(id)
     end
 end
 
+-- ── Public: show/hide tab buttons and reflow visible ones ─────
+function PBM.RefreshBottomTabPositions()
+    if not PBM.State.bottomTabButtons then return end
+    if not PBMConfig then return end
+    local hiddenTabs = PBMConfig.hiddenTabs or {}
+
+    -- count visible tabs so we can right-align the strip
+    local numVisible = 0
+    for _, tabDef in ipairs(BOTTOM_TABS) do
+        if not hiddenTabs[tabDef.id] then numVisible = numVisible + 1 end
+    end
+    local startX = TAB_START_X + (#BOTTOM_TABS - numVisible) * TAB_STEP
+
+    local visIdx = 0
+    for _, tabDef in ipairs(BOTTOM_TABS) do
+        local btn   = PBM.State.bottomTabButtons[tabDef.id]
+        local panel = PBM.State.bottomTabPanels[tabDef.id]
+        if hiddenTabs[tabDef.id] then
+            if btn then btn:Hide() end
+            if panel then panel:Hide() end
+            if PBM.State.activeBottomTab == tabDef.id then
+                PBM.State.activeBottomTab = nil
+                PBM.State.activeTab = "Overview"
+                if PBM.UpdateTabs then PBM.UpdateTabs() end
+            end
+        else
+            if btn then
+                btn:Show()
+                btn:ClearAllPoints()
+                btn:SetPoint("TOPLEFT", btn:GetParent(), "TOPLEFT",
+                    startX + visIdx * TAB_STEP, TAB_START_Y)
+                visIdx = visIdx + 1
+            end
+        end
+    end
+    PBM.UpdateBottomTabHighlights()
+end
+
 -- ── Content frame factory ─────────────────────────────────────
 --  fullHeight=true: covers the full lower area (LevelSync only) so
 --  underlying PBM buttons can't bleed through.
@@ -296,5 +334,5 @@ function PBM.BuildBottomTabs(parent, fl)
         PBM.State.bottomTabButtons[tabDef.id] = btn
     end
 
-    PBM.UpdateBottomTabHighlights()
+    PBM.RefreshBottomTabPositions()
 end

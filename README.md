@@ -6,7 +6,6 @@
 
 
 ## Installation
-Note: No other mods/addons are required to use Playerbot Manager
 
 ### Option 1 — Git Clone (recommended, stays updated)
 

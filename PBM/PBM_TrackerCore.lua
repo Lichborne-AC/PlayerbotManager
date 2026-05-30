@@ -280,7 +280,7 @@ local function OnFirstShow()
     -- ── Admin label (between overview help icon and import button) ─
     local adminLbl = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     adminLbl:SetJustifyH("LEFT")
-    adminLbl:SetText("|cffC69B3AAdmin:|r")
+    adminLbl:SetText("|cffC69B3AMenu:|r")
 
     -- ── Add Target button ──────────────────────────────────────
     local addBtn = CreateFrame("Button", "LichborneAddTargetBtn", f)
@@ -849,6 +849,7 @@ local function OnFirstShow()
         PBM.State.LichborneInspectTarget = nil
         PBM.State.LichborneSpecTarget = nil
         PBM.State.LichborneGroupScanActive = false
+        PBM.State.ipQueryActive = false
         SetScanActive(false)
         LichborneAddStatus:SetText("|cffff4444Scan stopped.|r")
         LichborneOutput("|cffC69B3ALichborne:|r |cffff4444Scan stopped.|r", 1, 0.85, 0)
@@ -1269,7 +1270,6 @@ local function OnFirstShow()
         SetScanActive(true)
         LichborneAddStatus:SetText("Adding group members first...")
         AddGroupMembers(function(added, skipped)
-            SetScanActive(false)
             -- Always include self, then add group members (deduped)
             local selfName = UnitName("player")
             local seen = {}
@@ -1287,6 +1287,7 @@ local function OnFirstShow()
                 for i = 1, GetNumPartyMembers() do addMember(UnitName("party"..i)) end
             end
             if #members == 0 then
+                SetScanActive(false)
                 if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444Could not determine any targets.|r") end
                 return
             end
@@ -1298,6 +1299,7 @@ local function OnFirstShow()
             local idx = 1
             local wait = 0
             local ipQueryFrame = CreateFrame("Frame")
+            activeInspectFrame = ipQueryFrame
             ipQueryFrame:SetScript("OnUpdate", function(_, elapsed)
                 wait = wait + elapsed
                 if wait < 0.2 then return end
@@ -1305,6 +1307,7 @@ local function OnFirstShow()
                 if idx > #members then
                     ipQueryFrame:SetScript("OnUpdate", nil)
                     PBM.State.ipQueryActive = false
+                    SetScanActive(false)
                     if LichborneAddStatus then
                         LichborneAddStatus:SetText("|cff44ff44IP Tier query complete ("..#members.." members).|r")
                     end
@@ -1377,6 +1380,45 @@ local function OnFirstShow()
     disbandBtn:SetScript("OnClick", function()
         StaticPopup_Show("PBM_DISBAND_GROUP")
     end)
+
+    -- ── Column button registry (x=335, bottom-to-top order) ──────
+    PBM.State.ipColumnBtns = {
+        {btn = disbandBtn,      isIPTiers = false},
+        {btn = orphanedBotsBtn, isIPTiers = false},
+        {btn = logoutBtn,       isIPTiers = false},
+        {btn = loginBtn,        isIPTiers = false},
+        {btn = ipTiersBtn,      isIPTiers = true},
+    }
+
+    -- Redistributes the x=335 column height when +Add IP Tiers is hidden.
+    -- Buttons span BOTTOMLEFT y=8 to y=173 (165px total, 5px gaps).
+    local function RefreshIPColumn()
+        if not PBMConfig then return end
+        local ipHidden = PBMConfig.hiddenTabs and PBMConfig.hiddenTabs["IPTiers"]
+        local COL_X = 335; local COL_W = 155
+        local COL_BOTTOM = 8; local COL_TOP = 173; local GAP = 5
+        local visible = {}
+        for _, entry in ipairs(PBM.State.ipColumnBtns) do
+            if entry.isIPTiers then
+                if ipHidden then entry.btn:Hide() else entry.btn:Show() end
+            end
+            if not (entry.isIPTiers and ipHidden) then
+                visible[#visible + 1] = entry.btn
+            end
+        end
+        local n     = #visible
+        local avail = (COL_TOP - COL_BOTTOM) - (n - 1) * GAP
+        local h     = math.floor(avail / n)
+        local extra = avail - h * n
+        local curY  = COL_BOTTOM
+        for i, btn in ipairs(visible) do
+            local bh = h + (i > (n - extra) and 1 or 0)
+            btn:ClearAllPoints()
+            btn:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", COL_X, curY)
+            btn:SetSize(COL_W, bh)
+            curY = curY + bh + GAP
+        end
+    end
 
     -- ── Top-row strategy buttons + upcoming placeholder ──────────
     local strTargetBtn = MakeTrackerBtn("LichborneTargetStrategiesBtn", 15, 42, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37+ Add Target Strategies|r")
@@ -2194,10 +2236,10 @@ local function OnFirstShow()
     optsTitleDiv:SetHeight(1)
     optsTitleDiv:SetTexture(0.78, 0.61, 0.23, 0.9)
 
-    local function MakeOptsTab(label, x)
+    local function MakeOptsTab(label, x, w)
         local btn = CreateFrame("Button", nil, optionsPanel)
         btn:SetPoint("TOPLEFT", optionsPanel, "TOPLEFT", x, -40)
-        btn:SetSize(100, 24)
+        btn:SetSize(w or 100, 24)
         btn:SetFrameLevel(optionsPanel:GetFrameLevel() + 2)
         btn:SetBackdrop({
             bgFile="Interface\\ChatFrame\\ChatFrameBackground",
@@ -2215,9 +2257,11 @@ local function OnFirstShow()
         return btn
     end
 
-    local optsTabOptions = MakeOptsTab("Options", 8)
-    local optsTabGeneral = MakeOptsTab("Links",  112)
-    local optsTabCredits = MakeOptsTab("Credits", 216)
+    local optsTabChanges = MakeOptsTab("Recent Changes", 8)
+    local optsTabOptions = MakeOptsTab("Show/Hide",     112, 84)
+    local optsTabData    = MakeOptsTab("Data",           200, 84)
+    local optsTabGeneral = MakeOptsTab("Links",          288, 84)
+    local optsTabCredits = MakeOptsTab("Credits",        376, 84)
 
     -- ── Options tab content ───────────────────────────────────────────
     local optsOptionsBox = CreateFrame("Frame", nil, optionsPanel)
@@ -2252,10 +2296,6 @@ local function OnFirstShow()
                         LichborneTrackerDB.allGroups[g][i] = {name="",cls="",spec="",gs=0,realGs=0}
                     end
                 end
-                LichborneTrackerDB.raidName  = "N/A (5-Man)"
-                LichborneTrackerDB.raidSize  = 5
-                LichborneTrackerDB.raidTier  = 0
-                LichborneTrackerDB.raidGroup = "A"
                 LichborneOutput("|cffC69B3ALichborne:|r |cffff4444All data wiped.|r", 1, 0.5, 0.5)
                 PBM.RefreshRows()
                 if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
@@ -2283,8 +2323,8 @@ local function OnFirstShow()
         optSecHdr:SetText("Data Management")
 
         local optSecDiv = optsOptionsBox:CreateTexture(nil, "ARTWORK")
-        optSecDiv:SetPoint("TOPLEFT",  optsOptionsBox, "TOPLEFT",  OPT_MX + 116, -20)
-        optSecDiv:SetPoint("TOPRIGHT", optsOptionsBox, "TOPRIGHT", -OPT_MX,      -20)
+        optSecDiv:SetPoint("TOPLEFT",  optsOptionsBox, "TOPLEFT",  OPT_MX, -28)
+        optSecDiv:SetPoint("TOPRIGHT", optsOptionsBox, "TOPRIGHT", -OPT_MX, -28)
         optSecDiv:SetHeight(1)
         optSecDiv:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
         optSecDiv:SetVertexColor(OPT_GR, OPT_GG, OPT_GB, 0.5)
@@ -2462,6 +2502,96 @@ local function OnFirstShow()
     cy = LnkEntry("Multibot:",  "https://github.com/Wishmaster117/MultiBot-Chatless",         cy, "PBMUpdateMultibotBox")
     linksChild:SetHeight(math.abs(cy) + 20)
 
+    -- ── Recent Changes tab content ────────────────────────────────────
+    local optsChangesBox = CreateFrame("Frame", nil, optionsPanel)
+    optsChangesBox:SetPoint("TOPLEFT",     optionsPanel, "TOPLEFT",     6, -66)
+    optsChangesBox:SetPoint("BOTTOMRIGHT", optionsPanel, "BOTTOMRIGHT", -6, 48)
+    optsChangesBox:SetFrameLevel(optionsPanel:GetFrameLevel() + 1)
+    optsChangesBox:SetBackdrop({
+        bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile=true, tileSize=16, edgeSize=8,
+        insets={left=2, right=2, top=2, bottom=2}
+    })
+    optsChangesBox:SetBackdropColor(0.03, 0.04, 0.09, 1)
+    optsChangesBox:SetBackdropBorderColor(0.60, 0.60, 0.60, 0.8)
+    optsChangesBox:Hide()
+
+    local chgFL = optionsPanel:GetFrameLevel() + 3
+    local chgScroll = CreateFrame("ScrollFrame", "PBMChangesScrollFrame", optsChangesBox, "UIPanelScrollFrameTemplate")
+    chgScroll:SetPoint("TOPLEFT",     optsChangesBox, "TOPLEFT",     4, -4)
+    chgScroll:SetPoint("BOTTOMRIGHT", optsChangesBox, "BOTTOMRIGHT", -22, 4)
+    chgScroll:SetFrameLevel(chgFL)
+    chgScroll:EnableMouseWheel(true)
+    chgScroll:SetScript("OnMouseWheel", function(self, delta)
+        local cur = self:GetVerticalScroll()
+        local max = self:GetVerticalScrollRange()
+        self:SetVerticalScroll(math.max(0, math.min(max, cur - delta * 20)))
+    end)
+
+    local chgChild = CreateFrame("Frame", nil, chgScroll)
+    chgChild:SetSize(440, 480)
+    chgChild:SetFrameLevel(chgFL + 1)
+    chgScroll:SetScrollChild(chgChild)
+
+    local function ChgLine(text, yOff, size, align)
+        local fs = chgChild:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        fs:SetPoint("TOPLEFT",  chgChild, "TOPLEFT",  12, yOff)
+        fs:SetPoint("TOPRIGHT", chgChild, "TOPRIGHT", -12, yOff)
+        if size then fs:SetFont("Fonts\\FRIZQT__.TTF", size, "OUTLINE") end
+        fs:SetJustifyH(align or "LEFT")
+        fs:SetText(text)
+    end
+    local function ChgDiv(yOff)
+        local t = chgChild:CreateTexture(nil, "ARTWORK")
+        t:SetPoint("TOPLEFT",  chgChild, "TOPLEFT",  10, yOff)
+        t:SetPoint("TOPRIGHT", chgChild, "TOPRIGHT", -10, yOff)
+        t:SetHeight(1)
+        t:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+        t:SetVertexColor(0.78, 0.61, 0.23, 0.4)
+    end
+
+    ChgLine("|cffC69B3ARecent Changes|r", -14, 14, "CENTER")
+    ChgDiv(-34)
+
+    ChgLine("|cffd4af37Release v1.2|r  |cff888888May 30, 2026|r", -48, 11, "CENTER")
+    ChgDiv(-63)
+
+    -- Bug Fixes
+    ChgLine("|cffC69B3ABug Fixes|r", -76, 10)
+    ChgDiv(-89)
+    ChgLine("|cff888888-|r  Fixed: Invite Raid no longer kicks and reinvites members in partial groups", -102)
+    ChgLine("|cff888888-|r  Stop Scan now stops |cffffcc00+Add IP Tiers|r mid-run", -115)
+    ChgLine("|cff888888-|r  Clear All no longer resets Raid tier/raid selection", -128)
+
+    -- UI
+    ChgLine("|cffC69B3AUI|r", -148, 10)
+    ChgDiv(-161)
+    ChgLine("|cff888888-|r  Show/Hide menu added: toggle tab and button visibility per bot row", -174)
+    ChgLine("|cff888888-|r  Needs column restored — shares the Prof. column |cff888888(use either)|r", -187)
+    ChgLine("|cff888888-|r  Raid tab: note color brightened for readability", -200)
+    ChgLine("|cff888888-|r  Tracker section header renamed: |cffffcc00Admin:|r  ->  |cffffcc00Menu:|r", -213)
+    ChgLine("|cff888888-|r  Character sheet: name on its own line in class color", -226)
+    ChgLine("|cff888888-|r  PvP tooltip: moved above button, wording cleaned up", -239)
+    ChgLine("|cff888888-|r  Several AoE icons updated to Blizzard |cff888888(spell_frost_icestorm)|r", -252)
+    ChgLine("|cff888888-|r  Reset Instances: tooltips updated", -265)
+
+    -- Class Menus
+    ChgLine("|cffC69B3AClass Menus|r", -285, 10)
+    ChgDiv(-298)
+    ChgLine("|cff888888-|r  Removed ability rotation lines from all 10 class spec tooltips", -311)
+    ChgLine("    |cff999999Due to time restraints and constantly evolving Playerbot strategies.|r", -324)
+    ChgLine("|cff888888-|r  Warlock: removed DPS toggle button, Combat row shrunk to 3 icons", -337)
+    ChgLine("|cff888888-|r  Warlock & Shaman: increased vertical row spacing |cff888888(15 px gap)|r", -350)
+    ChgLine("|cff888888-|r  Shaman: Caster AoE + Melee AoE merged into single |cffffcc00AoE|r button", -363)
+    ChgLine("|cff888888-|r  Shaman Totem section removed — use |cffffcc00Multibot|r for totem functions", -376)
+    ChgLine("|cff888888-|r  Druid: added |cffffcc00Tranquility|r, |cffffcc00Blanketing|r, and |cffffcc00Feral Charge|r strategies", -389)
+
+    -- Buttons
+    ChgLine("|cffC69B3AButtons|r", -409, 10)
+    ChgDiv(-422)
+    ChgLine("|cff888888-|r  Buttons disabled while |cffffcc00+Add IP Tiers|r is running", -435)
+
     -- ── Credits tab content ───────────────────────────────────────────
     local optsCreditsBox = CreateFrame("Frame", nil, optionsPanel)
     optsCreditsBox:SetPoint("TOPLEFT",     optionsPanel, "TOPLEFT",     6, -66)
@@ -2507,32 +2637,199 @@ local function OnFirstShow()
     CreditsLine("|cffffffffScoobyPwnsOnU|r",                        -158, nil, "CENTER")
     CreditsLine("|cffffffffGrimfeather|r",                          -170, nil, "CENTER")
     CreditsLine("|cffffffffKeleborn|r",                             -182, nil, "CENTER")
-    CreditsLine("|cffffffffPortions of PBM's character menu code were derived from Wishmaster117's Multibot.|r", -226, nil, "CENTER")
-    CreditsLine("|cffffffffThank you for the work.|r", -240, nil, "CENTER")
-    CreditsDivider(-258)
-    CreditsLine("|cffd4af37Questions & Support:|r  lichborne.wow@proton.me  —  |cffd4af37Discord:|r jared2219", -280, nil, "CENTER")
+    CreditsLine("|cffffffffGromleq|r",                              -194, nil, "CENTER")
+    CreditsLine("|cffffffffPortions of PBM's character menu code were derived from Wishmaster117's Multibot.|r", -238, nil, "CENTER")
+    CreditsLine("|cffffffffThank you for the work.|r", -252, nil, "CENTER")
+    CreditsDivider(-270)
+    CreditsLine("|cffd4af37Questions & Support:|r  lichborne.wow@proton.me  —  |cffd4af37Discord:|r jared2219", -292, nil, "CENTER")
+
+    -- ── Options tab content (Section Visibility) ──────────────────────
+    local optsVisBox = CreateFrame("Frame", nil, optionsPanel)
+    optsVisBox:SetPoint("TOPLEFT",     optionsPanel, "TOPLEFT",    6, -66)
+    optsVisBox:SetPoint("BOTTOMRIGHT", optionsPanel, "BOTTOMRIGHT", -6, 48)
+    optsVisBox:SetFrameLevel(optionsPanel:GetFrameLevel() + 1)
+    optsVisBox:SetBackdrop({
+        bgFile="Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
+        tile=true, tileSize=16, edgeSize=8,
+        insets={left=3, right=3, top=3, bottom=3}
+    })
+    optsVisBox:SetBackdropColor(0.03, 0.04, 0.09, 1)
+    optsVisBox:SetBackdropBorderColor(0.60, 0.60, 0.60, 0.8)
+    optsVisBox:Hide()
+
+    do
+        local VIS_FL   = optionsPanel:GetFrameLevel() + 2
+        local VIS_FONT = "Fonts\\FRIZQT__.TTF"
+        local VIS_GR, VIS_GG, VIS_GB = 0.78, 0.61, 0.23
+        local VIS_MX   = 14
+        local VIS_BTN_H = 30
+
+        local visHdr = optsVisBox:CreateFontString(nil, "OVERLAY")
+        visHdr:SetFont(VIS_FONT, 11, "OUTLINE")
+        visHdr:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", VIS_MX, -14)
+        visHdr:SetTextColor(VIS_GR, VIS_GG, VIS_GB)
+        visHdr:SetText("Show/Hide")
+
+        local visHdrDiv = optsVisBox:CreateTexture(nil, "ARTWORK")
+        visHdrDiv:SetPoint("TOPLEFT",  optsVisBox, "TOPLEFT",  VIS_MX, -28)
+        visHdrDiv:SetPoint("TOPRIGHT", optsVisBox, "TOPRIGHT", -VIS_MX, -28)
+        visHdrDiv:SetHeight(1)
+        visHdrDiv:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+        visHdrDiv:SetVertexColor(VIS_GR, VIS_GG, VIS_GB, 0.5)
+
+        local VIS_SECTIONS = {
+            {id = "Playerbots",            label = "Playerbots Tab"},
+            {id = "IndividualProgression", label = "Ind. Prog. Tab"},
+            {id = "LevelSync",             label = "LevelSync Tab"},
+            {id = "Notes",                 label = "Notes Tab"},
+            {id = "IPTiers",               label = "+Add IP Tiers (button)"},
+        }
+
+        PBM.State.visToggleBtns = {}
+
+        local function MakeVisToggle(yTop, sectionId, sectionLabel)
+            local btn = CreateFrame("Button", nil, optsVisBox)
+            btn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", VIS_MX, yTop)
+            btn:SetSize(190, VIS_BTN_H)
+            btn:SetFrameLevel(VIS_FL)
+            btn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
+            btn:SetBackdropBorderColor(VIS_GR, VIS_GG, VIS_GB, 0.85)
+            btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+
+            local nameLbl = btn:CreateFontString(nil, "OVERLAY")
+            nameLbl:SetFont(VIS_FONT, 10, "OUTLINE")
+            nameLbl:SetPoint("LEFT", btn, "LEFT", 10, 0)
+            nameLbl:SetText("|cffd4af37" .. sectionLabel .. "|r")
+
+            local stateLbl = btn:CreateFontString(nil, "OVERLAY")
+            stateLbl:SetFont(VIS_FONT, 10, "OUTLINE")
+            stateLbl:SetPoint("RIGHT", btn, "RIGHT", -10, 0)
+
+            function btn:Refresh()
+                local isHidden = PBMConfig.hiddenTabs and PBMConfig.hiddenTabs[sectionId]
+                if isHidden then
+                    btn:SetBackdropColor(0.18, 0.04, 0.04, 1)
+                    stateLbl:SetText("|cffff6666Hidden|r")
+                else
+                    btn:SetBackdropColor(0.04, 0.14, 0.06, 1)
+                    stateLbl:SetText("|cff55dd77Visible|r")
+                end
+            end
+            btn:Refresh()
+
+            btn:SetScript("OnClick", function()
+                if not PBMConfig.hiddenTabs then PBMConfig.hiddenTabs = {} end
+                local nowHidden = not PBMConfig.hiddenTabs[sectionId]
+                PBMConfig.hiddenTabs[sectionId] = nowHidden or nil
+                PBM.RefreshBottomTabPositions()
+                if sectionId == "IPTiers" then RefreshIPColumn() end
+                for _, b in ipairs(PBM.State.visToggleBtns) do b:Refresh() end
+                PBM.UpdateTabs()
+                PBM.RefreshRows()
+            end)
+
+            return btn
+        end
+
+        local yPos = -34
+        for _, sec in ipairs(VIS_SECTIONS) do
+            local btn = MakeVisToggle(yPos, sec.id, sec.label)
+            PBM.State.visToggleBtns[#PBM.State.visToggleBtns + 1] = btn
+            yPos = yPos - VIS_BTN_H - 6
+        end
+
+        -- Divider before Hide All / Show All
+        local hideAllDiv = optsVisBox:CreateTexture(nil, "ARTWORK")
+        hideAllDiv:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", VIS_MX, yPos)
+        hideAllDiv:SetWidth(190)
+        hideAllDiv:SetHeight(1)
+        hideAllDiv:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+        hideAllDiv:SetVertexColor(VIS_GR, VIS_GG, VIS_GB, 0.4)
+        yPos = yPos - 8
+
+        local hideAllBtn = CreateFrame("Button", nil, optsVisBox)
+        hideAllBtn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", VIS_MX, yPos)
+        hideAllBtn:SetSize(190, VIS_BTN_H)
+        hideAllBtn:SetFrameLevel(VIS_FL)
+        hideAllBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
+        hideAllBtn:SetBackdropBorderColor(VIS_GR, VIS_GG, VIS_GB, 0.85)
+        hideAllBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+
+        local hideAllLbl = hideAllBtn:CreateFontString(nil, "OVERLAY")
+        hideAllLbl:SetFont(VIS_FONT, 10, "OUTLINE")
+        hideAllLbl:SetAllPoints(hideAllBtn)
+        hideAllLbl:SetJustifyH("CENTER"); hideAllLbl:SetJustifyV("MIDDLE")
+
+        function hideAllBtn:Refresh()
+            local allHidden = true
+            for _, sec in ipairs(VIS_SECTIONS) do
+                if not (PBMConfig.hiddenTabs and PBMConfig.hiddenTabs[sec.id]) then
+                    allHidden = false; break
+                end
+            end
+            if allHidden then
+                hideAllBtn:SetBackdropColor(0.04, 0.14, 0.06, 1)
+                hideAllLbl:SetText("|cff55dd77Show All|r")
+            else
+                hideAllBtn:SetBackdropColor(0.18, 0.04, 0.04, 1)
+                hideAllLbl:SetText("|cffff6666Hide All|r")
+            end
+        end
+        hideAllBtn:Refresh()
+        PBM.State.visToggleBtns[#PBM.State.visToggleBtns + 1] = hideAllBtn
+
+        hideAllBtn:SetScript("OnClick", function()
+            if not PBMConfig.hiddenTabs then PBMConfig.hiddenTabs = {} end
+            local allHidden = true
+            for _, sec in ipairs(VIS_SECTIONS) do
+                if not PBMConfig.hiddenTabs[sec.id] then allHidden = false; break end
+            end
+            for _, sec in ipairs(VIS_SECTIONS) do
+                PBMConfig.hiddenTabs[sec.id] = (not allHidden) or nil
+            end
+            PBM.RefreshBottomTabPositions()
+            RefreshIPColumn()
+            for _, b in ipairs(PBM.State.visToggleBtns) do b:Refresh() end
+            PBM.UpdateTabs()
+            PBM.RefreshRows()
+        end)
+    end
 
     -- ── Tab switching ─────────────────────────────────────────────────
     local function SetOptsTab(which)
-        optsOptionsBox:Hide(); optsContentBox:Hide(); optsCreditsBox:Hide()
-        optsTabOptions:SetBackdropColor(0.12, 0.16, 0.30, 1)
+        optsOptionsBox:Hide(); optsContentBox:Hide(); optsCreditsBox:Hide(); optsVisBox:Hide(); optsChangesBox:Hide()
+        optsTabData:SetBackdropColor(0.12, 0.16, 0.30, 1)
         optsTabGeneral:SetBackdropColor(0.12, 0.16, 0.30, 1)
         optsTabCredits:SetBackdropColor(0.12, 0.16, 0.30, 1)
-        if which == "options" then
+        optsTabOptions:SetBackdropColor(0.12, 0.16, 0.30, 1)
+        optsTabChanges:SetBackdropColor(0.12, 0.16, 0.30, 1)
+        if which == "changes" then
+            optsChangesBox:Show()
+            optsTabChanges:SetBackdropColor(0.20, 0.26, 0.48, 1)
+        elseif which == "data" then
             optsOptionsBox:Show()
-            optsTabOptions:SetBackdropColor(0.20, 0.26, 0.48, 1)
+            optsTabData:SetBackdropColor(0.20, 0.26, 0.48, 1)
         elseif which == "update" then
             optsContentBox:Show()
             optsTabGeneral:SetBackdropColor(0.20, 0.26, 0.48, 1)
+        elseif which == "options" then
+            optsVisBox:Show()
+            if PBM.State.visToggleBtns then
+                for _, b in ipairs(PBM.State.visToggleBtns) do b:Refresh() end
+            end
+            optsTabOptions:SetBackdropColor(0.20, 0.26, 0.48, 1)
         else
             optsCreditsBox:Show()
             optsTabCredits:SetBackdropColor(0.20, 0.26, 0.48, 1)
         end
     end
-    optsTabOptions:SetScript("OnClick", function() SetOptsTab("options") end)
+    optsTabChanges:SetScript("OnClick", function() SetOptsTab("changes") end)
+    optsTabData:SetScript("OnClick",    function() SetOptsTab("data")    end)
     optsTabGeneral:SetScript("OnClick", function() SetOptsTab("update")  end)
     optsTabCredits:SetScript("OnClick", function() SetOptsTab("credits") end)
-    SetOptsTab("options")
+    optsTabOptions:SetScript("OnClick", function() SetOptsTab("options") end)
+    SetOptsTab("changes")
 
     -- Bottom divider
     local optsBottomDiv = optionsPanel:CreateTexture(nil, "OVERLAY")
@@ -2873,6 +3170,9 @@ local function OnFirstShow()
     filtersLbl:ClearAllPoints()
     filtersLbl:SetPoint("RIGHT", groupFilterBtn, "LEFT", -2, 0)
 
+    -- Apply persisted tab/column visibility (reads PBMConfig.hiddenTabs)
+    PBM.RefreshBottomTabPositions()
+    RefreshIPColumn()
 end
 
 PBM.UpdateSummary = function()
@@ -2958,7 +3258,7 @@ local function BuildFrameBG()
     title:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -12)
     title:SetPoint("TOPRIGHT", f, "TOPRIGHT", -280, -12)
     title:SetJustifyH("LEFT")
-    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.1|r")
+    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.2|r")
     local closeBtn = CreateFrame("Button", "LichborneCloseBtn", f, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 2, 2)
     closeBtn:SetScript("OnClick", function() f:Hide() end)
@@ -3029,10 +3329,6 @@ local function BuildFrameBG()
                     LichborneTrackerDB.allGroups[g][i] = {name="",cls="",spec="",gs=0,realGs=0}
                 end
             end
-            LichborneTrackerDB.raidName = "N/A (5-Man)"
-            LichborneTrackerDB.raidSize = 5
-            LichborneTrackerDB.raidTier = 0
-            LichborneTrackerDB.raidGroup = "A"
             LichborneOutput("|cffC69B3ALichborne:|r |cffff4444All data wiped.|r", 1, 0.5, 0.5)
             PBM.RefreshRows()
             if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end

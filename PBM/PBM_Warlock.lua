@@ -144,15 +144,15 @@ function PBM.OpenWarlockMenu(row)
             return btn
         end
 
-        -- Y row coordinates (18px box + 3px gap + 26px icon + 3px inter-tier)
+        -- Y row coordinates (18px box + 4px gap + 26px icon + 15px inter-tier, matching Mage)
         local specBoxY  = TREE_TOP_Y - 16
-        local specIconY = specBoxY  - 18 - 3
-        local r2BoxY    = specIconY - 26 - 3
-        local r2IconY   = r2BoxY   - 18 - 3
-        local r5BoxY    = r2IconY  - 26 - 3
-        local r5IconY   = r5BoxY   - 18 - 3
-        local r6BoxY    = r5IconY  - 26 - 3
-        local r6IconY   = r6BoxY   - 18 - 3
+        local specIconY = specBoxY  - 18 - 4
+        local r2BoxY    = specIconY - 26 - 15
+        local r2IconY   = r2BoxY   - 18 - 4
+        local r5BoxY    = r2IconY  - 26 - 15
+        local r5IconY   = r5BoxY   - 18 - 4
+        local r6BoxY    = r5IconY  - 26 - 15
+        local r6IconY   = r6BoxY   - 18 - 4
 
         -- Right column: Pets (1-wide) beside Destruction
         local petsX      = col3X + SPEC_COL_W + SPEC_COL_GAP
@@ -189,10 +189,6 @@ function PBM.OpenWarlockMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Affliction|r |cff999999- |r|cff8787EDaffli|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Affliction DoT specialization|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDCorruption, Unstable Affliction, Haunt.|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Nightfall|r procs instant |cff8787EDShadow Bolt|r.", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDDrain Soul|r executes below 25%.", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Pet:|r |cff8787EDFelhunter|r  |cffffcc00Curse:|r |cff8787EDCurse of Agony|r", 1, 1, 1)
                 GameTooltip:AddLine("|cffFF4444Mutually exclusive with Demonology, Destruction.|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeAffliBtn = treeAffliBtn
@@ -202,10 +198,6 @@ function PBM.OpenWarlockMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Demonology|r |cff999999- |r|cff8787EDdemo|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Demonology burst specialization|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDMetamorphosis|r on cooldown — major DPS CD.", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Decimation|r proc — |cff8787EDSoul Fire|r.", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Molten Core|r proc — free |cff8787EDIncinerate|r.", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Pet:|r |cff8787EDFelguard|r  |cffffcc00Curse:|r |cff8787EDCurse of Agony|r", 1, 1, 1)
                 GameTooltip:AddLine("|cffFF4444Mutually exclusive with Affliction, Destruction.|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeDemoBtn = treeDemoBtn
@@ -215,30 +207,22 @@ function PBM.OpenWarlockMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Destruction|r |cff999999- |r|cff8787EDdestro|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Destruction fire specialization|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDImmolate, Conflagrate, Chaos Bolt.|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDIncinerate|r fills between cooldowns.", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDShadowburn|r executes below 20%.", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Pet:|r |cff8787EDImp|r  |cffffcc00Curse:|r |cff8787EDCurse of the Elements|r", 1, 1, 1)
                 GameTooltip:AddLine("|cffFF4444Mutually exclusive with Affliction, Demonology.|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeDestroBtn = treeDestroBtn
 
         -- ── Row 2: Combat ────────────────────────────────────────────
-        -- 4 buttons: AoE, MetaMelee, Tank, DPS
-        local R2_TOTAL = 4 * EXT_ICON_SIZE + 3 * 4
+        -- 3 buttons: AoE, MetaMelee, Tank
+        local R2_TOTAL = 3 * EXT_ICON_SIZE + 2 * 4
         local R2_PAD   = math.floor((TREE_TOTAL_W - R2_TOTAL) / 2)
         local function r2X(i) return TREE_X + R2_PAD + i * (EXT_ICON_SIZE + 4) end
         MakeWideBox(TREE_X + R2_PAD, r2BoxY, R2_TOTAL, "Combat")
 
         local treeWarlockAoeBtn = MakeTreeBtn(r2X(0), r2IconY,
-            "Interface\\Icons\\Spell_Fire_FelFlameRing",
+            "Interface\\Icons\\Spell_Frost_IceStorm",
             function()
                 GameTooltip:SetText("|cffffcc00AoE|r |cff999999- |r|cff8787EDaoe|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Warlock AoE rotation|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDImmolation Aura|r (Demo in |cffffcc00Metamorphosis|r).", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDShadowfury|r (Destro) — AoE stun.", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDShadowflame|r — melee-range cone.", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDSeed of Corruption, Rain of Fire.|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeWarlockAoeBtn = treeWarlockAoeBtn
 
@@ -258,22 +242,9 @@ function PBM.OpenWarlockMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Tank|r |cff999999- |r|cff8787EDtank|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Warlock tank role|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDSearing Pain|r — extreme threat generation.", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDShadow Ward|r — absorb on cooldown.", 1, 1, 1)
-                GameTooltip:AddLine("Disables |cff8787EDSoulshatter|r threat dump.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with DPS.|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeTankBtn = treeTankBtn
 
-        local treeDpsBtn = MakeTreeBtn(r2X(3), r2IconY,
-            "Interface\\Icons\\Spell_Holy_DivinePurpose",
-            function()
-                GameTooltip:SetText("|cffffcc00DPS|r |cff999999- |r|cff8787EDdps|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00General DPS role|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot uses its active spec rotation.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Tank.|r", 1, 1, 1)
-            end)
-        LichborneWarlockMenu.treeDpsBtn = treeDpsBtn
 
         -- ── Left column: Curses (1-wide) beside Affliction ──────────
         MakeSpecBox(cursesHdrX, cursesHdrY, 44, "Curses")
@@ -527,9 +498,6 @@ function PBM.OpenWarlockMenu(row)
                 GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cff8787EDaoe|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
                 GameTooltip:AddLine("Switches to AoE rotation on multiple targets.", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDSeed of Corruption, Rain of Fire,|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDShadowfury, Shadowflame,|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDImmolation Aura|r (Demo).", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeDpsAoeBtn = treeDpsAoeBtn
 
@@ -552,7 +520,7 @@ function PBM.OpenWarlockMenu(row)
                 -- class-specific tree buttons only (food/loot/gather handled by base)
                 IconOff(treeAffliBtn); IconOff(treeDemoBtn); IconOff(treeDestroBtn)
                 IconOff(treeWarlockAoeBtn); IconOff(treeMetaMeleeBtn)
-                IconOff(treeTankBtn); IconOff(treeDpsBtn)
+                IconOff(treeTankBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
                 IconOff(treeCurseAgonyBtn); IconOff(treeCurseElementsBtn)
                 IconOff(treeCurseExhaustionBtn); IconOff(treeCurseDoomBtn)
@@ -619,21 +587,9 @@ function PBM.OpenWarlockMenu(row)
                     PBM.SendToBot("co -tank,?", bot); IconOff(treeTankBtn)
                 else
                     PBM.SendToBot("co +tank,?", bot); IconOn(treeTankBtn)
-                    IconOff(treeDpsBtn)
                 end
             end)
 
-            -- Dps (exclusive with Tank)
-            treeDpsBtn:SetScript("OnClick", function()
-                local bot = LichborneWarlockMenu.botName or ""
-                LichborneWarlockMenu._specUserSet = true
-                if treeDpsBtn.state then
-                    PBM.SendToBot("co -dps,?", bot); IconOff(treeDpsBtn)
-                else
-                    PBM.SendToBot("co +dps,?", bot); IconOn(treeDpsBtn)
-                    IconOff(treeTankBtn)
-                end
-            end)
 
             -- TankAssist (exclusive with DpsAssist, DpsAoe)
             treeTankAssistBtn:SetScript("OnClick", function()
@@ -780,7 +736,6 @@ function PBM.OpenWarlockMenu(row)
                         if activeSet["aoe"]          then IconOn(treeWarlockAoeBtn)   else IconOff(treeWarlockAoeBtn)   end
                         if activeSet["meta melee"]   then IconOn(treeMetaMeleeBtn)    else IconOff(treeMetaMeleeBtn)    end
                         if activeSet["tank"]         then IconOn(treeTankBtn)         else IconOff(treeTankBtn)         end
-                        if activeSet["dps"]          then IconOn(treeDpsBtn)          else IconOff(treeDpsBtn)          end
                         if activeSet["tank assist"]  then IconOn(treeTankAssistBtn)   else IconOff(treeTankAssistBtn)   end
                         if activeSet["dps assist"]   then IconOn(treeDpsAssistBtn)    else IconOff(treeDpsAssistBtn)    end
                         if activeSet["aoe"]           then IconOn(treeDpsAoeBtn)       else IconOff(treeDpsAoeBtn)       end

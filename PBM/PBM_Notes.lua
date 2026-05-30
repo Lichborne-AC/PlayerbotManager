@@ -1,10 +1,10 @@
 local NOTE_COLORS = {
-    red    = "ffe05252",
-    gold   = "fff0c674",
-    purple = "ff9482c9",
-    blue   = "ff4a8ec2",
-    green  = "ff4caf50",
-    orange = "ffff7d0a",
+    red    = "ffff5555",
+    gold   = "ffffd100",  -- Charsheet gold (Buffs)
+    purple = "ffa335ee",  -- Epic purple   (AoE)
+    blue   = "ff0070dd",  -- Rare blue     (Tank)
+    green  = "ff1eff00",  -- Uncommon green (Heal)
+    orange = "ffff8000",  -- Legendary orange (DPS)
 }
 
 PBM.NOTES_ROLE_ICONS = {
@@ -20,16 +20,17 @@ PBM.NOTES_CONFIG = {
         { cmd="bear",          p=1, n="Bear",       r={"T"} },
         { cmd="cat",           p=1, n="Cat",        r={"D"} },
         { cmd="caster",        p=1, n="Bal",        r={"D"} },
-        { cmd="heal",          p=1, n="Rest",       r={"H"} },
+        { cmd="resto",         p=1, n="Rest",       r={"H"} },
+        { cmd="tranquility",   p=1, n="Tranq",      r={"H"} },
+        { cmd="blanketing",    p=1, n="Blanket",    r={"H"} },
+        { cmd="feral charge",  p=2, n="FCharge",    r={"D"} },
         { cmd="melee",         p=3, n="Melee",      r={"D"} },
         { cmd="healer dps",    p=2, n="HealerDPS",  r={"H","D"} },
         { cmd="offheal",       p=2, n="OffHeal",    r={"D","H"} },
-        { cmd="cat aoe",       p=3, n="AoE",        r={"A"} },
-        { cmd="caster aoe",    p=3, n="AoE",        r={"A"} },
+        { cmd="aoe",           p=2, n="AoE",        r={"A"} },
         { cmd="caster debuff", p=4, n="Debuff",     r={"B"} },
         { cmd="tank assist",   p=5, n="TAssist",    r={"D"} },
         { cmd="dps assist",    p=5, n="DAssist",    r={"D"} },
-        { cmd="dps aoe",       p=2, n="AoE",        r={"A"} },
     },
     paladin = {
         { cmd="heal",       p=1, n="Heal",       r={"H"} },
@@ -263,6 +264,29 @@ function PBM.ComputeBotNotes(name, coSet, ncSet)
 
     local noteStr = table.concat(parts, "")
     return noteStr, roleList
+end
+
+-- Returns a sorted, display-ready role list for a bot (up to 2 entries).
+-- If only 1 role exists it is mirrored so both icon slots are always filled.
+-- Used by both the Raid tab and the Overview tab.
+function PBM.GetSortedVisRoles(name)
+    local botNE = LichborneTrackerDB.botNotes and name and name ~= ""
+                  and LichborneTrackerDB.botNotes[name:lower()]
+    local rawRoles = botNE and botNE.roles or {}
+    local visRoles = {}
+    for _, r in ipairs(rawRoles) do
+        if PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[r] then
+            visRoles[#visRoles+1] = r
+        end
+    end
+    local isTank = false
+    for _, r in ipairs(visRoles) do if r == "T" then isTank = true; break end end
+    local roleOrder = isTank and { T=1, A=2, D=3, H=4 } or { T=1, H=2, D=3, A=4 }
+    table.sort(visRoles, function(a, b)
+        return (roleOrder[a] or 9) < (roleOrder[b] or 9)
+    end)
+    if #visRoles == 1 then visRoles[2] = visRoles[1] end
+    return visRoles
 end
 
 function PBM.ApplyBotNotes(name, coSet, ncSet)

@@ -270,17 +270,24 @@ end
 
 function PBM.RefreshProfCell(cf, charName)
     if not cf or not cf.icons then return end
+    -- Build combined display: profs (by selection order) then needs
+    local combined = {}
     local profs = PBM.GetProfs(charName)
-    local active = {}
+    local profActive = {}
     for _, slot in ipairs(PBM.PROF_SLOTS) do
         local seq = profs[slot.key]
-        if seq then active[#active+1] = { icon=slot.icon, seq=seq } end
+        if seq then profActive[#profActive+1] = { icon=slot.icon, seq=seq } end
     end
-    table.sort(active, function(a, b) return a.seq < b.seq end)
-    local show = math.min(#active, PBM.MAX_PROFS)
+    table.sort(profActive, function(a, b) return a.seq < b.seq end)
+    for _, p in ipairs(profActive) do combined[#combined+1] = p.icon end
+    local needs = PBM.GetNeeds(charName)
+    for _, slot in ipairs(PBM.NEEDS_SLOTS) do
+        if needs[slot.key] then combined[#combined+1] = slot.icon end
+    end
+    local show = math.min(#combined, PBM.MAX_PROFS)
     for idx = 1, show do
         local ic = cf.icons[idx]
-        if ic then ic:SetTexture(active[idx].icon); ic:SetAlpha(1); ic:Show() end
+        if ic then ic:SetTexture(combined[idx]); ic:SetAlpha(1); ic:Show() end
     end
     for j = show+1, PBM.MAX_PROFS do
         if cf.icons[j] then cf.icons[j]:Hide() end
@@ -303,9 +310,12 @@ end
 function PBM.BuildProfPickerIfNeeded()
     if PBM.State.profPicker then return end
     local COLS, BSIZE, PAD = 7, 26, 4
-    local ROWS = math.ceil(#PBM.PROF_SLOTS / COLS)
+    local ROWS_P     = math.ceil(#PBM.PROF_SLOTS  / COLS)
+    local ROWS_N     = math.ceil(#PBM.NEEDS_SLOTS / COLS)
+    local PROF_H     = 20 + PAD + ROWS_P*(BSIZE+PAD)   -- title + prof rows
+    local NEEDS_HDR_H = 16                               -- "Needs" label strip
     local W = COLS*(BSIZE+PAD)+PAD
-    local H = ROWS*(BSIZE+PAD)+PAD+20
+    local H = PROF_H + PAD + NEEDS_HDR_H + PAD + ROWS_N*(BSIZE+PAD) + PAD
     local pf = CreateFrame("Frame","LichborneProfPicker",UIParent)
     pf:SetFrameStrata("TOOLTIP"); pf:SetFrameLevel(200)
     pf:SetSize(W,H)
@@ -313,6 +323,8 @@ function PBM.BuildProfPickerIfNeeded()
     pf:SetBackdropColor(0.04,0.06,0.12,0.98); pf:SetBackdropBorderColor(0.78,0.61,0.23,1)
     local ttl = pf:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     ttl:SetPoint("TOPLEFT",pf,"TOPLEFT",6,-5); pf.title=ttl
+
+    -- ── Prof buttons ──────────────────────────────────────────────────────────
     pf.slotBtns = {}
     for si, slot in ipairs(PBM.PROF_SLOTS) do
         local col = (si-1)%COLS
@@ -349,8 +361,12 @@ function PBM.BuildProfPickerIfNeeded()
             local cur=PBM.GetProfs(PBM.State.profPickerOwner)[k]
             if mouseButton=="RightButton" then PBM.SetProf(PBM.State.profPickerOwner,k,false)
             else PBM.SetProf(PBM.State.profPickerOwner,k,not cur) end
+            -- combined count across profs + needs
             local profs2=PBM.GetProfs(PBM.State.profPickerOwner)
-            local count2=0; for _ in pairs(profs2) do count2=count2+1 end
+            local needs2=PBM.GetNeeds(PBM.State.profPickerOwner)
+            local count2=0
+            for _ in pairs(profs2) do count2=count2+1 end
+            for _ in pairs(needs2) do count2=count2+1 end
             for _,sb in ipairs(pf.slotBtns) do
                 if profs2[sb.slotKey] then
                     sb.hi:Show(); sb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); sb.tex:SetAlpha(1)
@@ -360,11 +376,104 @@ function PBM.BuildProfPickerIfNeeded()
                     sb.hi:Hide(); sb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); sb.tex:SetAlpha(1)
                 end
             end
+            if pf.needsBtns then
+                for _,nb in ipairs(pf.needsBtns) do
+                    if needs2[nb.slotKey] then
+                        nb.hi:Show(); nb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); nb.tex:SetAlpha(1)
+                    elseif count2 >= PBM.MAX_PROFS then
+                        nb.hi:Hide(); nb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); nb.tex:SetAlpha(0.35)
+                    else
+                        nb.hi:Hide(); nb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); nb.tex:SetAlpha(1)
+                    end
+                end
+            end
             PBM.RefreshAllProfCells()
         end)
         btn:RegisterForClicks("LeftButtonUp","RightButtonUp")
         pf.slotBtns[si]=btn
     end
+
+    -- ── Needs section divider + header ────────────────────────────────────────
+    local sepY = -(PROF_H + PAD)
+    local sep = pf:CreateTexture(nil,"ARTWORK")
+    sep:SetPoint("TOPLEFT",  pf,"TOPLEFT",  PAD,  sepY)
+    sep:SetPoint("TOPRIGHT", pf,"TOPRIGHT", -PAD, sepY)
+    sep:SetHeight(1)
+    sep:SetTexture(0.78,0.61,0.23,0.5)
+
+    local needsHdrLbl = pf:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
+    needsHdrLbl:SetPoint("TOPLEFT",pf,"TOPLEFT",6, sepY - 2)
+    needsHdrLbl:SetText("|cffC69B3ANeeds|r")
+
+    -- ── Needs buttons ─────────────────────────────────────────────────────────
+    local needsBaseY = -(PROF_H + PAD + NEEDS_HDR_H + PAD)
+    pf.needsBtns = {}
+    for si, slot in ipairs(PBM.NEEDS_SLOTS) do
+        local col = (si-1)%COLS
+        local row = math.floor((si-1)/COLS)
+        local btn = CreateFrame("Button",nil,pf)
+        btn:SetSize(BSIZE,BSIZE)
+        btn:SetPoint("TOPLEFT",pf,"TOPLEFT",PAD+col*(BSIZE+PAD), needsBaseY - row*(BSIZE+PAD))
+        btn:SetFrameLevel(pf:GetFrameLevel()+1)
+        local bg=btn:CreateTexture(nil,"BACKGROUND"); bg:SetAllPoints(btn); bg:SetTexture(0.08,0.10,0.18,1)
+        local tex=btn:CreateTexture(nil,"ARTWORK")
+        tex:SetPoint("CENTER",btn,"CENTER",0,0); tex:SetSize(BSIZE-4,BSIZE-4); tex:SetTexture(slot.icon)
+        btn.tex=tex
+        local hi=btn:CreateTexture(nil,"OVERLAY")
+        hi:SetAllPoints(btn); hi:SetTexture(0.3,0.8,0.3,0.35); hi:Hide(); btn.hi=hi
+        btn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=8,edgeSize=6,insets={left=1,right=1,top=1,bottom=1}})
+        btn:SetBackdropColor(0.08,0.10,0.18,1); btn:SetBackdropBorderColor(0.25,0.35,0.55,0.8)
+        btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
+        btn.slotKey=slot.key; btn.slotLabel=slot.label
+        btn:SetScript("OnEnter",function()
+            if pf.title then
+                local owned = PBM.State.profPickerOwner and PBM.GetNeeds(PBM.State.profPickerOwner)[slot.key]
+                local hint = owned and "|cffff6666  (right-click to remove)|r" or "|cff66ff66  click to mark|r"
+                pf.title:SetText("|cffC69B3A"..slot.label.."|r"..hint)
+            end
+        end)
+        btn:SetScript("OnLeave",function()
+            if pf.title and PBM.State.profPickerOwner then
+                pf.title:SetText("|cffC69B3AProfs: |r|cffffff00"..PBM.State.profPickerOwner.."|r")
+            end
+        end)
+        btn:SetScript("OnClick",function(_, mouseButton)
+            if not PBM.State.profPickerOwner or PBM.State.profPickerOwner=="" then return end
+            local k=slot.key
+            local cur=PBM.GetNeeds(PBM.State.profPickerOwner)[k]
+            if mouseButton=="RightButton" then PBM.SetNeed(PBM.State.profPickerOwner,k,false)
+            else PBM.SetNeed(PBM.State.profPickerOwner,k,not cur) end
+            -- combined count across profs + needs
+            local profs2=PBM.GetProfs(PBM.State.profPickerOwner)
+            local needs2=PBM.GetNeeds(PBM.State.profPickerOwner)
+            local count2=0
+            for _ in pairs(profs2) do count2=count2+1 end
+            for _ in pairs(needs2) do count2=count2+1 end
+            for _,nb in ipairs(pf.needsBtns) do
+                if needs2[nb.slotKey] then
+                    nb.hi:Show(); nb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); nb.tex:SetAlpha(1)
+                elseif count2 >= PBM.MAX_PROFS then
+                    nb.hi:Hide(); nb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); nb.tex:SetAlpha(0.35)
+                else
+                    nb.hi:Hide(); nb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); nb.tex:SetAlpha(1)
+                end
+            end
+            for _,sb in ipairs(pf.slotBtns) do
+                if profs2[sb.slotKey] then
+                    sb.hi:Show(); sb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); sb.tex:SetAlpha(1)
+                elseif count2 >= PBM.MAX_PROFS then
+                    sb.hi:Hide(); sb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); sb.tex:SetAlpha(0.35)
+                else
+                    sb.hi:Hide(); sb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); sb.tex:SetAlpha(1)
+                end
+            end
+            PBM.RefreshAllNeedsCells()
+            PBM.RefreshAllProfCells()
+        end)
+        btn:RegisterForClicks("LeftButtonUp","RightButtonUp")
+        pf.needsBtns[si]=btn
+    end
+
     pf.closeTimer = 0
     pf:SetScript("OnUpdate",function(_, elapsed)
         if not pf:IsShown() then return end
@@ -389,8 +498,12 @@ function PBM.OpenProfPicker(anchorFrame, charName)
     PBM.BuildProfPickerIfNeeded()
     PBM.State.profPickerOwner=charName
     PBM.State.profPicker.title:SetText("|cffC69B3AProfs: |r|cffffff00"..charName.."|r")
+    -- combined count for limit enforcement across both sections
     local profs3=PBM.GetProfs(charName)
-    local count3=0; for _ in pairs(profs3) do count3=count3+1 end
+    local needs3=PBM.GetNeeds(charName)
+    local count3=0
+    for _ in pairs(profs3) do count3=count3+1 end
+    for _ in pairs(needs3) do count3=count3+1 end
     for _,sb in ipairs(PBM.State.profPicker.slotBtns) do
         if profs3[sb.slotKey] then
             sb.hi:Show(); sb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); sb.tex:SetAlpha(1)
@@ -398,6 +511,17 @@ function PBM.OpenProfPicker(anchorFrame, charName)
             sb.hi:Hide(); sb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); sb.tex:SetAlpha(0.35)
         else
             sb.hi:Hide(); sb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); sb.tex:SetAlpha(1)
+        end
+    end
+    if PBM.State.profPicker.needsBtns then
+        for _,nb in ipairs(PBM.State.profPicker.needsBtns) do
+            if needs3[nb.slotKey] then
+                nb.hi:Show(); nb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); nb.tex:SetAlpha(1)
+            elseif count3 >= PBM.MAX_PROFS then
+                nb.hi:Hide(); nb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); nb.tex:SetAlpha(0.35)
+            else
+                nb.hi:Hide(); nb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); nb.tex:SetAlpha(1)
+            end
         end
     end
     PBM.State.profPicker:ClearAllPoints()

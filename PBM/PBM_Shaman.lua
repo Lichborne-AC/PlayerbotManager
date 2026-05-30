@@ -147,17 +147,13 @@ function PBM.OpenShamanMenu(row)
         end
 
         -- ── Compute Y rows ───────────────────────────────────────────
-        -- Each "tier" = box(18) + gap(4) + icon(26) = 48px, plus inter-tier gap(6)
+        -- Each "tier" = box(18) + gap(4) + icon(26) = 48px, plus inter-tier gap(15)
         local specBoxY   = TREE_TOP_Y - 16                   -- row 1 header
         local specIconY  = specBoxY - 18 - 4                 -- row 1 icons
-        local subBoxY    = specIconY - 26 - 6                -- row 2 header
+        local subBoxY    = specIconY - 26 - 15               -- row 2 header
         local subIconY   = subBoxY - 18 - 4                  -- row 2 icons
-        local totBoxY    = subIconY - 26 - 6                 -- row 3 header
-        local totLabelY  = totBoxY - 18 - 2                  -- CO/NC labels just below header
-        local totIconY   = totBoxY - 18 - 12                 -- mana buttons (shifted down to clear labels)
-        local totRow2Y   = totIconY - EXT_ICON_SIZE - 2      -- totems row 2: dps stacked under mana
-        local assBoxY    = totRow2Y - EXT_ICON_SIZE - 6      -- row 4 header
-        local assIconY   = assBoxY - 18 - 4                  -- row 4 icons
+        local assBoxY    = subIconY - 26 - 15                -- row 3 header
+        local assIconY   = assBoxY - 18 - 4                  -- row 3 icons
 
         -- ── Row 1: Spec columns ─────────────────────────────────────
         MakeSpecBox(col1X, specBoxY, SPEC_COL_W, "Elemental",
@@ -172,9 +168,6 @@ function PBM.OpenShamanMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Elemental|r |cff999999- |r|cff0070DEelemental|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Elemental caster DPS|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DELightning Bolt, Chain Lightning, Lava Burst|r caster rotation.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEFlame Shock|r maintains DoT; |cffffcc00Lava Surge|r proc enables instant |cff0070DELava Burst|r.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEEarth Shock|r interrupt or execute. |cffffcc00AoE|r via |cff0070DEChain Lightning|r.", 1, 1, 1)
                 GameTooltip:AddLine("|cffFF4444Mutually exclusive with Enhancement, Restoration.|r", 1, 1, 1)
             end)
         LichborneShamanMenu.treeEleBtn = treeEleBtn
@@ -184,10 +177,6 @@ function PBM.OpenShamanMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Enhancement|r |cff999999- |r|cff0070DEenhancement|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Enhancement melee DPS|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Melee|r with |cff0070DEStormstrike, Lava Lash, Flametongue, Windfury.|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEStormstrike|r — Nature damage debuff on target.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DELava Lash|r — OH attack scaled by |cff0070DEFlametongue|r.", 1, 1, 1)
-                GameTooltip:AddLine("|cffffcc00Windfury|r proc grants extra melee swings.", 1, 1, 1)
                 GameTooltip:AddLine("|cffFF4444Mutually exclusive with Elemental, Restoration.|r", 1, 1, 1)
             end)
         LichborneShamanMenu.treeEnhBtn = treeEnhBtn
@@ -197,9 +186,6 @@ function PBM.OpenShamanMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Restoration|r |cff999999- |r|cff0070DErestoration|r |cffee4433CO|r")
                 GameTooltip:AddLine("|cffffcc00Restoration healing specialization|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEChain Heal, Riptide, Lesser Healing Wave, Healing Wave.|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DERiptide|r — instant |cffffcc00HoT|r, generates Tidal Waves.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEChain Heal|r — Tidal Waves proc, 2+ injured.", 1, 1, 1)
                 GameTooltip:AddLine("|cffFF4444Mutually exclusive with Elemental, Enhancement.|r", 1, 1, 1)
             end)
         LichborneShamanMenu.treeRestoBtn = treeRestoBtn
@@ -212,31 +198,13 @@ function PBM.OpenShamanMenu(row)
         MakeWideBox(aoeHdrX,  subBoxY, SPEC_COL_W, "AoE")
         MakeWideBox(hdpsHdrX, subBoxY, SPEC_COL_W, "Healer DPS")
 
-        -- Pack the two AoE buttons side-by-side, centred inside AoE header
-        local AOE_PAIR_W = 2 * EXT_ICON_SIZE + 4
-        local aoeLeft = aoeHdrX + math.floor((SPEC_COL_W - AOE_PAIR_W) / 2)
-
-        local treeCasterAoeBtn = MakeTreeBtn(aoeLeft, subIconY,
-            "Interface\\Icons\\Spell_Nature_LightningOverload",
+        local treeAoeBtn = MakeTreeBtn(aoeHdrX + math.floor((SPEC_COL_W - EXT_ICON_SIZE) / 2), subIconY,
+            "Interface\\Icons\\Spell_Frost_IceStorm",
             function()
-                GameTooltip:SetText("|cffffcc00Caster AoE|r |cff999999- |r|cffff8000caster aoe|r |cffffcc00CO|r")
-                GameTooltip:AddLine("|cffffcc00Caster AoE rotation|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEChain Lightning|r — bounces to 3 targets.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEFire Nova|r — detonates on nearby targets.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEThunderstorm|r — |cffffcc00AoE|r knockback and damage.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00AoE|r |cff999999- |r|cff0070DEaoe|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00AoE rotation|r", 1, 1, 1)
             end)
-        LichborneShamanMenu.treeCasterAoeBtn = treeCasterAoeBtn
-
-        local treeMeleeAoeBtn = MakeTreeBtn(aoeLeft + EXT_ICON_SIZE + 4, subIconY,
-            "Interface\\Icons\\Ability_Warrior_Shockwave",
-            function()
-                GameTooltip:SetText("|cffffcc00Melee AoE|r |cff999999- |r|cffff8000melee aoe|r |cffffcc00CO|r")
-                GameTooltip:AddLine("|cffffcc00Melee AoE rotation|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEFire Nova|r — detonates Flame Shock on targets.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEMagma Totem|r — ground |cffffcc00AoE|r pulse.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEChain Lightning|r — Maelstrom procs, 3 targets.", 1, 1, 1)
-            end)
-        LichborneShamanMenu.treeMeleeAoeBtn = treeMeleeAoeBtn
+        LichborneShamanMenu.treeAoeBtn = treeAoeBtn
 
         -- Healer DPS — centred inside hdpsHdrX column
         local treeHealerDpsBtn = MakeTreeBtn(hdpsHdrX + math.floor((SPEC_COL_W - EXT_ICON_SIZE) / 2), subIconY,
@@ -244,101 +212,10 @@ function PBM.OpenShamanMenu(row)
             function()
                 GameTooltip:SetText("|cffffcc00Healer DPS|r |cff999999- |r|cffffcc00healer dps|r |cffff8000CO|r")
                 GameTooltip:AddLine("|cffffcc00Healer that fills with DPS|r", 1, 1, 1)
-                GameTooltip:AddLine("Casts |cff0070DELightning Bolt|r when no heals are needed.", 1, 1, 1)
-                GameTooltip:AddLine("Maintains |cff0070DEEarth Shield|r and |cff0070DERiptide|r.", 1, 1, 1)
-                GameTooltip:AddLine("Only attacks when all party HP is high.", 1, 1, 1)
             end)
         LichborneShamanMenu.treeHealerDpsBtn = treeHealerDpsBtn
 
-        -- ── Row 3: Totems — [Totems btn] [CO: Mana/DPS stacked] [NC: Mana/DPS stacked] ─
-        local TOT_LEFT_GAP = 10   -- gap between Totems btn and CO column
-        local TOT_COL_GAP  = 4   -- gap between CO and NC columns
-        local totNewW   = 3 * EXT_ICON_SIZE + TOT_LEFT_GAP + TOT_COL_GAP   -- 92px
-        local totStartX = TREE_X + math.floor((TREE_TOTAL_W - totNewW) / 2)
-        local totCoX    = totStartX + EXT_ICON_SIZE + TOT_LEFT_GAP
-        local totNcX    = totCoX    + EXT_ICON_SIZE + TOT_COL_GAP
-
-        MakeWideBox(totStartX, totBoxY, totNewW, "Totems")
-
-        -- "CO" mini-label above CO column
-        local coLabel = LichborneShamanMenu:CreateFontString(nil, "OVERLAY")
-        coLabel:SetFont("Fonts\\FRIZQT__.TTF", 8, "OUTLINE")
-        coLabel:SetTextColor(1, 0.82, 0)
-        coLabel:SetText("CO")
-        coLabel:SetPoint("TOPLEFT", LichborneShamanMenu, "TOPLEFT", totCoX, totLabelY)
-        coLabel:SetWidth(EXT_ICON_SIZE)
-        coLabel:SetJustifyH("CENTER")
-
-        -- "NC" mini-label above NC column
-        local ncLabel = LichborneShamanMenu:CreateFontString(nil, "OVERLAY")
-        ncLabel:SetFont("Fonts\\FRIZQT__.TTF", 8, "OUTLINE")
-        ncLabel:SetTextColor(0.6, 0.8, 1.0)
-        ncLabel:SetText("NC")
-        ncLabel:SetPoint("TOPLEFT", LichborneShamanMenu, "TOPLEFT", totNcX, totLabelY)
-        ncLabel:SetWidth(EXT_ICON_SIZE)
-        ncLabel:SetJustifyH("CENTER")
-
-        -- Totems full-set (co +totems)
-        local treeTotemsBtn = MakeTreeBtn(totStartX, totIconY,
-            "Interface\\Icons\\INV_Relics_TotemOfRebirth",
-            function()
-                GameTooltip:SetText("|cffffcc00Totems|r |cff999999- |r|cffffff00totems|r |cffff8000CO|r")
-                GameTooltip:AddLine("|cffffcc00Places situational totems|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEEle:|r Stoneskin, Wrath, Mana Spring, Wrath of Air.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEEnh:|r Strength of Earth, Magma, Healing Stream, Windfury.", 1, 1, 1)
-                GameTooltip:AddLine("|cff0070DEResto:|r Stoneskin, Flametongue, Mana Spring, Wrath of Air.", 1, 1, 1)
-            end)
-        LichborneShamanMenu.treeTotemsBtn = treeTotemsBtn
-
-        -- CO: Mana Spring Totem (co +bmana) — radio with CombatDps
-        local treeCombatManaBtn = MakeTreeBtn(totCoX, totIconY,
-            "Interface\\Icons\\Spell_Nature_ManaRegenTotem",
-            function()
-                GameTooltip:SetText("|cffffcc00Mana Totem|r |cff999999- |r|cffffff00bmana|r |cffff8000CO|r")
-                GameTooltip:AddLine("|cffffcc00Mana Spring Totem in combat|r", 1, 1, 1)
-                GameTooltip:AddLine("Drops |cff0070DEMana Spring Totem|r on combat start.", 1, 1, 1)
-                GameTooltip:AddLine("Provides passive mana regen for the group.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one totem set active at a time.|r", 1, 1, 1)
-            end)
-        LichborneShamanMenu.treeCombatManaBtn = treeCombatManaBtn
-
-        -- CO: Windfury Totem (co +bdps) — radio with CombatMana
-        local treeCombatDpsBtn = MakeTreeBtn(totCoX, totRow2Y,
-            "Interface\\Icons\\Spell_Nature_Windfury",
-            function()
-                GameTooltip:SetText("|cffffcc00DPS Totem|r |cff999999- |r|cffffff00bdps|r |cffff8000CO|r")
-                GameTooltip:AddLine("|cffffcc00Windfury Totem in combat|r", 1, 1, 1)
-                GameTooltip:AddLine("Drops |cff0070DEWindfury Totem|r on combat start.", 1, 1, 1)
-                GameTooltip:AddLine("Grants extra melee attacks to the group.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one totem set active at a time.|r", 1, 1, 1)
-            end)
-        LichborneShamanMenu.treeCombatDpsBtn = treeCombatDpsBtn
-
-        -- NC: Mana Spring Totem (nc +bmana) — radio with NcDps
-        local treeNcManaBtn = MakeTreeBtn(totNcX, totIconY,
-            "Interface\\Icons\\Spell_Nature_ManaRegenTotem",
-            function()
-                GameTooltip:SetText("|cffffcc00Mana Totem|r |cff999999- |r|cffffff00bmana|r |cffff8000NC|r")
-                GameTooltip:AddLine("|cffffcc00Mana Spring Totem out of combat|r", 1, 1, 1)
-                GameTooltip:AddLine("Drops |cff0070DEMana Spring Totem|r between fights.", 1, 1, 1)
-                GameTooltip:AddLine("Passive mana regen for the group at rest.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one totem set active at a time.|r", 1, 1, 1)
-            end)
-        LichborneShamanMenu.treeNcManaBtn = treeNcManaBtn
-
-        -- NC: Windfury Totem (nc +bdps) — radio with NcMana
-        local treeNcDpsBtn = MakeTreeBtn(totNcX, totRow2Y,
-            "Interface\\Icons\\Spell_Nature_Windfury",
-            function()
-                GameTooltip:SetText("|cffffcc00DPS Totem|r |cff999999- |r|cffffff00bdps|r |cffff8000NC|r")
-                GameTooltip:AddLine("|cffffcc00Windfury Totem out of combat|r", 1, 1, 1)
-                GameTooltip:AddLine("Drops |cff0070DEWindfury Totem|r between fights.", 1, 1, 1)
-                GameTooltip:AddLine("Melee haste for the group at rest.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one totem set active at a time.|r", 1, 1, 1)
-            end)
-        LichborneShamanMenu.treeNcDpsBtn = treeNcDpsBtn
-
-        -- ── Row 4: Assist ────────────────────────────────────────────
+        -- ── Row 3: Assist ────────────────────────────────────────────
         local ASS_TOTAL_W = 3 * EXT_ICON_SIZE                                  -- 78px, no gaps
         local assHdrX     = TREE_X + math.floor((TREE_TOTAL_W - ASS_TOTAL_W) / 2)
 
@@ -432,10 +309,7 @@ function PBM.OpenShamanMenu(row)
 
             -- Initialise all desaturated (OFF)
             IconOff(treeEleBtn);       IconOff(treeEnhBtn);       IconOff(treeRestoBtn)
-            IconOff(treeCasterAoeBtn); IconOff(treeMeleeAoeBtn);  IconOff(treeHealerDpsBtn)
-            IconOff(treeTotemsBtn)
-            IconOff(treeCombatManaBtn); IconOff(treeCombatDpsBtn)
-            IconOff(treeNcManaBtn);     IconOff(treeNcDpsBtn)
+            IconOff(treeAoeBtn);  IconOff(treeHealerDpsBtn)
             IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
             IconOff(treeCureBtn)
 
@@ -444,10 +318,7 @@ function PBM.OpenShamanMenu(row)
                 if _baseReset then _baseReset() end
                 -- class-specific tree buttons only (food/loot/gather handled by base)
                 IconOff(treeEleBtn);       IconOff(treeEnhBtn);       IconOff(treeRestoBtn)
-                IconOff(treeCasterAoeBtn); IconOff(treeMeleeAoeBtn);  IconOff(treeHealerDpsBtn)
-                IconOff(treeTotemsBtn)
-                IconOff(treeCombatManaBtn); IconOff(treeCombatDpsBtn)
-                IconOff(treeNcManaBtn);     IconOff(treeNcDpsBtn)
+                IconOff(treeAoeBtn);  IconOff(treeHealerDpsBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
                 IconOff(treeCureBtn)
             end
@@ -495,27 +366,15 @@ function PBM.OpenShamanMenu(row)
 
             -- ── Row 2: Sub-roles + Cure (independent) ─────────────────
 
-            treeCasterAoeBtn:SetScript("OnClick", function()
+            treeAoeBtn:SetScript("OnClick", function()
                 local bot = LichborneShamanMenu.botName or ""
                 LichborneShamanMenu._specUserSet = true
-                if treeCasterAoeBtn.state then
-                    PBM.SendToBot("co -caster aoe,?", bot)
-                    IconOff(treeCasterAoeBtn)
+                if treeAoeBtn.state then
+                    PBM.SendToBot("co -aoe,?", bot)
+                    IconOff(treeAoeBtn)
                 else
-                    PBM.SendToBot("co +caster aoe,?", bot)
-                    IconOn(treeCasterAoeBtn)
-                end
-            end)
-
-            treeMeleeAoeBtn:SetScript("OnClick", function()
-                local bot = LichborneShamanMenu.botName or ""
-                LichborneShamanMenu._specUserSet = true
-                if treeMeleeAoeBtn.state then
-                    PBM.SendToBot("co -melee aoe,?", bot)
-                    IconOff(treeMeleeAoeBtn)
-                else
-                    PBM.SendToBot("co +melee aoe,?", bot)
-                    IconOn(treeMeleeAoeBtn)
+                    PBM.SendToBot("co +aoe,?", bot)
+                    IconOn(treeAoeBtn)
                 end
             end)
 
@@ -531,75 +390,7 @@ function PBM.OpenShamanMenu(row)
                 end
             end)
 
-            -- ── Row 3: Totems ─────────────────────────────────────────
-
-            treeTotemsBtn:SetScript("OnClick", function()
-                local bot = LichborneShamanMenu.botName or ""
-                LichborneShamanMenu._specUserSet = true
-                if treeTotemsBtn.state then
-                    PBM.SendToBot("co -totems,?", bot)
-                    IconOff(treeTotemsBtn)
-                else
-                    PBM.SendToBot("co +totems,?", bot)
-                    IconOn(treeTotemsBtn)
-                end
-            end)
-
-            -- CO totems: radio pair
-            treeCombatManaBtn:SetScript("OnClick", function()
-                local bot = LichborneShamanMenu.botName or ""
-                LichborneShamanMenu._specUserSet = true
-                if treeCombatManaBtn.state then
-                    PBM.SendToBot("co -bmana,?", bot)
-                    IconOff(treeCombatManaBtn)
-                else
-                    PBM.SendToBot("co +bmana,?", bot)
-                    IconOn(treeCombatManaBtn)
-                    IconOff(treeCombatDpsBtn)
-                end
-            end)
-
-            treeCombatDpsBtn:SetScript("OnClick", function()
-                local bot = LichborneShamanMenu.botName or ""
-                LichborneShamanMenu._specUserSet = true
-                if treeCombatDpsBtn.state then
-                    PBM.SendToBot("co -bdps,?", bot)
-                    IconOff(treeCombatDpsBtn)
-                else
-                    PBM.SendToBot("co +bdps,?", bot)
-                    IconOn(treeCombatDpsBtn)
-                    IconOff(treeCombatManaBtn)
-                end
-            end)
-
-            -- NC totems: radio pair
-            treeNcManaBtn:SetScript("OnClick", function()
-                local bot = LichborneShamanMenu.botName or ""
-                LichborneShamanMenu._specUserSet = true
-                if treeNcManaBtn.state then
-                    PBM.SendToBot("nc -bmana,?", bot)
-                    IconOff(treeNcManaBtn)
-                else
-                    PBM.SendToBot("nc +bmana,?", bot)
-                    IconOn(treeNcManaBtn)
-                    IconOff(treeNcDpsBtn)
-                end
-            end)
-
-            treeNcDpsBtn:SetScript("OnClick", function()
-                local bot = LichborneShamanMenu.botName or ""
-                LichborneShamanMenu._specUserSet = true
-                if treeNcDpsBtn.state then
-                    PBM.SendToBot("nc -bdps,?", bot)
-                    IconOff(treeNcDpsBtn)
-                else
-                    PBM.SendToBot("nc +bdps,?", bot)
-                    IconOn(treeNcDpsBtn)
-                    IconOff(treeNcManaBtn)
-                end
-            end)
-
-            -- ── Row 4: Assist (mutually exclusive) ────────────────────
+            -- ── Row 3: Assist (mutually exclusive) ────────────────────
 
             treeTankAssistBtn:SetScript("OnClick", function()
                 local bot = LichborneShamanMenu.botName or ""
@@ -664,21 +455,13 @@ function PBM.OpenShamanMenu(row)
                         if activeSet["enh"]   then IconOn(treeEnhBtn)   else IconOff(treeEnhBtn)   end
                         if activeSet["resto"] then IconOn(treeRestoBtn) else IconOff(treeRestoBtn) end
                         -- Sub-roles
-                        if activeSet["caster aoe"]  then IconOn(treeCasterAoeBtn)  else IconOff(treeCasterAoeBtn) end
-                        if activeSet["melee aoe"]   then IconOn(treeMeleeAoeBtn)   else IconOff(treeMeleeAoeBtn)  end
+                        if activeSet["aoe"]         then IconOn(treeAoeBtn)        else IconOff(treeAoeBtn)       end
                         if activeSet["healer dps"]  then IconOn(treeHealerDpsBtn)  else IconOff(treeHealerDpsBtn) end
-                        -- Totems
-                        if activeSet["totems"] then IconOn(treeTotemsBtn) else IconOff(treeTotemsBtn) end
-                        if activeSet["bmana"]  then IconOn(treeCombatManaBtn) else IconOff(treeCombatManaBtn) end
-                        if activeSet["bdps"]   then IconOn(treeCombatDpsBtn)  else IconOff(treeCombatDpsBtn)  end
                         -- Assist + Cure
                         if activeSet["tank assist"] then IconOn(treeTankAssistBtn) else IconOff(treeTankAssistBtn) end
                         if activeSet["dps assist"]  then IconOn(treeDpsAssistBtn)  else IconOff(treeDpsAssistBtn)  end
                         if activeSet["aoe"]         then IconOn(treeDpsAoeBtn)     else IconOff(treeDpsAoeBtn)     end
                         if activeSet["cure"]        then IconOn(treeCureBtn)       else IconOff(treeCureBtn)       end
-                    elseif stratType == "nc" then
-                        if activeSet["bmana"]  then IconOn(treeNcManaBtn)   else IconOff(treeNcManaBtn)   end
-                        if activeSet["bdps"]   then IconOn(treeNcDpsBtn)    else IconOff(treeNcDpsBtn)    end
                     end
                 end
             end

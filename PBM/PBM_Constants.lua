@@ -175,9 +175,9 @@ PBM.TAB_LABELS = {
 -- and TIER_TOOLTIP_RAIDS are all defined there.
 
 PBM.ROLE_DEFS = {
-    {key="TNK", label="Tank",   color={r=0.20,g=0.60,b=1.00}, icon="Interface\\Icons\\Ability_Warrior_DefensiveStance"},
-    {key="HLR", label="Healer", color={r=0.20,g=1.00,b=0.40}, icon="Interface\\Icons\\Spell_ChargePositive"},
-    {key="DPS", label="DPS",    color={r=1.00,g=0.40,b=0.20}, icon="Interface\\Icons\\Ability_DualWield"},
+    {key="TNK", label="Tank",   color={r=0.00,g=0.44,b=0.87}, icon="Interface\\Icons\\Ability_Warrior_DefensiveStance"},  -- Rare blue
+    {key="HLR", label="Healer", color={r=0.12,g=1.00,b=0.00}, icon="Interface\\Icons\\Spell_ChargePositive"},             -- Uncommon green
+    {key="DPS", label="DPS",    color={r=1.00,g=0.50,b=0.00}, icon="Interface\\Icons\\Ability_DualWield"},                -- Legendary orange
 }
 PBM.ROLE_BY_KEY = {}
 for _, rd in ipairs(PBM.ROLE_DEFS) do PBM.ROLE_BY_KEY[rd.key] = rd end
@@ -257,3 +257,6 @@ PBM.ROLE_ORDER_HLR = {HLR=1, TNK=2, DPS=3}
 
 -- Spec scan retry limit
 PBM.MAX_SPEC_RETRIES = 6
+
+-- Bottom tab IDs in display order (used by visibility toggles)
+PBM.BOTTOM_TAB_IDS = {"Playerbots", "IndividualProgression", "LevelSync", "Notes"}

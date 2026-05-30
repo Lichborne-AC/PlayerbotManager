@@ -121,10 +121,6 @@ function PBM.OpenDruidMenu(row)
             GameTooltip:ClearLines()
             GameTooltip:SetText("|cffffcc00Bear|r |cff999999- |r|cffFF7D0Abear|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Dire Bear Form|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0AFeral Charge, Mangle,|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0ALacerate|r |cffffcc00(5-stack),|r |cffFF7D0AMaul,|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0ASwipe|r |cffffcc00(AoE Threat),|r |cffFF7D0AFaerie Fire.|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffffcc00Defensive CDs:|r |cffFF7D0AFrenzied Regen, Barkskin.|r", 1, 1, 1)
             GameTooltip:AddLine("|cffFF4444Mutually exclusive with Cat, Balance, Heal, Off-Heal.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
@@ -136,11 +132,6 @@ function PBM.OpenDruidMenu(row)
             GameTooltip:ClearLines()
             GameTooltip:SetText("|cffffcc00Cat|r |cff999999- |r|cffFF7D0Acat|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Feral Cat melee DPS|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffffcc00Cat Form|r. Uses |cffffcc00Stealth|r opener:", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0APounce, Ravage, Savage Roar,|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0AMangle, Rake, Rip,|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0AFerocious Bite, Shred.|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffffcc00Energy CD:|r |cffFF7D0ATiger's Fury|r.", 1, 1, 1)
             GameTooltip:AddLine("|cffFF4444Mutually exclusive with Bear, Balance, Heal, Off-Heal.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
@@ -150,12 +141,8 @@ function PBM.OpenDruidMenu(row)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
             GameTooltip:SetFrameLevel(LichborneDruidMenu:GetFrameLevel() + 20)
             GameTooltip:ClearLines()
-            GameTooltip:SetText("|cffffcc00Balance|r |cff999999- |r|cffFF7D0Acaster|r |cffee4433CO|r")
+            GameTooltip:SetText("|cffffcc00Balance|r |cff999999- |r|cffFF7D0Abalance|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Moonkin Form — Balance caster DPS|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffffcc00DoTs:|r |cffFF7D0AMoonfire, Insect Swarm.|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffffcc00Solar Eclipse:|r |cffFF7D0AWrath|r.", 1, 1, 1)
-            GameTooltip:AddLine("|cffffcc00Lunar Eclipse:|r |cffFF7D0AStarfire|r.", 1, 1, 1)
-            GameTooltip:AddLine("|cffffcc00Major CDs:|r |cffFF7D0AStarfall, Force of Nature.|r", 1, 1, 1)
             GameTooltip:AddLine("|cffFF4444Mutually exclusive with Bear, Cat, Heal, Off-Heal.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
@@ -165,12 +152,8 @@ function PBM.OpenDruidMenu(row)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
             GameTooltip:SetFrameLevel(LichborneDruidMenu:GetFrameLevel() + 20)
             GameTooltip:ClearLines()
-            GameTooltip:SetText("|cffffcc00Restoration|r |cff999999- |r|cffFF7D0Aheal|r |cffee4433CO|r")
+            GameTooltip:SetText("|cffffcc00Restoration|r |cff999999- |r|cffFF7D0Aresto|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Tree of Life — Restoration healer|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0ARejuvenation, Regrowth,|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0AWild Growth, Swiftmend.|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0AInnervate|r on lowest-|cff3A8FC4mana|r healer.", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0ARebirth|r battle-rez (highest priority).", 1, 1, 1)
             GameTooltip:AddLine("|cffFF4444Mutually exclusive with Bear, Cat, Balance, Off-Heal.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
@@ -181,25 +164,38 @@ function PBM.OpenDruidMenu(row)
         LichborneDruidMenu.treeCasterBtn = treeCasterBtn
         LichborneDruidMenu.treeHealBtn   = treeHealBtn
 
-        -- ── ROW 2 — Melee (left) + Hybrid modifier (right) ──────────
-        local meleeSpecBox = MakeSpecBox(LichborneDruidMenu, TREE_X, TREE_TOP_Y - 16, 70, "Melee", nil)
-        meleeSpecBox:ClearAllPoints()
-        meleeSpecBox:SetPoint("TOPLEFT", bearSpecBox, "BOTTOMLEFT", 79, -45)
+        -- ── ROW 2 — Healing (left) + Hybrid modifier (right) ──────────
+        local healingSpecBox = MakeSpecBox(LichborneDruidMenu, TREE_X, TREE_TOP_Y - 16, 60, "Healing", nil)
+        healingSpecBox:ClearAllPoints()
+        healingSpecBox:SetPoint("TOPLEFT", bearSpecBox, "BOTTOMLEFT", 79, -45)
 
-        local treeMeleeBtn = MakeTreeBtn(LichborneDruidMenu, meleeSpecBox, "BOTTOMLEFT", 22, -4,
-            "Interface\\Icons\\inv_sword_27")
-        treeMeleeBtn:SetScript("OnEnter", function(self)
+        local treeTranqBtn = MakeTreeBtn(LichborneDruidMenu, healingSpecBox, "BOTTOMLEFT", 2, -4,
+            "Interface\\Icons\\Spell_Nature_Tranquility")
+        treeTranqBtn:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
             GameTooltip:SetFrameLevel(LichborneDruidMenu:GetFrameLevel() + 20)
             GameTooltip:ClearLines()
-            GameTooltip:SetText("|cffffcc00Melee|r |cff999999- |r|cffddaa77melee|r |cffaaaaaaCO|r")
-            GameTooltip:AddLine("|cffffcc00Generic melee mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Auto-attack with |cffffcc00Melee|r cooldowns.", 1, 1, 1)
-            GameTooltip:AddLine("Stay in melee range, prefer physical attacks.", 1, 1, 1)
+            GameTooltip:SetText("|cffffcc00Tranquility|r |cff999999- |r|cffFF7D0Atranquility|r |cffee4433CO|r")
+            GameTooltip:AddLine("Auto-loaded on Resto,", 1, 1, 1)
+            GameTooltip:AddLine("Heals ALL nearby party members.", 1, 1, 1)
             GameTooltip:Show()
         end)
-        treeMeleeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-        LichborneDruidMenu.treeMeleeBtn = treeMeleeBtn
+        treeTranqBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneDruidMenu.treeTranqBtn = treeTranqBtn
+
+        local treeBlankBtn = MakeTreeBtn(LichborneDruidMenu, healingSpecBox, "BOTTOMLEFT", 32, -4,
+            "Interface\\Icons\\Spell_Nature_Rejuvenation")
+        treeBlankBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichborneDruidMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00Blanketing|r |cff999999- |r|cffFF7D0Ablanketing|r |cffee4433CO|r")
+            GameTooltip:AddLine("pre-HoT party with Wild Growth", 1, 1, 1)
+            GameTooltip:AddLine("+ Rejuvenation regardless of HP.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeBlankBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneDruidMenu.treeBlankBtn = treeBlankBtn
 
         local hybridSpecBox = MakeSpecBox(LichborneDruidMenu, 0, 0, 60, "Hybrid", nil)
         hybridSpecBox:ClearAllPoints()
@@ -213,8 +209,6 @@ function PBM.OpenDruidMenu(row)
             GameTooltip:ClearLines()
             GameTooltip:SetText("|cffffcc00Healer DPS|r |cff999999- |r|cffFF7D0Ahealer dps|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Healer contributes DPS between heals|r", 1, 1, 1)
-            GameTooltip:AddLine("Casts |cffFF7D0AMoonfire|r and |cffFF7D0AWrath|r when all", 1, 1, 1)
-            GameTooltip:AddLine("party HP is high and no |cffffcc00HoTs|r are falling off.", 1, 1, 1)
             GameTooltip:Show()
         end)
         treeHealerDpsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -228,71 +222,54 @@ function PBM.OpenDruidMenu(row)
             GameTooltip:ClearLines()
             GameTooltip:SetText("|cffffcc00Off-Heal|r |cff999999- |r|cffFF7D0Aoffheal|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Cat DPS primary, heals when party drops low|r", 1, 1, 1)
-            GameTooltip:AddLine("Stays in |cffffcc00Cat Form|r for DPS.", 1, 1, 1)
-            GameTooltip:AddLine("Shifts out to cast |cffFF7D0ARegrowth, Rejuvenation,|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0ASwiftmend|r when a party member drops low.", 1, 1, 1)
             GameTooltip:AddLine("|cffFF4444Mutually exclusive with Bear, Cat, Balance, Heal.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         treeOffhealBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
         LichborneDruidMenu.treeOffhealBtn = treeOffhealBtn
 
-        -- ── ROW 3 — AoE ──────────────────────────────────────────────
-        local aoeSpecBox = MakeSpecBox(LichborneDruidMenu, 0, 0, 100, "AoE", nil)
+        -- ── ROW 3 — AoE + Charge ─────────────────────────────────────
+        local aoeSpecBox = MakeSpecBox(LichborneDruidMenu, 0, 0, 34, "AoE", nil)
         aoeSpecBox:ClearAllPoints()
-        aoeSpecBox:SetPoint("TOPLEFT", meleeSpecBox, "BOTTOMLEFT", 17, -45)
+        aoeSpecBox:SetPoint("TOPLEFT", healingSpecBox, "BOTTOMLEFT", 31, -45)
 
-        local treeCatAoeBtn = MakeTreeBtn(LichborneDruidMenu, aoeSpecBox, "BOTTOMLEFT", 2, -4,
-            "Interface\\Icons\\Ability_Druid_Bash")
-        treeCatAoeBtn:SetScript("OnEnter", function(self)
+        local treeAoeBtn = MakeTreeBtn(LichborneDruidMenu, aoeSpecBox, "BOTTOMLEFT", 4, -4,
+            "Interface\\Icons\\Spell_Frost_IceStorm")
+        treeAoeBtn:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
             GameTooltip:SetFrameLevel(LichborneDruidMenu:GetFrameLevel() + 20)
             GameTooltip:ClearLines()
-            GameTooltip:SetText("|cffffcc00Cat AoE|r |cff999999- |r|cffFF7D0Acat aoe|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Feral AoE rotation|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0ASwipe|r spam on melee-range targets.", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0AThrash|r (bleed AoE on all nearby).", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0AHurricane|r fallback at range.", 1, 1, 1)
+            GameTooltip:SetText("|cffffcc00AoE|r |cff999999- |r|cffFF7D0Aaoe|r |cffee4433CO|r")
+            GameTooltip:AddLine("Shared AoE strategy across all druid specs.", 1, 1, 1)
             GameTooltip:Show()
         end)
-        treeCatAoeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-        LichborneDruidMenu.treeCatAoeBtn = treeCatAoeBtn
+        treeAoeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneDruidMenu.treeAoeBtn = treeAoeBtn
 
-        local treeCasterAoeBtn = MakeTreeBtn(LichborneDruidMenu, aoeSpecBox, "BOTTOMLEFT", 32, -4,
-            "Interface\\Icons\\Spell_Arcane_StarFire")
-        treeCasterAoeBtn:SetScript("OnEnter", function(self)
+        local chargeSpecBox = MakeSpecBox(LichborneDruidMenu, 0, 0, 50, "Charge", nil)
+        chargeSpecBox:ClearAllPoints()
+        chargeSpecBox:SetPoint("TOPLEFT", aoeSpecBox, "TOPRIGHT", 4, 0)
+
+        local treeChargeBtn = MakeTreeBtn(LichborneDruidMenu, chargeSpecBox, "BOTTOMLEFT", 12, -4,
+            "Interface\\Icons\\Ability_Hunter_Pet_Bear")
+        treeChargeBtn:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
             GameTooltip:SetFrameLevel(LichborneDruidMenu:GetFrameLevel() + 20)
             GameTooltip:ClearLines()
-            GameTooltip:SetText("|cffffcc00Caster AoE|r |cff999999- |r|cffFF7D0Acaster aoe|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Balance AoE rotation|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0AHurricane|r channel (8-sec AoE slow + damage).", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0AStarfall|r if off cooldown.", 1, 1, 1)
+            GameTooltip:SetText("|cffffcc00Feral Charge|r |cff999999- |r|cffFF7D0Aferal charge|r |cffee4433CO|r")
+            GameTooltip:AddLine("Cat & Bear, for encounters when", 1, 1, 1)
+            GameTooltip:AddLine("charging in is unfavorable.", 1, 1, 1)
             GameTooltip:Show()
         end)
-        treeCasterAoeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-        LichborneDruidMenu.treeCasterAoeBtn = treeCasterAoeBtn
+        treeChargeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneDruidMenu.treeChargeBtn = treeChargeBtn
 
-        local treeCasterDebuffBtn = MakeTreeBtn(LichborneDruidMenu, aoeSpecBox, "BOTTOMLEFT", 62, -4,
-            "Interface\\Icons\\Ability_Druid_Cower")
-        treeCasterDebuffBtn:SetScript("OnEnter", function(self)
-            GameTooltip:SetOwner(self, "ANCHOR_TOP")
-            GameTooltip:SetFrameLevel(LichborneDruidMenu:GetFrameLevel() + 20)
-            GameTooltip:ClearLines()
-            GameTooltip:SetText("|cffffcc00Caster Debuff|r |cff999999- |r|cffFF7D0Acaster debuff|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Spread Balance DoTs|r", 1, 1, 1)
-            GameTooltip:AddLine("Spreads |cffffcc00DoTs|r: |cffFF7D0AMoonfire, Insect Swarm|r", 1, 1, 1)
-            GameTooltip:AddLine("across as many targets as possible.", 1, 1, 1)
-            GameTooltip:AddLine("|cffffcc00DoTs|r run 12–18 sec before reapplication.", 1, 1, 1)
-            GameTooltip:Show()
-        end)
-        treeCasterDebuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-        LichborneDruidMenu.treeCasterDebuffBtn = treeCasterDebuffBtn
-
-        -- ── ROW 4 — Assist + Buff ─────────────────────────────────────
+        -- ── ROW 4 — Assist ────────────────────────────────────────────
         local assistSpecBox = MakeSpecBox(LichborneDruidMenu, 0, 0, 90, "Assist", nil)
         assistSpecBox:ClearAllPoints()
-        assistSpecBox:SetPoint("TOPLEFT", aoeSpecBox, "BOTTOMLEFT", 5, -45)
+        -- Center assistSpecBox within the tree (TREE_TOTAL_W=292, box=90px → left offset=101)
+        -- aoeSpecBox left = TREE_X+110, so delta = 101-110 = -9
+        assistSpecBox:SetPoint("TOPLEFT", aoeSpecBox, "BOTTOMLEFT", -9, -45)
 
         local treeTankAssistBtn = MakeTreeBtn(LichborneDruidMenu, assistSpecBox, "BOTTOMLEFT", 2, -4,
             "Interface\\Icons\\inv_shield_02")
@@ -330,7 +307,6 @@ function PBM.OpenDruidMenu(row)
             GameTooltip:ClearLines()
             GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cffFF7D0Adps aoe|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF7D0ASwipe, Hurricane, Typhoon.|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         treeDpsAoeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -380,9 +356,9 @@ function PBM.OpenDruidMenu(row)
 
             IconOff(treeBearBtn);       IconOff(treeCatBtn)
             IconOff(treeCasterBtn);     IconOff(treeHealBtn)
-            IconOff(treeMeleeBtn)
+            IconOff(treeTranqBtn);      IconOff(treeBlankBtn)
             IconOff(treeHealerDpsBtn);  IconOff(treeOffhealBtn)
-            IconOff(treeCatAoeBtn);     IconOff(treeCasterAoeBtn); IconOff(treeCasterDebuffBtn)
+            IconOff(treeAoeBtn);        IconOff(treeChargeBtn)
             IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
             IconOff(treeSideBuffBtn)
 
@@ -392,9 +368,9 @@ function PBM.OpenDruidMenu(row)
                 if _baseReset then _baseReset() end
                 IconOff(treeBearBtn);       IconOff(treeCatBtn)
                 IconOff(treeCasterBtn);     IconOff(treeHealBtn)
-                IconOff(treeMeleeBtn)
+                IconOff(treeTranqBtn);      IconOff(treeBlankBtn)
                 IconOff(treeHealerDpsBtn);  IconOff(treeOffhealBtn)
-                IconOff(treeCatAoeBtn);     IconOff(treeCasterAoeBtn); IconOff(treeCasterDebuffBtn)
+                IconOff(treeAoeBtn);        IconOff(treeChargeBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
                 IconOff(treeSideBuffBtn)
             end
@@ -428,9 +404,9 @@ function PBM.OpenDruidMenu(row)
                 local bot = LichborneDruidMenu.botName or ""
                 LichborneDruidMenu._specUserSet = true
                 if treeCasterBtn.state then
-                    PBM.SendToBot("co -caster,?", bot); IconOff(treeCasterBtn)
+                    PBM.SendToBot("co -balance,?", bot); IconOff(treeCasterBtn)
                 else
-                    PBM.SendToBot("co +caster,?", bot); IconOn(treeCasterBtn)
+                    PBM.SendToBot("co +balance,?", bot); IconOn(treeCasterBtn)
                     IconOff(treeBearBtn); IconOff(treeCatBtn); IconOff(treeHealBtn)
                     IconOff(treeOffhealBtn)
                 end
@@ -440,22 +416,32 @@ function PBM.OpenDruidMenu(row)
                 local bot = LichborneDruidMenu.botName or ""
                 LichborneDruidMenu._specUserSet = true
                 if treeHealBtn.state then
-                    PBM.SendToBot("co -heal,?", bot); IconOff(treeHealBtn)
+                    PBM.SendToBot("co -resto,?", bot); IconOff(treeHealBtn)
                 else
-                    PBM.SendToBot("co +heal,?", bot); IconOn(treeHealBtn)
+                    PBM.SendToBot("co +resto,?", bot); IconOn(treeHealBtn)
                     IconOff(treeBearBtn); IconOff(treeCatBtn); IconOff(treeCasterBtn)
                     IconOff(treeOffhealBtn)
                 end
             end)
 
-            -- ── Row 2: Melee + Hybrid ──────────────────────────────────
-            treeMeleeBtn:SetScript("OnClick", function()
+            -- ── Row 2: Healing + Hybrid ────────────────────────────────
+            treeTranqBtn:SetScript("OnClick", function()
                 local bot = LichborneDruidMenu.botName or ""
                 LichborneDruidMenu._specUserSet = true
-                if treeMeleeBtn.state then
-                    PBM.SendToBot("co -melee,?", bot); IconOff(treeMeleeBtn)
+                if treeTranqBtn.state then
+                    PBM.SendToBot("co -tranquility,?", bot); IconOff(treeTranqBtn)
                 else
-                    PBM.SendToBot("co +melee,?", bot); IconOn(treeMeleeBtn)
+                    PBM.SendToBot("co +tranquility,?", bot); IconOn(treeTranqBtn)
+                end
+            end)
+
+            treeBlankBtn:SetScript("OnClick", function()
+                local bot = LichborneDruidMenu.botName or ""
+                LichborneDruidMenu._specUserSet = true
+                if treeBlankBtn.state then
+                    PBM.SendToBot("co -blanketing,?", bot); IconOff(treeBlankBtn)
+                else
+                    PBM.SendToBot("co +blanketing,?", bot); IconOn(treeBlankBtn)
                 end
             end)
 
@@ -482,34 +468,24 @@ function PBM.OpenDruidMenu(row)
                 end
             end)
 
-            -- ── Row 3: AoE (independent) ───────────────────────────────
-            treeCatAoeBtn:SetScript("OnClick", function()
+            -- ── Row 3: AoE + Charge (independent) ─────────────────────
+            treeAoeBtn:SetScript("OnClick", function()
                 local bot = LichborneDruidMenu.botName or ""
                 LichborneDruidMenu._specUserSet = true
-                if treeCatAoeBtn.state then
-                    PBM.SendToBot("co -cat aoe,?", bot); IconOff(treeCatAoeBtn)
+                if treeAoeBtn.state then
+                    PBM.SendToBot("co -aoe,?", bot); IconOff(treeAoeBtn)
                 else
-                    PBM.SendToBot("co +cat aoe,?", bot); IconOn(treeCatAoeBtn)
+                    PBM.SendToBot("co +aoe,?", bot); IconOn(treeAoeBtn)
                 end
             end)
 
-            treeCasterAoeBtn:SetScript("OnClick", function()
+            treeChargeBtn:SetScript("OnClick", function()
                 local bot = LichborneDruidMenu.botName or ""
                 LichborneDruidMenu._specUserSet = true
-                if treeCasterAoeBtn.state then
-                    PBM.SendToBot("co -caster aoe,?", bot); IconOff(treeCasterAoeBtn)
+                if treeChargeBtn.state then
+                    PBM.SendToBot("co -feral charge,?", bot); IconOff(treeChargeBtn)
                 else
-                    PBM.SendToBot("co +caster aoe,?", bot); IconOn(treeCasterAoeBtn)
-                end
-            end)
-
-            treeCasterDebuffBtn:SetScript("OnClick", function()
-                local bot = LichborneDruidMenu.botName or ""
-                LichborneDruidMenu._specUserSet = true
-                if treeCasterDebuffBtn.state then
-                    PBM.SendToBot("co -caster debuff,?", bot); IconOff(treeCasterDebuffBtn)
-                else
-                    PBM.SendToBot("co +caster debuff,?", bot); IconOn(treeCasterDebuffBtn)
+                    PBM.SendToBot("co +feral charge,?", bot); IconOn(treeChargeBtn)
                 end
             end)
 
@@ -563,19 +539,19 @@ function PBM.OpenDruidMenu(row)
                 if _baseSU then _baseSU(stratType, activeSet) end
                 if not LichborneDruidMenu._specUserSet then
                     if stratType == "co" then
-                        if activeSet["bear"]          then IconOn(treeBearBtn)         else IconOff(treeBearBtn)         end
-                        if activeSet["cat"]           then IconOn(treeCatBtn)          else IconOff(treeCatBtn)          end
-                        if activeSet["caster"]        then IconOn(treeCasterBtn)       else IconOff(treeCasterBtn)       end
-                        if activeSet["heal"]          then IconOn(treeHealBtn)         else IconOff(treeHealBtn)         end
-                        if activeSet["melee"]         then IconOn(treeMeleeBtn)        else IconOff(treeMeleeBtn)        end
-                        if activeSet["healer dps"]    then IconOn(treeHealerDpsBtn)    else IconOff(treeHealerDpsBtn)    end
-                        if activeSet["offheal"]       then IconOn(treeOffhealBtn)      else IconOff(treeOffhealBtn)      end
-                        if activeSet["cat aoe"]       then IconOn(treeCatAoeBtn)       else IconOff(treeCatAoeBtn)       end
-                        if activeSet["caster aoe"]    then IconOn(treeCasterAoeBtn)    else IconOff(treeCasterAoeBtn)    end
-                        if activeSet["caster debuff"] then IconOn(treeCasterDebuffBtn) else IconOff(treeCasterDebuffBtn) end
-                        if activeSet["tank assist"]   then IconOn(treeTankAssistBtn)   else IconOff(treeTankAssistBtn)   end
-                        if activeSet["dps assist"]    then IconOn(treeDpsAssistBtn)    else IconOff(treeDpsAssistBtn)    end
-                        if activeSet["dps aoe"]       then IconOn(treeDpsAoeBtn)       else IconOff(treeDpsAoeBtn)       end
+                        if activeSet["bear"]         then IconOn(treeBearBtn)       else IconOff(treeBearBtn)       end
+                        if activeSet["cat"]          then IconOn(treeCatBtn)        else IconOff(treeCatBtn)        end
+                        if activeSet["balance"]      then IconOn(treeCasterBtn)     else IconOff(treeCasterBtn)     end
+                        if activeSet["resto"]        then IconOn(treeHealBtn)       else IconOff(treeHealBtn)       end
+                        if activeSet["tranquility"]  then IconOn(treeTranqBtn)      else IconOff(treeTranqBtn)      end
+                        if activeSet["blanketing"]   then IconOn(treeBlankBtn)      else IconOff(treeBlankBtn)      end
+                        if activeSet["healer dps"]   then IconOn(treeHealerDpsBtn)  else IconOff(treeHealerDpsBtn)  end
+                        if activeSet["offheal"]      then IconOn(treeOffhealBtn)    else IconOff(treeOffhealBtn)    end
+                        if activeSet["aoe"]          then IconOn(treeAoeBtn)        else IconOff(treeAoeBtn)        end
+                        if activeSet["feral charge"] then IconOn(treeChargeBtn)     else IconOff(treeChargeBtn)     end
+                        if activeSet["tank assist"]  then IconOn(treeTankAssistBtn) else IconOff(treeTankAssistBtn) end
+                        if activeSet["dps assist"]   then IconOn(treeDpsAssistBtn)  else IconOff(treeDpsAssistBtn)  end
+                        if activeSet["dps aoe"]      then IconOn(treeDpsAoeBtn)     else IconOff(treeDpsAoeBtn)     end
                     elseif stratType == "nc" then
                         if activeSet["buff"] then IconOn(treeSideBuffBtn) else IconOff(treeSideBuffBtn) end
                     end

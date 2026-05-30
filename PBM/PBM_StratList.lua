@@ -410,13 +410,17 @@ PBM.CLASS_STRAT_LIST = {
     ["Druid"] = {
         {n="bear",         lab="CO", t=1},
         {n="cat",          lab="CO", t=1},
-        {n="caster",       lab="CO", t=1},
-        {n="heal",         lab="CO", t=1},
+        {n="balance",      lab="CO", t=1},
+        {n="caster",       lab="CO", t=1},  -- server fallback for balance
+        {n="restoration",  lab="CO", t=1},
+        {n="resto",        lab="CO", t=1},  -- server canonical key (maps to "Restoration" display)
+        {n="heal",         lab="CO", t=1},  -- server fallback for restoration
         {n="offheal",      lab="CO", t=1},
         {n="healer dps",   lab="CO", t=1},
-        {n="caster aoe",   lab="CO", t=1},
-        {n="caster debuff",lab="CO", t=1},
-        {n="cat aoe",      lab="CO", t=1},
+        {n="tranquility",  lab="CO", t=1},
+        {n="blanketing",   lab="CO", t=1},
+        {n="aoe",          lab="CO", t=1},
+        {n="feral charge", lab="CO", t=1},
         {n="dps aoe",      lab="CO", t=1},
         {n="PvP",          lab="CO", t=1},
         -- Tier 2 (buffs)
@@ -434,7 +438,6 @@ PBM.CLASS_STRAT_LIST = {
         {n="food",         lab="NC", t=4},
         -- Tier 5 (grey)
         {n="boost",        lab="CO", t=5},
-        {n="melee",        lab="CO", t=5},
         {n="avoid aoe",    lab="CO", t=5},
         {n="cast time",    lab="CO", t=5},
         {n="potions",      lab="CO", t=5},
@@ -536,7 +539,7 @@ function PBM.InstallTieredStratDisplay(menuFrame, cls)
     local STRAT_DISPLAY = {
         ["ele"]   = "Elemental",
         ["enh"]   = "Enhancement",
-        ["resto"] = "Restoration",
+        ["resto"] = "resto",
     }
 
     local CLASS_FILTER = {}

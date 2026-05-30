@@ -92,18 +92,7 @@ function PBM.RefreshRaidRows()
                 if rf.roleIcon then rf.roleIcon:SetTexture(0,0,0,0) end
                 rf.roleLbl:SetText("")
                 rf.roleBtn:SetBackdropBorderColor(0.20,0.30,0.50,0.3)
-                local visRoles = {}
-                for _, r in ipairs(botNE.roles) do
-                    if PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[r] then
-                        visRoles[#visRoles+1] = r
-                    end
-                end
-                local isTank = false
-                for _, r in ipairs(visRoles) do if r == "T" then isTank = true; break end end
-                local roleOrder = isTank and { T=1, A=2, D=3, H=4 } or { T=1, H=2, D=3, A=4 }
-                table.sort(visRoles, function(a, b)
-                    return (roleOrder[a] or 9) < (roleOrder[b] or 9)
-                end)
+                local visRoles = PBM.GetSortedVisRoles(data.name)
                 for ni = 1, 2 do
                     if rf.noteRoleIcons and rf.noteRoleIcons[ni] then
                         if visRoles[ni] then
@@ -139,7 +128,9 @@ function PBM.RefreshRaidRows()
                 GameTooltip:AddLine("Role", 1, 1, 1)
                 if botNE3 and botNE3.roles and #botNE3.roles > 0 then
                     local roleLabels = { T="Tank", H="Healer", D="DPS", A="AoE" }
-                    local roleOrder = { T=1, H=2, D=3, A=4 }
+                    local isTankTip = false
+                    for _, r in ipairs(botNE3.roles) do if r == "T" then isTankTip = true; break end end
+                    local roleOrder = isTankTip and { T=1, A=2, D=3, H=4 } or { T=1, H=2, D=3, A=4 }
                     local sortedRoles = {}
                     for _, r in ipairs(botNE3.roles) do sortedRoles[#sortedRoles+1] = r end
                     table.sort(sortedRoles, function(a, b)
@@ -1164,7 +1155,7 @@ function PBM.BuildRaidFrame(parent, fl)
 
     inviteBtn:SetScript("OnClick",function()
         local roster, size = PBM.GetCurrentRoster()
-        -- Collect non-empty names
+        -- Collect non-empty names (exclude self)
         local names = {}
         local nameClasses = {}
         local selfName  = UnitName("player")
@@ -1187,12 +1178,12 @@ function PBM.BuildRaidFrame(parent, fl)
             return "|cffffff88"
         end
 
-        local totalCount = #names + 1  -- +1 for the player who fired the sequence
+        local totalCount = #names + 1  -- +1 for self
         PBM.SetInviteActive(true)
-        LichborneOutput("|cffC69B3ALichborne:|r Starting raid invite for "..totalCount.." players...",1,0.85,0)
+        LichborneOutput("|cffC69B3ALichborne:|r Starting invite for "..totalCount.." players...",1,0.85,0)
         if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Logging out all bots...") end
 
-        -- Step 0: Remove all bots with wildcard
+        -- Always kick everyone and start fresh so we get a clean group/raid.
         SendChatMessage(".playerbots bot remove *", "SAY")
 
         local inviteIndex = 1
@@ -1210,7 +1201,6 @@ function PBM.BuildRaidFrame(parent, fl)
             if phase == "logout_wait" then
                 if waitTime < 1.5 then return end
                 waitTime = 0
-                -- Leave party after bots are removed
                 LeaveParty()
                 phase = "leave_wait"
                 LichborneOutput("|cffC69B3ALichborne:|r Bots removed, leaving party...",1,0.85,0)
@@ -1236,7 +1226,6 @@ function PBM.BuildRaidFrame(parent, fl)
                 if waitTime < 0.8 then return end
                 waitTime = 0
                 if inviteIndex > #names then
-                    -- Initial pass done — wait 3s then verify who's missing
                     phase = "verify_wait"
                     waitTime = 0
                     LichborneOutput("|cffC69B3ALichborne:|r Initial invites sent, verifying...",1,0.85,0)
@@ -1246,8 +1235,7 @@ function PBM.BuildRaidFrame(parent, fl)
                 SendChatMessage(".playerbots bot add "..pname, "SAY")
                 LichborneOutput("|cffC69B3ALichborne:|r Inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                 inviteIndex = inviteIndex + 1
-                -- player + names[1..5] = 6; names[5] just logged in and triggered conversion
-                -- store it for InviteUnit after 1s pause, then continue normally
+                -- 6th member triggers WoW party→raid auto-conversion; pause to handle it cleanly
                 if inviteIndex == 6 and names[5] then
                     slot6Name = names[5]
                     phase = "raid_pause"
@@ -1256,7 +1244,6 @@ function PBM.BuildRaidFrame(parent, fl)
                 end
 
             elseif phase == "raid_pause" then
-                -- Raid conversion just happened; remove slot6 bot so we can re-add cleanly
                 if waitTime < 1.0 then return end
                 if slot6Name then
                     SendChatMessage(".playerbots bot remove "..slot6Name, "SAY")
@@ -1266,7 +1253,6 @@ function PBM.BuildRaidFrame(parent, fl)
                 phase = "slot6_readd"
 
             elseif phase == "slot6_readd" then
-                -- Bot is logged out; now re-add into the already-converted raid
                 if waitTime < 1.0 then return end
                 if slot6Name then
                     SendChatMessage(".playerbots bot add "..slot6Name, "SAY")
@@ -1278,24 +1264,31 @@ function PBM.BuildRaidFrame(parent, fl)
 
             elseif phase == "verify_wait" then
                 if waitTime < 3.0 then return end
-                -- Build set of who is currently in the raid
-                local inRaid = {}
-                for i = 1, GetNumRaidMembers() do
-                    local rname = UnitName("raid"..i)
-                    if rname then inRaid[rname:lower()] = true end
+                -- Detect whether WoW put us in a raid or a party and use the right API
+                local inGroup = {}
+                local numRaid = GetNumRaidMembers()
+                if numRaid > 0 then
+                    for i = 1, numRaid do
+                        local rname = UnitName("raid"..i)
+                        if rname then inGroup[rname:lower()] = true end
+                    end
+                else
+                    for i = 1, GetNumPartyMembers() do
+                        local rname = UnitName("party"..i)
+                        if rname then inGroup[rname:lower()] = true end
+                    end
                 end
-                local selfName = UnitName("player")
-                if selfName then inRaid[selfName:lower()] = true end
-                -- Find missing
+                local selfName2 = UnitName("player")
+                if selfName2 then inGroup[selfName2:lower()] = true end
                 local missing = {}
                 for _, pname in ipairs(names) do
-                    if not inRaid[pname:lower()] then
+                    if not inGroup[pname:lower()] then
                         missing[#missing+1] = pname
                     end
                 end
                 if #missing == 0 then
-                    LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44All "..totalCount.." players confirmed in raid!|r",1,0.85,0)
-                    if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44All "..totalCount.." players confirmed in raid.|r") end
+                    LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44All "..totalCount.." players confirmed in group!|r",1,0.85,0)
+                    if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44All "..totalCount.." players confirmed.|r") end
                     inviteFrame:SetScript("OnUpdate",nil)
                     PBM.State.activeInviteFrame = nil
                     PBM.SetInviteActive(false)
@@ -1309,7 +1302,6 @@ function PBM.BuildRaidFrame(parent, fl)
                 waitTime = 0
 
             elseif phase == "reinvite" then
-                -- remove then wait 1s then add, per missed character
                 if reinviteSubPhase == "remove" then
                     if inviteIndex > #names then
                         LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44Re-invite pass complete.|r",1,0.85,0)
@@ -1439,11 +1431,19 @@ function PBM.BuildRaidFrame(parent, fl)
                 invIdx = invIdx + 1
             elseif grpPhase == "verify_wait" then
                 if waited < 3.0 then return end
-                -- Build set of who is currently in the party
+                -- Detect whether WoW put us in a raid or a party and use the right API
                 local inParty = {}
-                for pi = 1, GetNumPartyMembers() do
-                    local pn = UnitName("party"..pi)
-                    if pn then inParty[pn:lower()] = true end
+                local grpNumRaid = GetNumRaidMembers()
+                if grpNumRaid > 0 then
+                    for ri = 1, grpNumRaid do
+                        local rn = UnitName("raid"..ri)
+                        if rn then inParty[rn:lower()] = true end
+                    end
+                else
+                    for pi = 1, GetNumPartyMembers() do
+                        local pn = UnitName("party"..pi)
+                        if pn then inParty[pn:lower()] = true end
+                    end
                 end
                 local selfName = UnitName("player")
                 if selfName then inParty[selfName:lower()] = true end
