@@ -38,9 +38,10 @@ The four blessing strategy keys have been renamed to match their actual spell na
 * GM Reset Instances button removed
 * Requires `AiPlayerbot.ResetInstanceIdForAltBots = 1`
 
-### Universal Strategies
+### Filters & UI
 
-* **aggressive** added — `co +/- aggressive`, proactively engages nearby threats (same color as `passive`)
+* Several new filter options added and refined across the class and overview tabs
+* Party Filter, Raid Tab Filter, and Hide Group Members filters are now mutually exclusive
 
 ---
 
