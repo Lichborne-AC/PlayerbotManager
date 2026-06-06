@@ -98,7 +98,7 @@ _coreFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
                 :gsub("|r", "")
             local menuFrame = PBM.State.lastQueriedMenu[sender]
             if menuFrame and menuFrame.onStatsResponse then
-                menuFrame.onStatsResponse(sender, statsClean)
+                menuFrame.onStatsResponse(sender, statsClean, msg)  -- raw msg keeps bot color codes
             end
             PBM.SendToBot("who", sender)
             ep.step = 4
@@ -364,6 +364,7 @@ PBM.STRATEGY_COLORS = {
     ["dps"]                = "ddaa00",   -- dark gold (generic DPS)
     -- Added: missing common strategies
     ["passive"]            = "aabb55",   -- yellow-green
+    ["aggressive"]         = "aabb55",   -- yellow-green (matches passive)
     ["tank face"]          = "ff9966",   -- peach-orange
     ["nc"]                 = "888888",   -- grey (system)
     ["follow"]             = "7799bb",   -- muted steel blue
@@ -477,7 +478,7 @@ end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", function(_, _, msg, sender)
     if not msg:match("^Strategies:") then return end
-    if LichborneOutput then
+    if LichborneOutput and not (PBMConfig and PBMConfig.hideStrategyOutput) then
         local prefix = "[" .. sender .. "]:"
         if LichborneTrackerDB and LichborneTrackerDB.rows and PBM.CLASS_COLORS then
             for _, row in ipairs(LichborneTrackerDB.rows) do
@@ -500,6 +501,50 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", function(_, _, msg, sender)
         LichborneOutput(prefix .. " " .. ColorizeStrategies(msg, senderCls))
     end
     return true  -- suppress from regular chat
+end)
+
+-- Filter bot stats/who/ss responses from regular chat
+local WHO_CMDS = { ["co ?"]=true, ["nc ?"]=true, ["stats"]=true, ["who"]=true, ["ss ?"]=true }
+local function IsTrackedBot(name)
+    if not name or not LichborneTrackerDB or not LichborneTrackerDB.rows then return false end
+    local l = name:lower()
+    for _, row in ipairs(LichborneTrackerDB.rows) do
+        if row.name and row.name:lower() == l then return true end
+    end
+    return false
+end
+
+ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", function(_, _, msg, sender)
+    if not (PBMConfig and PBMConfig.hideWhoCommands) then return end
+    if not IsTrackedBot(sender) then return end
+    if msg:find("Bag") or msg:find("lvl%)") or msg:match("^Ignored spell list") then
+        return true
+    end
+end)
+
+ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", function(_, _, msg, recipient)
+    if not (PBMConfig and PBMConfig.hideWhoCommands) then return end
+    if WHO_CMDS[msg] and IsTrackedBot(recipient) then return true end
+end)
+
+-- ── Talent template filter ───────────────────────────────────
+-- Hides the talents query exchange triggered by the Templates menu.
+-- Patterns are class-agnostic (only spec names/numbers differ per class).
+ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", function(_, _, msg, sender)
+    if not (PBMConfig and PBMConfig.hideTalentsOutput) then return end
+    if not IsTrackedBot(sender) then return end
+    if msg:find("talent spec is:")            -- "My current talent spec is: arms (55/8/8) warrior"
+       or msg:find("Talents usage:")          -- "Talents usage: talents switch <1/2>, ..."
+       or msg:find("specs found")             -- "Total 6 specs found"
+       or msg:match("^%d+%..-%(%d+%-%d+%-%d+%)") then  -- "1. arms pve (55-8-8)"
+        return true
+    end
+end)
+
+ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", function(_, _, msg, recipient)
+    if not (PBMConfig and PBMConfig.hideTalentsOutput) then return end
+    -- Outgoing "talents", "talents spec list", "talents switch 1", "talents spec arms", "talents apply ..."
+    if IsTrackedBot(recipient) and msg:match("^talents") then return true end
 end)
 
 -- ── Strategy Query ───────────────────────────────────────────

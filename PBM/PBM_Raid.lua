@@ -7,6 +7,125 @@ PBM.State.LichborneRaidCountLabels  = PBM.State.LichborneRaidCountLabels  or nil
 PBM.State.LichborneRosterIlvlLabel  = PBM.State.LichborneRosterIlvlLabel  or nil
 PBM.State.LichborneRosterGsLabel    = PBM.State.LichborneRosterGsLabel    or nil
 
+-- ── Shared constants for the filter role picker ───────────────────────────
+local FROLE_SLOTS = {
+    { key="T", label="Tank",   icon="Interface\\Icons\\Ability_Warrior_DefensiveStance", color={r=0.20,g=0.60,b=1.00} },
+    { key="H", label="Healer", icon="Interface\\Icons\\Spell_ChargePositive",             color={r=0.20,g=1.00,b=0.40} },
+    { key="D", label="DPS",    icon="Interface\\Icons\\Ability_DualWield",                color={r=1.00,g=0.40,b=0.20} },
+    { key="A", label="AoE",    icon="Interface\\Icons\\Spell_Shadow_RainOfFire",          color={r=0.58,g=0.51,b=0.79} },
+}
+local FROLE_ICON  = { T=FROLE_SLOTS[1].icon, H=FROLE_SLOTS[2].icon, D=FROLE_SLOTS[3].icon, A=FROLE_SLOTS[4].icon }
+local FROLE_COLOR = { T=FROLE_SLOTS[1].color, H=FROLE_SLOTS[2].color, D=FROLE_SLOTS[3].color, A=FROLE_SLOTS[4].color }
+
+-- ── Filter role picker popup ──────────────────────────────────────────────
+local raidFilterRolePicker = nil
+local raidFilterPickerIdx  = nil  -- roster index currently open
+
+local function SyncRaidFilterPickerBtns(fr)
+    if not raidFilterRolePicker then return end
+    local count = 0
+    for _ in pairs(fr) do count = count + 1 end
+    for _, btn in ipairs(raidFilterRolePicker.btns) do
+        local sc = btn.slotColor
+        if fr[btn.slotKey] then
+            btn.hi:Show(); btn:SetBackdropBorderColor(sc.r,sc.g,sc.b,0.9)
+        elseif count >= 2 then
+            btn.hi:Hide(); btn:SetBackdropBorderColor(0.15,0.15,0.15,0.5); btn.tex:SetAlpha(0.35)
+        else
+            btn.hi:Hide(); btn:SetBackdropBorderColor(sc.r*0.5,sc.g*0.5,sc.b*0.5,0.8); btn.tex:SetAlpha(1)
+        end
+    end
+end
+
+local function BuildRaidFilterRolePicker()
+    if raidFilterRolePicker then return end
+    local BSIZE, PAD = 26, 4
+    local W = #FROLE_SLOTS*(BSIZE+PAD)+PAD
+    local H = 16 + PAD + BSIZE + PAD
+    local pf = CreateFrame("Frame","LichborneRaidFilterRolePicker",UIParent)
+    pf:SetFrameStrata("TOOLTIP"); pf:SetFrameLevel(210)
+    pf:SetSize(W, H)
+    pf:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=2,right=2,top=2,bottom=2}})
+    pf:SetBackdropColor(0.04,0.06,0.12,0.98); pf:SetBackdropBorderColor(0.78,0.61,0.23,1)
+    pf:Hide()
+    local ttl = pf:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
+    ttl:SetPoint("TOPLEFT",pf,"TOPLEFT",6,-5)
+    ttl:SetText("|cffC69B3ARole|r  |cff888888(max 2)|r")
+    pf.btns = {}
+    for si, slot in ipairs(FROLE_SLOTS) do
+        local col = si - 1
+        local btn = CreateFrame("Button",nil,pf)
+        btn:SetSize(BSIZE,BSIZE)
+        btn:SetPoint("TOPLEFT",pf,"TOPLEFT",PAD+col*(BSIZE+PAD),-16-PAD)
+        btn:SetFrameLevel(pf:GetFrameLevel()+1)
+        local bg=btn:CreateTexture(nil,"BACKGROUND"); bg:SetAllPoints(btn); bg:SetTexture(0.08,0.10,0.18,1)
+        local tex=btn:CreateTexture(nil,"ARTWORK")
+        tex:SetPoint("CENTER",btn,"CENTER",0,0); tex:SetSize(BSIZE-4,BSIZE-4); tex:SetTexture(slot.icon)
+        btn.tex=tex
+        local hi=btn:CreateTexture(nil,"OVERLAY")
+        hi:SetAllPoints(btn); hi:SetTexture(0.3,0.8,0.3,0.35); hi:Hide(); btn.hi=hi
+        btn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=8,edgeSize=6,insets={left=1,right=1,top=1,bottom=1}})
+        btn:SetBackdropColor(0.08,0.10,0.18,1)
+        local sc = slot.color
+        btn:SetBackdropBorderColor(sc.r*0.5,sc.g*0.5,sc.b*0.5,0.8)
+        btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
+        btn.slotKey=slot.key; btn.slotColor=sc
+        btn:SetScript("OnEnter",function()
+            GameTooltip:SetOwner(btn,"ANCHOR_TOP")
+            GameTooltip:AddLine(slot.label, sc.r,sc.g,sc.b)
+            GameTooltip:Show()
+        end)
+        btn:SetScript("OnLeave",function() GameTooltip:Hide() end)
+        btn:SetScript("OnClick",function(_, mouseButton)
+            if not raidFilterPickerIdx then return end
+            local roster, _ = PBM.GetCurrentRoster()
+            local d = roster[raidFilterPickerIdx]
+            if not d or not d.name or d.name == "" then return end
+            if not d.filterRoles then d.filterRoles = {} end
+            local k = slot.key
+            if mouseButton == "RightButton" or d.filterRoles[k] then
+                d.filterRoles[k] = nil
+            else
+                local count = 0
+                for _ in pairs(d.filterRoles) do count = count + 1 end
+                if count < 2 then d.filterRoles[k] = true end
+            end
+            SyncRaidFilterPickerBtns(d.filterRoles)
+            PBM.RefreshRaidRows()
+            if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
+            if PBM.State.groupViewFrame then PBM.RefreshGroupViewRows() end
+        end)
+        btn:RegisterForClicks("LeftButtonUp","RightButtonUp")
+        pf.btns[si] = btn
+    end
+    pf.closeTimer = 0
+    pf:SetScript("OnUpdate",function(_, elapsed)
+        if not pf:IsShown() then return end
+        if not MouseIsOver(pf) then
+            pf.closeTimer = (pf.closeTimer or 0) + elapsed
+            if pf.closeTimer > 0.35 then pf:Hide(); raidFilterPickerIdx=nil end
+        else
+            pf.closeTimer = 0
+        end
+    end)
+    raidFilterRolePicker = pf
+end
+
+local function OpenRaidFilterRolePicker(anchorBtn, rosterIdx)
+    BuildRaidFilterRolePicker()
+    if raidFilterPickerIdx == rosterIdx and raidFilterRolePicker:IsShown() then
+        raidFilterRolePicker:Hide(); raidFilterPickerIdx = nil; return
+    end
+    raidFilterPickerIdx = rosterIdx
+    local roster, _ = PBM.GetCurrentRoster()
+    local d = roster[rosterIdx]
+    SyncRaidFilterPickerBtns(d and d.filterRoles or {})
+    raidFilterRolePicker:ClearAllPoints()
+    raidFilterRolePicker:SetPoint("TOPLEFT", anchorBtn, "BOTTOMLEFT", 0, -2)
+    raidFilterRolePicker:Show(); raidFilterRolePicker:Raise()
+    raidFilterRolePicker.closeTimer = 0
+end
+
 -- ── RefreshRaidRows ───────────────────────────────────────────
 function PBM.RefreshRaidRows()
     if not PBM.State.raidRowFrames or #PBM.State.raidRowFrames == 0 then return end
@@ -28,6 +147,9 @@ function PBM.RefreshRaidRows()
             end
         end
     end
+
+    local raidRoleFilter  = PBM.State.LBFilter.raidRoleFilter
+    local raidNotesFilter = PBM.State.LBFilter.raidNotesFilter
 
     PBM.SortRaidRows()
     local rows, raidSize = PBM.GetCurrentRoster()
@@ -83,91 +205,155 @@ function PBM.RefreshRaidRows()
         -- Role button
         if rf.roleBtn and rf.roleLbl then
             if not data.role then data.role = "" end
-            local rd = PBM.ROLE_BY_KEY[data.role]
-            local botNE = LichborneTrackerDB.botNotes and data.name and data.name ~= ""
-                          and LichborneTrackerDB.botNotes[data.name:lower()]
-            local hasBotRoles = botNE and botNE.roles and #botNE.roles > 0
-            if hasBotRoles then
-                -- Show computed role icons from botNotes, packed left, no gaps
-                if rf.roleIcon then rf.roleIcon:SetTexture(0,0,0,0) end
+            local idx = i
+
+            if raidRoleFilter then
+                -- ── Role filter active: show up to 2 manual filterRoles, popup to edit ──
+                if not data.filterRoles then data.filterRoles = {} end
+                local fr = data.filterRoles
                 rf.roleLbl:SetText("")
-                rf.roleBtn:SetBackdropBorderColor(0.20,0.30,0.50,0.3)
-                local visRoles = PBM.GetSortedVisRoles(data.name)
+                if rf.roleIcon then rf.roleIcon:SetTexture(0,0,0,0) end
+                -- Collect active roles in THDA order, display up to 2
+                local activeRoles = {}
+                for _, slot in ipairs(FROLE_SLOTS) do
+                    if fr[slot.key] then activeRoles[#activeRoles+1] = slot end
+                end
                 for ni = 1, 2 do
-                    if rf.noteRoleIcons and rf.noteRoleIcons[ni] then
-                        if visRoles[ni] then
-                            rf.noteRoleIcons[ni]:SetTexture(PBM.NOTES_ROLE_ICONS[visRoles[ni]])
-                            rf.noteRoleIcons[ni]:SetAlpha(0.9)
+                    if rf.noteRoleIcons[ni] then
+                        if activeRoles[ni] then
+                            rf.noteRoleIcons[ni]:SetTexture(activeRoles[ni].icon)
+                            rf.noteRoleIcons[ni]:SetAlpha(1.0)
                         else
                             rf.noteRoleIcons[ni]:SetTexture(0,0,0,0)
                         end
                     end
                 end
-            elseif rd then
-                -- Manual role: pack to left slot via noteRoleIcons
-                rf.roleLbl:SetText("")
-                rf.roleBtn:SetBackdropBorderColor(rd.color.r, rd.color.g, rd.color.b, 0.9)
-                if rf.roleIcon then rf.roleIcon:SetTexture(0,0,0,0) end
-                if rf.noteRoleIcons then
-                    rf.noteRoleIcons[1]:SetTexture(rd.icon); rf.noteRoleIcons[1]:SetAlpha(1.0)
-                    if rf.noteRoleIcons[2] then rf.noteRoleIcons[2]:SetTexture(0,0,0,0) end
+                -- Border color from first active role
+                if activeRoles[1] then
+                    local sc = activeRoles[1].color
+                    rf.roleBtn:SetBackdropBorderColor(sc.r,sc.g,sc.b,0.9)
+                else
+                    rf.roleBtn:SetBackdropBorderColor(0.20,0.30,0.50,0.3)
                 end
-            else
-                rf.roleLbl:SetText("")
-                rf.roleBtn:SetBackdropBorderColor(0.20,0.30,0.50,0.3)
-                if rf.roleIcon then rf.roleIcon:SetTexture(0,0,0,0) end
-                if rf.noteRoleIcons then for ni=1,2 do rf.noteRoleIcons[ni]:SetTexture(0,0,0,0) end end
-            end
-            local idx = i
-            rf.roleBtn:SetScript("OnEnter", function()
-                local roster2, _ = PBM.GetCurrentRoster()
-                local d2 = roster2[idx]
-                GameTooltip:SetOwner(rf.roleBtn, "ANCHOR_RIGHT")
-                local botNE3 = LichborneTrackerDB.botNotes and d2 and d2.name and d2.name ~= ""
-                               and LichborneTrackerDB.botNotes[d2.name:lower()]
-                GameTooltip:AddLine("Role", 1, 1, 1)
-                if botNE3 and botNE3.roles and #botNE3.roles > 0 then
-                    local roleLabels = { T="Tank", H="Healer", D="DPS", A="AoE" }
-                    local isTankTip = false
-                    for _, r in ipairs(botNE3.roles) do if r == "T" then isTankTip = true; break end end
-                    local roleOrder = isTankTip and { T=1, A=2, D=3, H=4 } or { T=1, H=2, D=3, A=4 }
-                    local sortedRoles = {}
-                    for _, r in ipairs(botNE3.roles) do sortedRoles[#sortedRoles+1] = r end
-                    table.sort(sortedRoles, function(a, b)
-                        return (roleOrder[a] or 9) < (roleOrder[b] or 9)
-                    end)
-                    for _, r in ipairs(sortedRoles) do
-                        local icon = PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[r] or ""
-                        local label = roleLabels[r] or r
-                        local cr,cg,cb = 0.8,0.8,0.8
-                        if r=="T" then cr,cg,cb=0.20,0.60,1.00
-                        elseif r=="H" then cr,cg,cb=0.20,1.00,0.40
-                        elseif r=="D" then cr,cg,cb=1.00,0.40,0.20
-                        elseif r=="A" then cr,cg,cb=0.58,0.51,0.79 end
-                        GameTooltip:AddLine("|T"..icon..":14:14|t  "..label, cr, cg, cb)
+                rf.roleBtn:SetScript("OnEnter", function()
+                    GameTooltip:SetOwner(rf.roleBtn, "ANCHOR_RIGHT")
+                    GameTooltip:AddLine("Role", 1, 1, 1)
+                    local r2, _ = PBM.GetCurrentRoster()
+                    local d2 = r2[idx]
+                    local fr2 = d2 and d2.filterRoles or {}
+                    for _, slot in ipairs(FROLE_SLOTS) do
+                        if fr2[slot.key] then
+                            local sc=slot.color
+                            GameTooltip:AddLine("|T"..slot.icon..":14:14|t  "..slot.label,sc.r,sc.g,sc.b)
+                        end
                     end
+                    GameTooltip:AddLine("|cff888888Click to set role  ·  Right-click removes|r", 0.6,0.6,0.6)
+                    GameTooltip:Show()
+                end)
+                rf.roleBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+                rf.roleBtn:SetScript("OnClick", function(_, btn)
+                    if btn == "RightButton" then
+                        local r2, _ = PBM.GetCurrentRoster()
+                        local d2 = r2[idx]
+                        if d2 then d2.filterRoles = {} end
+                        if raidFilterRolePicker and raidFilterRolePicker:IsShown() and raidFilterPickerIdx == idx then
+                            raidFilterRolePicker:Hide(); raidFilterPickerIdx = nil
+                        end
+                        PBM.RefreshRaidRows()
+                        if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
+                    else
+                        OpenRaidFilterRolePicker(rf.roleBtn, idx)
+                    end
+                end)
+            else
+                -- ── Role filter off: botNotes roles take priority, then data.role ────
+                local rd = PBM.ROLE_BY_KEY[data.role]
+                local botNE = LichborneTrackerDB.botNotes and data.name and data.name ~= ""
+                              and LichborneTrackerDB.botNotes[data.name:lower()]
+                local hasBotRoles = botNE and botNE.roles and #botNE.roles > 0
+                if hasBotRoles then
+                    if rf.roleIcon then rf.roleIcon:SetTexture(0,0,0,0) end
+                    rf.roleLbl:SetText("")
+                    rf.roleBtn:SetBackdropBorderColor(0.20,0.30,0.50,0.3)
+                    local visRoles = PBM.GetSortedVisRoles(data.name)
+                    for ni = 1, 2 do
+                        if rf.noteRoleIcons and rf.noteRoleIcons[ni] then
+                            if visRoles[ni] then
+                                rf.noteRoleIcons[ni]:SetTexture(PBM.NOTES_ROLE_ICONS[visRoles[ni]])
+                                rf.noteRoleIcons[ni]:SetAlpha(0.9)
+                            else
+                                rf.noteRoleIcons[ni]:SetTexture(0,0,0,0)
+                            end
+                        end
+                    end
+                elseif rd then
+                    rf.roleLbl:SetText("")
+                    rf.roleBtn:SetBackdropBorderColor(rd.color.r, rd.color.g, rd.color.b, 0.9)
+                    if rf.roleIcon then rf.roleIcon:SetTexture(0,0,0,0) end
+                    if rf.noteRoleIcons then
+                        rf.noteRoleIcons[1]:SetTexture(rd.icon); rf.noteRoleIcons[1]:SetAlpha(1.0)
+                        if rf.noteRoleIcons[2] then rf.noteRoleIcons[2]:SetTexture(0,0,0,0) end
+                    end
+                else
+                    rf.roleLbl:SetText("")
+                    rf.roleBtn:SetBackdropBorderColor(0.20,0.30,0.50,0.3)
+                    if rf.roleIcon then rf.roleIcon:SetTexture(0,0,0,0) end
+                    if rf.noteRoleIcons then for ni=1,2 do rf.noteRoleIcons[ni]:SetTexture(0,0,0,0) end end
                 end
-                GameTooltip:Show()
-            end)
-            rf.roleBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-            rf.roleBtn:SetScript("OnClick", nil)
+                rf.roleBtn:SetScript("OnEnter", function()
+                    local roster2, _ = PBM.GetCurrentRoster()
+                    local d2 = roster2[idx]
+                    GameTooltip:SetOwner(rf.roleBtn, "ANCHOR_RIGHT")
+                    local botNE3 = LichborneTrackerDB.botNotes and d2 and d2.name and d2.name ~= ""
+                                   and LichborneTrackerDB.botNotes[d2.name:lower()]
+                    GameTooltip:AddLine("Role", 1, 1, 1)
+                    if botNE3 and botNE3.roles and #botNE3.roles > 0 then
+                        local roleLabels = { T="Tank", H="Healer", D="DPS", A="AoE" }
+                        local isTankTip = false
+                        for _, r in ipairs(botNE3.roles) do if r == "T" then isTankTip = true; break end end
+                        local roleOrder = isTankTip and { T=1, A=2, D=3, H=4 } or { T=1, H=2, D=3, A=4 }
+                        local sortedRoles = {}
+                        for _, r in ipairs(botNE3.roles) do sortedRoles[#sortedRoles+1] = r end
+                        table.sort(sortedRoles, function(a, b)
+                            return (roleOrder[a] or 9) < (roleOrder[b] or 9)
+                        end)
+                        for _, r in ipairs(sortedRoles) do
+                            local icon = PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[r] or ""
+                            local label = roleLabels[r] or r
+                            local cr,cg,cb = 0.8,0.8,0.8
+                            if r=="T" then cr,cg,cb=0.20,0.60,1.00
+                            elseif r=="H" then cr,cg,cb=0.20,1.00,0.40
+                            elseif r=="D" then cr,cg,cb=1.00,0.40,0.20
+                            elseif r=="A" then cr,cg,cb=0.58,0.51,0.79 end
+                            GameTooltip:AddLine("|T"..icon..":14:14|t  "..label, cr, cg, cb)
+                        end
+                    end
+                    GameTooltip:Show()
+                end)
+                rf.roleBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+                rf.roleBtn:SetScript("OnClick", nil)
+            end
         end
 
         -- Notes
         if rf.notesBox then
             rf.notesBox:SetScript("OnTextChanged", nil)
-            local botNE2 = LichborneTrackerDB.botNotes and data.name and data.name ~= ""
+            local notesIdx = i
+            local botNE2 = not raidNotesFilter and LichborneTrackerDB.botNotes and data.name and data.name ~= ""
                            and LichborneTrackerDB.botNotes[data.name:lower()]
             if botNE2 and botNE2.notes and botNE2.notes ~= "" then
+                -- Notes filter off and botNote exists: show strategy note, read-only
+                rf.notesBox:EnableKeyboard(false)
                 rf.notesBox:SetText(botNE2.notes)
                 rf.notesBox:SetCursorPosition(0)
             else
+                -- Notes filter on OR no botNote: show roster note, fully editable
+                rf.notesBox:EnableKeyboard(true)
                 rf.notesBox:SetText(data.notes or "")
                 rf.notesBox:SetCursorPosition(0)
-                local idx = i
                 rf.notesBox:SetScript("OnTextChanged", function()
                     local r2, _ = PBM.GetCurrentRoster()
-                    if r2[idx] then r2[idx].notes = rf.notesBox:GetText() end
+                    if r2[notesIdx] then r2[notesIdx].notes = rf.notesBox:GetText() end
                 end)
             end
         end
@@ -275,6 +461,37 @@ local r5, _ = PBM.GetCurrentRoster(); r5[idx] = {name="", cls="", spec="", gs=0,
             end
         end
     end
+end
+
+-- ── GetRosterIdxByName — returns roster slot index for a character name ──────────
+function PBM.GetRosterIdxByName(name)
+    if not name or name == "" then return nil end
+    local roster, size = PBM.GetCurrentRoster()
+    local lower = name:lower()
+    for i = 1, size do
+        local r = roster[i]
+        if r and r.name and r.name:lower() == lower then return i end
+    end
+    return nil
+end
+
+-- ── Public wrapper so Overview can open the picker ────────────────────────────
+function PBM.OpenRaidFilterRolePicker(anchor, rosterIdx)
+    OpenRaidFilterRolePicker(anchor, rosterIdx)
+end
+
+-- ── GetFilterRolesByName — returns filterRoles dict for a name in current roster ──
+function PBM.GetFilterRolesByName(name)
+    if not name or name == "" then return nil end
+    local roster, size = PBM.GetCurrentRoster()
+    local lower = name:lower()
+    for i = 1, size do
+        local r = roster[i]
+        if r and r.name and r.name:lower() == lower then
+            return r.filterRoles or {}
+        end
+    end
+    return nil
 end
 
 -- ── GetRosterAvgIlvl ──────────────────────────────────────────
@@ -982,6 +1199,7 @@ function PBM.BuildRaidFrame(parent, fl)
         local roleLbl=roleBtn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
         roleLbl:SetAllPoints(roleBtn); roleLbl:SetJustifyH("CENTER"); roleLbl:SetJustifyV("MIDDLE")
         roleLbl:SetText(""); rf.roleBtn=roleBtn; rf.roleLbl=roleLbl; rf.roleIcon=roleIcon
+        roleBtn:RegisterForClicks("LeftButtonUp","RightButtonUp")
         local noteRoleIcons = {}
         for ni = 1, 2 do
             local nri = roleBtn:CreateTexture(nil,"ARTWORK")
@@ -1048,7 +1266,7 @@ function PBM.BuildRaidFrame(parent, fl)
                 if btn == "RightButton" then
                     UninviteUnit(d.name)
                     SendChatMessage(".playerbots bot remove "..d.name, "SAY")
-                    LichborneOutput("|cffC69B3ALichborne:|r Removed "..d.name.." from bots.", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r Removed "..d.name.." from bots.", 1, 0.85, 0)
                     return
                 end
                 SendChatMessage(".playerbots bot add "..d.name, "SAY")
@@ -1104,7 +1322,7 @@ function PBM.BuildRaidFrame(parent, fl)
     local rcW = (1086 - 50) / 10
     local rcIdx = 0
     for ci, cls in ipairs(PBM.CLASS_TABS) do
-        if cls == "Raid" or cls == "Overview" then break end
+        if cls == "Raid" or cls == "Overview" or cls == "Group" then break end
         rcIdx = rcIdx + 1
         local c = PBM.CLASS_COLORS[cls]
         local rcSw = CreateFrame("Button", nil, raidCountBar)
@@ -1149,6 +1367,7 @@ function PBM.BuildRaidFrame(parent, fl)
         GameTooltip:SetOwner(inviteBtn,"ANCHOR_TOP")
         GameTooltip:AddLine("Invite Raid",0.78,0.61,0.23)
         GameTooltip:AddLine(count.." players in this roster",0.8,0.8,0.8)
+        GameTooltip:AddLine("Does not work for rndbots.",1,0.4,0)
         GameTooltip:Show()
     end)
     inviteBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -1168,7 +1387,7 @@ function PBM.BuildRaidFrame(parent, fl)
             end
         end
         if #names == 0 then
-            LichborneOutput("|cffC69B3ALichborne:|r No players in this roster.",1,0.5,0.5)
+            LichborneOutput("|cffC69B3APBM:|r No players in this roster.",1,0.5,0.5)
             return
         end
         local function GetClassHex(name)
@@ -1180,7 +1399,7 @@ function PBM.BuildRaidFrame(parent, fl)
 
         local totalCount = #names + 1  -- +1 for self
         PBM.SetInviteActive(true)
-        LichborneOutput("|cffC69B3ALichborne:|r Starting invite for "..totalCount.." players...",1,0.85,0)
+        LichborneOutput("|cffC69B3APBM:|r Starting invite for "..totalCount.." players...",1,0.85,0)
         if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Logging out all bots...") end
 
         -- Always kick everyone and start fresh so we get a clean group/raid.
@@ -1203,21 +1422,21 @@ function PBM.BuildRaidFrame(parent, fl)
                 waitTime = 0
                 LeaveParty()
                 phase = "leave_wait"
-                LichborneOutput("|cffC69B3ALichborne:|r Bots removed, leaving party...",1,0.85,0)
+                LichborneOutput("|cffC69B3APBM:|r Bots removed, leaving party...",1,0.85,0)
                 if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Leaving party, then inviting...") end
 
             elseif phase == "leave_wait" then
                 if waitTime < 1.0 then return end
                 waitTime = 0
                 phase = "first"
-                LichborneOutput("|cffC69B3ALichborne:|r Bots cleared, starting invites...",1,0.85,0)
+                LichborneOutput("|cffC69B3APBM:|r Bots cleared, starting invites...",1,0.85,0)
                 if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Inviting "..totalCount.." players...") end
 
             elseif phase == "first" then
                 if waitTime < 0.5 then return end
                 local firstName = names[1]
                 SendChatMessage(".playerbots bot add "..firstName, "SAY")
-                LichborneOutput("|cffC69B3ALichborne:|r Inviting "..GetClassHex(firstName)..firstName.."|r...",1,0.85,0)
+                LichborneOutput("|cffC69B3APBM:|r Inviting "..GetClassHex(firstName)..firstName.."|r...",1,0.85,0)
                 inviteIndex = 2
                 waitTime = 0
                 phase = "rest"
@@ -1228,26 +1447,26 @@ function PBM.BuildRaidFrame(parent, fl)
                 if inviteIndex > #names then
                     phase = "verify_wait"
                     waitTime = 0
-                    LichborneOutput("|cffC69B3ALichborne:|r Initial invites sent, verifying...",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r Initial invites sent, verifying...",1,0.85,0)
                     return
                 end
                 local pname = names[inviteIndex]
                 SendChatMessage(".playerbots bot add "..pname, "SAY")
-                LichborneOutput("|cffC69B3ALichborne:|r Inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
+                LichborneOutput("|cffC69B3APBM:|r Inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                 inviteIndex = inviteIndex + 1
                 -- 6th member triggers WoW party→raid auto-conversion; pause to handle it cleanly
                 if inviteIndex == 6 and names[5] then
                     slot6Name = names[5]
                     phase = "raid_pause"
                     waitTime = 0
-                    LichborneOutput("|cffC69B3ALichborne:|r Pausing for auto-conversion...",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r Pausing for auto-conversion...",1,0.85,0)
                 end
 
             elseif phase == "raid_pause" then
                 if waitTime < 1.0 then return end
                 if slot6Name then
                     SendChatMessage(".playerbots bot remove "..slot6Name, "SAY")
-                    LichborneOutput("|cffC69B3ALichborne:|r Logging out "..GetClassHex(slot6Name)..slot6Name.."|r for clean raid invite...",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r Logging out "..GetClassHex(slot6Name)..slot6Name.."|r for clean raid invite...",1,0.85,0)
                 end
                 waitTime = 0
                 phase = "slot6_readd"
@@ -1256,7 +1475,7 @@ function PBM.BuildRaidFrame(parent, fl)
                 if waitTime < 1.0 then return end
                 if slot6Name then
                     SendChatMessage(".playerbots bot add "..slot6Name, "SAY")
-                    LichborneOutput("|cffC69B3ALichborne:|r Re-adding "..GetClassHex(slot6Name)..slot6Name.."|r to raid...",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r Re-adding "..GetClassHex(slot6Name)..slot6Name.."|r to raid...",1,0.85,0)
                     slot6Name = nil
                 end
                 waitTime = 0
@@ -1287,7 +1506,7 @@ function PBM.BuildRaidFrame(parent, fl)
                     end
                 end
                 if #missing == 0 then
-                    LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44All "..totalCount.." players confirmed in group!|r",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r |cff44ff44All "..totalCount.." players confirmed in group!|r",1,0.85,0)
                     if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44All "..totalCount.." players confirmed.|r") end
                     inviteFrame:SetScript("OnUpdate",nil)
                     PBM.State.activeInviteFrame = nil
@@ -1295,7 +1514,7 @@ function PBM.BuildRaidFrame(parent, fl)
                     PBM.UpdateInviteButtons()
                     return
                 end
-                LichborneOutput("|cffC69B3ALichborne:|r |cffff9900"..#missing.." missed — re-inviting...|r",1,0.85,0)
+                LichborneOutput("|cffC69B3APBM:|r |cffff9900"..#missing.." missed — re-inviting...|r",1,0.85,0)
                 names = missing
                 inviteIndex = 1
                 phase = "reinvite"
@@ -1304,7 +1523,7 @@ function PBM.BuildRaidFrame(parent, fl)
             elseif phase == "reinvite" then
                 if reinviteSubPhase == "remove" then
                     if inviteIndex > #names then
-                        LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44Re-invite pass complete.|r",1,0.85,0)
+                        LichborneOutput("|cffC69B3APBM:|r |cff44ff44Re-invite pass complete.|r",1,0.85,0)
                         if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44Invite complete (re-invite pass done).|r") end
                         inviteFrame:SetScript("OnUpdate",nil)
                         PBM.State.activeInviteFrame = nil
@@ -1314,7 +1533,7 @@ function PBM.BuildRaidFrame(parent, fl)
                     end
                     local pname = names[inviteIndex]
                     SendChatMessage(".playerbots bot remove "..pname, "SAY")
-                    LichborneOutput("|cffC69B3ALichborne:|r Removing "..GetClassHex(pname)..pname.."|r before re-invite...",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r Removing "..GetClassHex(pname)..pname.."|r before re-invite...",1,0.85,0)
                     waitTime = 0
                     reinviteSubPhase = "add"
 
@@ -1322,7 +1541,7 @@ function PBM.BuildRaidFrame(parent, fl)
                     if waitTime < 1.0 then return end
                     local pname = names[inviteIndex]
                     SendChatMessage(".playerbots bot add "..pname, "SAY")
-                    LichborneOutput("|cffC69B3ALichborne:|r Re-inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r Re-inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                     inviteIndex = inviteIndex + 1
                     waitTime = 0
                     reinviteSubPhase = "remove"
@@ -1354,6 +1573,7 @@ function PBM.BuildRaidFrame(parent, fl)
         GameTooltip:SetOwner(inviteGroupBtn,"ANCHOR_TOP")
         GameTooltip:AddLine("Invite Group (5-Man)",0.78,0.61,0.23)
         GameTooltip:AddLine(count.." players in T0 5-Man roster",0.8,0.8,0.8)
+        GameTooltip:AddLine("Does not work for rndbots.",1,0.4,0)
         GameTooltip:Show()
     end)
     inviteGroupBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -1379,7 +1599,7 @@ function PBM.BuildRaidFrame(parent, fl)
             end
         end
         if #names == 0 then
-            LichborneOutput("|cffC69B3ALichborne:|r No players in T0 5-Man roster.",1,0.5,0.5)
+            LichborneOutput("|cffC69B3APBM:|r No players in T0 5-Man roster.",1,0.5,0.5)
             return
         end
         local function GetClassHex(name)
@@ -1389,7 +1609,7 @@ function PBM.BuildRaidFrame(parent, fl)
             return "|cffffff88"
         end
         PBM.SetInviteActive(true)
-        LichborneOutput("|cffC69B3ALichborne:|r Starting group invite for "..#names.." players...",1,0.85,0)
+        LichborneOutput("|cffC69B3APBM:|r Starting group invite for "..#names.." players...",1,0.85,0)
         if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Logging out all bots...") end
         -- Remove all bots with wildcard first
         SendChatMessage(".playerbots bot remove *", "SAY")
@@ -1407,13 +1627,13 @@ function PBM.BuildRaidFrame(parent, fl)
                 waited = 0
                 LeaveParty()
                 grpPhase = "leave_wait"
-                LichborneOutput("|cffC69B3ALichborne:|r Bots removed, leaving party...",1,0.85,0)
+                LichborneOutput("|cffC69B3APBM:|r Bots removed, leaving party...",1,0.85,0)
                 if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Leaving party, then inviting...") end
             elseif grpPhase == "leave_wait" then
                 if waited < 1.0 then return end
                 waited = 0
                 grpPhase = "invite"
-                LichborneOutput("|cffC69B3ALichborne:|r Starting group invites...",1,0.85,0)
+                LichborneOutput("|cffC69B3APBM:|r Starting group invites...",1,0.85,0)
                 if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Inviting "..#names.." players...") end
             elseif grpPhase == "invite" then
                 if waited < 0.8 then return end
@@ -1422,12 +1642,12 @@ function PBM.BuildRaidFrame(parent, fl)
                     -- Verify pass
                     grpPhase = "verify_wait"
                     waited = 0
-                    LichborneOutput("|cffC69B3ALichborne:|r Initial invites sent, verifying...",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r Initial invites sent, verifying...",1,0.85,0)
                     return
                 end
                 local pname = names[invIdx]
                 SendChatMessage(".playerbots bot add "..pname, "SAY")
-                LichborneOutput("|cffC69B3ALichborne:|r Inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
+                LichborneOutput("|cffC69B3APBM:|r Inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                 invIdx = invIdx + 1
             elseif grpPhase == "verify_wait" then
                 if waited < 3.0 then return end
@@ -1454,7 +1674,7 @@ function PBM.BuildRaidFrame(parent, fl)
                     end
                 end
                 if #missing == 0 then
-                    LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44All "..#names.." players confirmed in group!|r",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r |cff44ff44All "..#names.." players confirmed in group!|r",1,0.85,0)
                     if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44All "..#names.." players confirmed in group.|r") end
                     grpFrame:SetScript("OnUpdate",nil)
                     PBM.State.activeInviteFrame = nil
@@ -1462,7 +1682,7 @@ function PBM.BuildRaidFrame(parent, fl)
                     PBM.UpdateInviteButtons()
                     return
                 end
-                LichborneOutput("|cffC69B3ALichborne:|r |cffff9900"..#missing.." missed — re-inviting...|r",1,0.85,0)
+                LichborneOutput("|cffC69B3APBM:|r |cffff9900"..#missing.." missed — re-inviting...|r",1,0.85,0)
                 names = missing
                 invIdx = 1
                 grpPhase = "reinvite"
@@ -1470,7 +1690,7 @@ function PBM.BuildRaidFrame(parent, fl)
             elseif grpPhase == "reinvite" then
                 if grpReinviteSubPhase == "remove" then
                     if invIdx > #names then
-                        LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44Re-invite pass complete.|r",1,0.85,0)
+                        LichborneOutput("|cffC69B3APBM:|r |cff44ff44Re-invite pass complete.|r",1,0.85,0)
                         if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44Invite complete (re-invite pass done).|r") end
                         grpFrame:SetScript("OnUpdate",nil)
                         PBM.State.activeInviteFrame = nil
@@ -1480,14 +1700,14 @@ function PBM.BuildRaidFrame(parent, fl)
                     end
                     local pname = names[invIdx]
                     SendChatMessage(".playerbots bot remove "..pname, "SAY")
-                    LichborneOutput("|cffC69B3ALichborne:|r Removing "..GetClassHex(pname)..pname.."|r before re-invite...",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r Removing "..GetClassHex(pname)..pname.."|r before re-invite...",1,0.85,0)
                     waited = 0
                     grpReinviteSubPhase = "add"
                 elseif grpReinviteSubPhase == "add" then
                     if waited < 1.0 then return end
                     local pname = names[invIdx]
                     SendChatMessage(".playerbots bot add "..pname, "SAY")
-                    LichborneOutput("|cffC69B3ALichborne:|r Re-inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
+                    LichborneOutput("|cffC69B3APBM:|r Re-inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                     invIdx = invIdx + 1
                     waited = 0
                     grpReinviteSubPhase = "remove"
@@ -1522,7 +1742,7 @@ function PBM.BuildRaidFrame(parent, fl)
             PBM.State.activeInviteFrame = nil
             PBM.SetInviteActive(false)
             PBM.UpdateInviteButtons()
-            LichborneOutput("|cffC69B3ALichborne:|r |cffff4444Invite stopped.|r", 1, 0.85, 0)
+            LichborneOutput("|cffC69B3APBM:|r |cffff4444Invite stopped.|r", 1, 0.85, 0)
             if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444Invite stopped.") end
         end
     end)

@@ -60,12 +60,16 @@ function PBM.OpenHunterMenu(row)
         local specBoxY  = TREE_TOP_Y - 16
         local specIconY = specBoxY - 18 - 4     -- 4px header→icon gap
 
-        -- Combat/Assist headers: 3 buttons wide, centered under Marksmanship
+        -- Combat header: 2 buttons wide (Trap Weave only — dps/dps debuff removed)
         local BTN_GAP      = 4
-        local combatBtnW   = 3 * EXT_ICON_SIZE + 2 * BTN_GAP
+        local combatBtnW   = 2 * EXT_ICON_SIZE + BTN_GAP
         local combatHdrX   = col2X + math.floor((SPEC_COL_W - combatBtnW) / 2)
+        local trapX        = combatHdrX + math.floor((combatBtnW - EXT_ICON_SIZE) / 2)
         local combatHdrY   = specIconY - EXT_ICON_SIZE - 15
         local combatIconY  = combatHdrY - 18 - 4
+        -- Assist header: 3 buttons wide, centred independently under Marksmanship
+        local assistBtnW   = 3 * EXT_ICON_SIZE + 2 * BTN_GAP
+        local assistHdrX   = col2X + math.floor((SPEC_COL_W - assistBtnW) / 2)
         local assistHdrY   = combatIconY - EXT_ICON_SIZE - 15
         local assistIconY  = assistHdrY - 18 - 4
 
@@ -79,7 +83,6 @@ function PBM.OpenHunterMenu(row)
         local aspectIcon1Y = coNcHdrY - 18 - 4               -- first aspect button
         local aspectIcon2Y = aspectIcon1Y - EXT_ICON_SIZE - 3
         local aspectIcon3Y = aspectIcon2Y - EXT_ICON_SIZE - 3
-        local aspectIcon4Y = aspectIcon3Y - EXT_ICON_SIZE - 3
 
         -- ── Backdrop template ────────────────────────────────────────
         local SPEC_BOX_BD = {
@@ -184,44 +187,27 @@ function PBM.OpenHunterMenu(row)
         end)
         LichborneHunterMenu.treeSurvBtn = treeSurvBtn
 
-        -- ── Combat header (centered under Marksmanship) ─────────────
+        -- ── Combat header (2-button wide, Trap Weave centred) ────────
         MakeWideBox(combatHdrX, combatHdrY, combatBtnW, "Combat")
 
-        local treeDpsBtn = MakeTreeBtn(combatHdrX, combatIconY,
-            "Interface\\Icons\\Ability_Hunter_SteadyShot", function()
-            GameTooltip:SetText("|cffffcc00Dps|r |cff999999- |r|cffABD473dps|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Single-target DPS mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Uses standard shot rotation on", 1, 1, 1)
-            GameTooltip:AddLine("the current target.", 1, 1, 1)
-        end)
-        LichborneHunterMenu.treeDpsBtn = treeDpsBtn
-
-        local treeDpsDebuffBtn = MakeTreeBtn(combatHdrX + 30, combatIconY,
-            "Interface\\Icons\\ability_hunter_snipershot", function()
-            GameTooltip:SetText("|cffffcc00Dps Debuff|r |cff999999- |r|cffABD473dps debuff|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Apply debuffs while DPSing|r", 1, 1, 1)
-            GameTooltip:AddLine("Maintains |cffABD473Hunter's Mark|r on targets.", 1, 1, 1)
-        end)
-        LichborneHunterMenu.treeDpsDebuffBtn = treeDpsDebuffBtn
-
-        local treeTrapWeaveBtn = MakeTreeBtn(combatHdrX + 60, combatIconY,
+        local treeTrapWeaveBtn = MakeTreeBtn(trapX, combatIconY,
             "Interface\\Icons\\ability_ensnare", function()
             GameTooltip:SetText("|cffffcc00Trap Weave|r |cff999999- |r|cffABD473trap weave|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Melee trap rotation|r", 1, 1, 1)
         end)
         LichborneHunterMenu.treeTrapWeaveBtn = treeTrapWeaveBtn
 
-        -- ── Assist header (under Combat, same width) ─────────────────
-        MakeWideBox(combatHdrX, assistHdrY, combatBtnW, "Assist")
+        -- ── Assist header (3-button wide, centred under Marksmanship) ─
+        MakeWideBox(assistHdrX, assistHdrY, assistBtnW, "Assist")
 
-        local treeTankAssistBtn = MakeTreeBtn(combatHdrX, assistIconY,
+        local treeTankAssistBtn = MakeTreeBtn(assistHdrX, assistIconY,
             "Interface\\Icons\\inv_shield_02", function()
             GameTooltip:SetText("|cffffcc00Tank Assist|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r")
             GameTooltip:AddLine("|cffffcc00Tank target focus|r", 1, 1, 1)
         end)
         LichborneHunterMenu.treeTankAssistBtn = treeTankAssistBtn
 
-        local treeDpsAssistBtn = MakeTreeBtn(combatHdrX + 30, assistIconY,
+        local treeDpsAssistBtn = MakeTreeBtn(assistHdrX + 30, assistIconY,
             "Interface\\Icons\\Ability_Warrior_Challange", function()
             GameTooltip:SetText("|cffffcc00DPS Assist|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r")
             GameTooltip:AddLine("|cffffcc00Assists the main assist target|r", 1, 1, 1)
@@ -229,7 +215,7 @@ function PBM.OpenHunterMenu(row)
         end)
         LichborneHunterMenu.treeDpsAssistBtn = treeDpsAssistBtn
 
-        local treeDpsAoeBtn = MakeTreeBtn(combatHdrX + 60, assistIconY,
+        local treeDpsAoeBtn = MakeTreeBtn(assistHdrX + 60, assistIconY,
             "Interface\\Icons\\Spell_Shadow_RainOfFire", function()
             GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cffABD473aoe|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
@@ -249,16 +235,7 @@ function PBM.OpenHunterMenu(row)
         end)
         LichborneHunterMenu.treeCADragonhawkBtn = treeCADragonhawkBtn
 
-        local treeCAViperBtn = MakeTreeBtn(coX, aspectIcon2Y,
-            "Interface\\Icons\\Ability_Hunter_AspectoftheViper", function()
-            GameTooltip:SetText("|cffffcc00Viper|r |cff999999- |r|cffffff00bmana|r |cffff8000CO|r")
-            GameTooltip:AddLine("|cffffcc00Aspect of the Viper|r", 1, 1, 1)
-            GameTooltip:AddLine("Regenerates |cff3A8FC4mana|r at the cost", 1, 1, 1)
-            GameTooltip:AddLine("of reduced ranged attack power.", 1, 1, 1)
-        end)
-        LichborneHunterMenu.treeCAViperBtn = treeCAViperBtn
-
-        local treeCAPackBtn = MakeTreeBtn(coX, aspectIcon3Y,
+        local treeCAPackBtn = MakeTreeBtn(coX, aspectIcon2Y,
             "Interface\\Icons\\Ability_Mount_WhiteTiger", function()
             GameTooltip:SetText("|cffffcc00Pack|r |cff999999- |r|cffffff00bspeed|r |cffff8000CO|r")
             GameTooltip:AddLine("|cffffcc00Aspect of the Pack|r", 1, 1, 1)
@@ -267,7 +244,7 @@ function PBM.OpenHunterMenu(row)
         end)
         LichborneHunterMenu.treeCAPackBtn = treeCAPackBtn
 
-        local treeCAWildBtn = MakeTreeBtn(coX, aspectIcon4Y,
+        local treeCAWildBtn = MakeTreeBtn(coX, aspectIcon3Y,
             "Interface\\Icons\\Spell_Nature_ProtectionformNature", function()
             GameTooltip:SetText("|cffffcc00Wild|r |cff999999- |r|cffffff00rnature|r |cffff8000CO|r")
             GameTooltip:AddLine("|cffffcc00Aspect of the Wild|r", 1, 1, 1)
@@ -289,15 +266,7 @@ function PBM.OpenHunterMenu(row)
         end)
         LichborneHunterMenu.treeNCADragonhawkBtn = treeNCADragonhawkBtn
 
-        local treeNCAViperBtn = MakeTreeBtn(ncX, aspectIcon2Y,
-            "Interface\\Icons\\Ability_Hunter_AspectoftheViper", function()
-            GameTooltip:SetText("|cffffcc00Viper|r |cff999999- |r|cffffff00bmana|r |cffff8000NC|r")
-            GameTooltip:AddLine("|cffffcc00Aspect of the Viper|r", 1, 1, 1)
-            GameTooltip:AddLine("Regenerates |cff3A8FC4mana|r between fights.", 1, 1, 1)
-        end)
-        LichborneHunterMenu.treeNCAViperBtn = treeNCAViperBtn
-
-        local treeNCACheetahBtn = MakeTreeBtn(ncX, aspectIcon3Y,
+        local treeNCACheetahBtn = MakeTreeBtn(ncX, aspectIcon2Y,
             "Interface\\Icons\\Ability_Mount_WhiteTiger", function()
             GameTooltip:SetText("|cffffcc00Cheetah|r |cff999999- |r|cffffff00bspeed|r |cffff8000NC|r")
             GameTooltip:AddLine("|cffffcc00Aspect of the Cheetah|r", 1, 1, 1)
@@ -306,7 +275,7 @@ function PBM.OpenHunterMenu(row)
         end)
         LichborneHunterMenu.treeNCACheetahBtn = treeNCACheetahBtn
 
-        local treeNCAWildBtn = MakeTreeBtn(ncX, aspectIcon4Y,
+        local treeNCAWildBtn = MakeTreeBtn(ncX, aspectIcon3Y,
             "Interface\\Icons\\Spell_Nature_ProtectionformNature", function()
             GameTooltip:SetText("|cffffcc00Wild|r |cff999999- |r|cffffff00rnature|r |cffff8000NC|r")
             GameTooltip:AddLine("|cffffcc00Aspect of the Wild|r", 1, 1, 1)
@@ -349,17 +318,6 @@ function PBM.OpenHunterMenu(row)
                 end)
             end
 
-            -- Dps (independent CO)
-            treeDpsBtn:SetScript("OnClick", function()
-                local bot = LichborneHunterMenu.botName or ""
-                LichborneHunterMenu._specUserSet = true
-                if treeDpsBtn.state then
-                    PBM.SendToBot("co -dps,?", bot); IconOff(treeDpsBtn)
-                else
-                    PBM.SendToBot("co +dps,?", bot); IconOn(treeDpsBtn)
-                end
-            end)
-
             -- DpsAssist ↔ TankAssist ↔ DpsAoe exclusive trio
             treeDpsAssistBtn:SetScript("OnClick", function()
                 local bot = LichborneHunterMenu.botName or ""
@@ -369,17 +327,6 @@ function PBM.OpenHunterMenu(row)
                 else
                     PBM.SendToBot("co +dps assist,?", bot); IconOn(treeDpsAssistBtn)
                     IconOff(treeTankAssistBtn); IconOff(treeDpsAoeBtn)
-                end
-            end)
-
-            -- DpsDebuff (independent CO)
-            treeDpsDebuffBtn:SetScript("OnClick", function()
-                local bot = LichborneHunterMenu.botName or ""
-                LichborneHunterMenu._specUserSet = true
-                if treeDpsDebuffBtn.state then
-                    PBM.SendToBot("co -dps debuff,?", bot); IconOff(treeDpsDebuffBtn)
-                else
-                    PBM.SendToBot("co +dps debuff,?", bot); IconOn(treeDpsDebuffBtn)
                 end
             end)
 
@@ -421,7 +368,6 @@ function PBM.OpenHunterMenu(row)
             -- Combat Aspect radio (CO, one-way sync)
             local combatAspectList = {
                 { cmd="bdps",    btn=treeCADragonhawkBtn },
-                { cmd="bmana",   btn=treeCAViperBtn      },
                 { cmd="bspeed",  btn=treeCAPackBtn       },
                 { cmd="rnature", btn=treeCAWildBtn       },
             }
@@ -445,7 +391,6 @@ function PBM.OpenHunterMenu(row)
             -- Non-Combat Aspect radio (NC, one-way sync)
             local ncAspectList = {
                 { cmd="bdps",    btn=treeNCADragonhawkBtn },
-                { cmd="bmana",   btn=treeNCAViperBtn      },
                 { cmd="bspeed",  btn=treeNCACheetahBtn    },
                 { cmd="rnature", btn=treeNCAWildBtn       },
             }
@@ -471,8 +416,7 @@ function PBM.OpenHunterMenu(row)
             LichborneHunterMenu.resetAllIcons = function()
                 if _baseReset then _baseReset() end
                 for _, e in ipairs(specList)         do IconOff(e.btn) end
-                IconOff(treeDpsBtn)
-                IconOff(treeDpsAssistBtn); IconOff(treeDpsDebuffBtn)
+                IconOff(treeDpsAssistBtn)
                 IconOff(treeDpsAoeBtn); IconOff(treeTrapWeaveBtn)
                 IconOff(treeTankAssistBtn)
                 for _, e in ipairs(combatAspectList) do IconOff(e.btn) end
@@ -488,10 +432,8 @@ function PBM.OpenHunterMenu(row)
                         if activeSet["bm"]          then IconOn(treeBmBtn)          else IconOff(treeBmBtn)          end
                         if activeSet["mm"]          then IconOn(treeMmBtn)          else IconOff(treeMmBtn)          end
                         if activeSet["surv"]        then IconOn(treeSurvBtn)        else IconOff(treeSurvBtn)        end
-                        if activeSet["dps"]         then IconOn(treeDpsBtn)         else IconOff(treeDpsBtn)         end
                         if activeSet["dps assist"]  then IconOn(treeDpsAssistBtn)   else IconOff(treeDpsAssistBtn)   end
-                        if activeSet["dps debuff"]  then IconOn(treeDpsDebuffBtn)   else IconOff(treeDpsDebuffBtn)   end
-                        if activeSet["aoe"]          then IconOn(treeDpsAoeBtn)      else IconOff(treeDpsAoeBtn)      end
+                        if activeSet["aoe"]         then IconOn(treeDpsAoeBtn)      else IconOff(treeDpsAoeBtn)      end
                         if activeSet["trap weave"]  then IconOn(treeTrapWeaveBtn)   else IconOff(treeTrapWeaveBtn)   end
                         if activeSet["tank assist"] then IconOn(treeTankAssistBtn)  else IconOff(treeTankAssistBtn)  end
                         -- Combat Aspects: one-way (only snap ON)

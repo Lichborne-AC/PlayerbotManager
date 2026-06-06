@@ -35,12 +35,13 @@ local LAB_GREY      = "aaaaaa"   -- T5  grey tier label (light grey)
 
 -- Universal system strategies shown in grey for all classes
 local UNIVERSAL_GREY = {
-    ["chat"]    = "NC",
-    ["default"] = "NC",
-    ["duel"]    = "NC",
-    ["emote"]   = "NC",
-    ["mount"]   = "NC",
-    ["quest"]   = "NC",
+    ["aggressive"] = "CO",
+    ["chat"]       = "NC",
+    ["default"]    = "NC",
+    ["duel"]       = "NC",
+    ["emote"]      = "NC",
+    ["mount"]      = "NC",
+    ["quest"]      = "NC",
 }
 
 -- ── Per-class strategy reference data ───────────────────────────
@@ -96,15 +97,16 @@ PBM.CLASS_STRAT_LIST = {
         {n="healer dps",  lab="CO",   t=1},
         {n="dps aoe",     lab="CO",   t=1},
         {n="PvP",         lab="CO",   t=1},
-        -- Tier 2 (buffs + auras/blessings)
-        {n="bmana",       lab="BOTH", t=2},
-        {n="bdps",        lab="BOTH", t=2},
+        -- Tier 1 (blessings — pink name + red label)
+        {n="bkings",      lab="NC",   t=1},
+        {n="bsanc",       lab="NC",   t=1},
+        {n="bwisdom",     lab="NC",   t=1},
+        {n="bmight",      lab="NC",   t=1},
+        -- Tier 2 (auras/buffs)
         {n="bthreat",     lab="BOTH", t=2},
         {n="bspeed",      lab="BOTH", t=2},
         {n="barmor",      lab="BOTH", t=2},
         {n="bcast",       lab="BOTH", t=2},
-        {n="bhealth",     lab="BOTH", t=2},
-        {n="bstats",      lab="NC",   t=2},
         {n="baoe",        lab="BOTH", t=2},
         {n="rshadow",     lab="BOTH", t=2},
         {n="rfrost",      lab="BOTH", t=2},
@@ -150,7 +152,6 @@ PBM.CLASS_STRAT_LIST = {
         -- Tier 2 (buffs)
         {n="buff",        lab="NC",   t=2},
         {n="bdps",        lab="BOTH", t=2},
-        {n="bmana",       lab="BOTH", t=2},
         {n="bspeed",      lab="BOTH", t=2},
         {n="rnature",     lab="BOTH", t=2},
         -- Tier 3 (cross-role)

@@ -2,7 +2,45 @@
 
 **A World of Warcraft WotLK 3.3.5a Addon for AzerothCore Private Servers that tracks gear score, iLvL, gear slots, specs, strategies, and raid composition for your entire playerbot roster.**
 
-**Version 1.2**
+**Version 1.3**
+
+---
+
+## Recent Changes — v1.3 (June 5, 2026)
+
+### Paladin — Blessing Strategy Renames *(mod-playerbots PR #2432)*
+
+The four blessing strategy keys have been renamed to match their actual spell names. **Bots will need a one-time strategy reset after updating.**
+
+| Old key | New key | Blessing |
+|---|---|---|
+| `bstats` | `bkings` | Blessing of Kings |
+| `bhealth` | `bsanc` | Blessing of Sanctuary |
+| `bmana` | `bwisdom` | Blessing of Wisdom |
+| `bdps` | `bmight` | Blessing of Might |
+
+### Rogue Character Sheet
+
+* **Melee button** added — `co +/- melee` with `inv_sword_35` icon
+* Combat section reorganised into two side-by-side rows: **DPS** (DPS / Melee / Boost) and **Stealth** (Stealth / Stealthed)
+
+### Hunter Character Sheet
+
+* Removed `dps`, `dps debuff`, and `bviper` (Aspect of the Viper CO + NC) buttons — these strategies are no longer relevant or have been superseded
+
+### Group Tab
+
+* Column layout now matches the class tabs — spec icon only, class icon removed, all column widths aligned
+
+### Playerbots Tab — Reset Instances
+
+* Reset Instances button now sends `.playerbots bot refresh=raid *` (single command via Playerbot module)
+* GM Reset Instances button removed
+* Requires `AiPlayerbot.ResetInstanceIdForAltBots = 1`
+
+### Universal Strategies
+
+* **aggressive** added — `co +/- aggressive`, proactively engages nearby threats (same color as `passive`)
 
 ---
 

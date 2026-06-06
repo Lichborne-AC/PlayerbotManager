@@ -338,28 +338,28 @@ function PBM.OpenPaladinMenu(row)
 
         -- Blessing tooltips
         tBstats:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Kings|r |cff999999- |r|cffffff00bstats|r |cffff8000NC|r",
+            "|cffffcc00Kings|r |cff999999- |r|cffffff00bkings|r |cffff8000NC|r",
             "|cffffcc00Blessing of Kings|r",
             "Increases all |cffFF9900stats|r by 10% for all",
             "party members.")
         end); tBstats:SetScript("OnLeave", TL)
 
         tBhealth:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Sanctuary|r |cff999999- |r|cffffff00bhealth|r |cffff8000NC|r",
+            "|cffffcc00Sanctuary|r |cff999999- |r|cffffff00bsanc|r |cffff8000NC|r",
             "|cffffcc00Blessing of Sanctuary|r",
             "Damage reduction + mana on block.",
             "Applies to all party members.")
         end); tBhealth:SetScript("OnLeave", TL)
 
         tBmana:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Wisdom|r |cff999999- |r|cffffff00bmana|r |cffff8000NC|r",
+            "|cffffcc00Wisdom|r |cff999999- |r|cffffff00bwisdom|r |cffff8000NC|r",
             "|cffffcc00Blessing of Wisdom|r",
             "Increases |cff3A8FC4mana regeneration|r for all",
             "party members.")
         end); tBmana:SetScript("OnLeave", TL)
 
         tBdps:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Might|r |cff999999- |r|cffffff00bdps|r |cffff8000NC|r",
+            "|cffffcc00Might|r |cff999999- |r|cffffff00bmight|r |cffff8000NC|r",
             "|cffffcc00Blessing of Might|r",
             "Increases |cffFF9900attack power|r for all",
             "party members.")
@@ -430,10 +430,10 @@ function PBM.OpenPaladinMenu(row)
                         if activeSet["rfire"]   then IconOn(tNcFire)   else IconOff(tNcFire)   end
                         if activeSet["rfrost"]  then IconOn(tNcFrost)  else IconOff(tNcFrost)  end
                         if activeSet["rshadow"] then IconOn(tNcShadow) else IconOff(tNcShadow) end
-                        if activeSet["bstats"]  then IconOn(tBstats)  else IconOff(tBstats)  end
-                        if activeSet["bhealth"] then IconOn(tBhealth) else IconOff(tBhealth) end
-                        if activeSet["bmana"]   then IconOn(tBmana)   else IconOff(tBmana)   end
-                        if activeSet["bdps"]    then IconOn(tBdps)    else IconOff(tBdps)    end
+                        if activeSet["bkings"]  then IconOn(tBstats)  else IconOff(tBstats)  end
+                        if activeSet["bsanc"]   then IconOn(tBhealth) else IconOff(tBhealth) end
+                        if activeSet["bwisdom"] then IconOn(tBmana)   else IconOff(tBmana)   end
+                        if activeSet["bmight"]  then IconOn(tBdps)    else IconOff(tBdps)    end
                     end
                 end
             end
@@ -599,10 +599,10 @@ function PBM.OpenPaladinMenu(row)
 
             -- Blessing tree (radio: one at a time)
             local blessTree = {
-                { btn=tBstats,  cmd="bstats"  },
-                { btn=tBhealth, cmd="bhealth" },
-                { btn=tBmana,   cmd="bmana"   },
-                { btn=tBdps,    cmd="bdps"    },
+                { btn=tBstats,  cmd="bkings"  },
+                { btn=tBhealth, cmd="bsanc"   },
+                { btn=tBmana,   cmd="bwisdom" },
+                { btn=tBdps,    cmd="bmight"  },
             }
             for _, e in ipairs(blessTree) do
                 local btn, cmd = e.btn, e.cmd

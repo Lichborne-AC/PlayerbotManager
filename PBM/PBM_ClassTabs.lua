@@ -120,6 +120,16 @@ function PBM.GetClassRows(cls)
         end
         allIdx = raidFiltered
     end
+    -- Apply hide-group filter: hide characters already in your current party/group
+    if PBM.State.LBFilter.hideGroupMembers then
+        local gnames = PBM.GetGroupMemberNameSet()
+        local groupFiltered = {}
+        for _, ai in ipairs(allIdx) do
+            local nm = LichborneTrackerDB.rows[ai].name or ""
+            if nm == "" or not gnames[nm] then groupFiltered[#groupFiltered+1] = ai end
+        end
+        allIdx = groupFiltered
+    end
     -- Apply header-click sort if active; always compact filled before empty
     local curKey = PBM.State.classSortKey[cls]
     local curAsc = PBM.State.classSortAsc[cls]
@@ -577,6 +587,7 @@ function PBM.BuildRows(parent, yStart)
         nameBtn:SetFrameLevel(nb:GetFrameLevel() + 2)
         nameBtn:SetScript("OnClick", function()
             if not row.dbIndex then return end
+            if PBM.State.LBFilter and PBM.State.LBFilter.classCharSheet == false then return end
             PBM.OpenNameMenu(row)
         end)
         nameBtn:SetScript("OnEnter", function() row.hov:SetTexture(0.78, 0.61, 0.23, 0.12) end)
@@ -769,6 +780,10 @@ function PBM.RefreshRows()
         if LichborneOverviewFrame then PBM.RefreshOverviewRows() end
         return
     end
+    if PBM.State.activeTab == "Group" then
+        PBM.OpenGroupView()
+        return
+    end
     if PBM.State.activeTab == "Settings" then return end
     PBM.SetNeedsCellMode("prof")
     PBM.EnsureClass(PBM.State.activeTab)
@@ -927,7 +942,7 @@ function PBM.RefreshRows()
                             if LichborneAddStatus then
                                 LichborneAddStatus:SetText(hex2..srcData.name.."|r is already in the Raid.")
                             end
-                            LichborneOutput("|cffC69B3ALichborne:|r "..hex2..srcData.name.."|r is already in the Raid.", 1, 0.5, 0.5)
+                            LichborneOutput("|cffC69B3APBM:|r "..hex2..srcData.name.."|r is already in the Raid.", 1, 0.5, 0.5)
                             return
                         end
                     end
@@ -941,7 +956,7 @@ function PBM.RefreshRows()
                     end
                     if not slot then
                         local raidLabel = LichborneTrackerDB.raidName or "Raid"
-                        LichborneOutput("|cffC69B3ALichborne:|r "..raidLabel.." is full ("..maxSlots.."/"..maxSlots..").", 1, 0.5, 0.5)
+                        LichborneOutput("|cffC69B3APBM:|r "..raidLabel.." is full ("..maxSlots.."/"..maxSlots..").", 1, 0.5, 0.5)
                         return
                     end
                     roster[slot] = {
@@ -953,7 +968,7 @@ function PBM.RefreshRows()
                         role   = "",
                         notes  = "",
                     }
-                    LichborneOutput("|cffC69B3ALichborne:|r Added "..hex..srcData.name.."|r to Raid slot "..slot..".", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r Added "..hex..srcData.name.."|r to Raid slot "..slot..".", 1, 0.85, 0)
                     if LichborneAddStatus then
                         LichborneAddStatus:SetText(hex..srcData.name.."|r added to raid slot "..slot..".")
                     end
@@ -974,11 +989,11 @@ function PBM.RefreshRows()
                     if btn == "RightButton" then
                         UninviteUnit(srcData.name)
                         SendChatMessage(".playerbots bot remove "..srcData.name, "SAY")
-                        LichborneOutput("|cffC69B3ALichborne:|r Removed "..hex..srcData.name.."|r from bots.", 1, 0.85, 0)
+                        LichborneOutput("|cffC69B3APBM:|r Removed "..hex..srcData.name.."|r from bots.", 1, 0.85, 0)
                         return
                     end
                     SendChatMessage(".playerbots bot add "..srcData.name, "SAY")
-                    LichborneOutput("|cffC69B3ALichborne:|r Inviting "..hex..srcData.name.."|r to group...", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r Inviting "..hex..srcData.name.."|r to group...", 1, 0.85, 0)
                     if LichborneAddStatus then
                         LichborneAddStatus:SetText("Invited "..hex..srcData.name.."|r to group.")
                     end

@@ -60,6 +60,15 @@ PBM.RefreshOverviewRows = function()
         end
         allTracked = raidFiltered
     end
+    -- Apply hide-group filter: hide characters already in your current party/group
+    if PBM.State.LBFilter.hideGroupMembers then
+        local gnames = PBM.GetGroupMemberNameSet()
+        local groupFiltered = {}
+        for _, r in ipairs(allTracked) do
+            if not gnames[r.name or ""] then groupFiltered[#groupFiltered+1] = r end
+        end
+        allTracked = groupFiltered
+    end
     -- Apply sort globally across ALL characters before splitting into pages
     if PBM.State.allSortKey then
         local function nameEmpty(r) return not r.name or r.name == "" end
@@ -286,15 +295,85 @@ PBM.RefreshOverviewRows = function()
             end
         end
 
-        -- Role slot display (shared logic with Raid tab via PBM.GetSortedVisRoles)
+        -- Role slot display — mirrors Role Filter when active
         if rf.roleSlots then
-            local roles = hasData and PBM.GetSortedVisRoles(data.name) or {}
+            local roleFilter = PBM.State.LBFilter.raidRoleFilter
+            local roleIcons = {}
+            if roleFilter and hasData then
+                local fr = PBM.GetFilterRolesByName(data.name)
+                if fr then
+                    for _, k in ipairs({"T","H","D","A"}) do
+                        if fr[k] and PBM.NOTES_ROLE_ICONS[k] then
+                            roleIcons[#roleIcons+1] = PBM.NOTES_ROLE_ICONS[k]
+                        end
+                    end
+                end
+            else
+                local roles = hasData and PBM.GetSortedVisRoles(data.name) or {}
+                for si = 1, 2 do
+                    if roles[si] then roleIcons[#roleIcons+1] = PBM.NOTES_ROLE_ICONS[roles[si]] end
+                end
+            end
             for si = 1, 2 do
                 local tex = rf.roleSlots[si]
-                local icon = roles[si] and PBM.NOTES_ROLE_ICONS[roles[si]]
                 if tex then
-                    if icon then tex:SetTexture(icon); tex:SetAlpha(1.0)
+                    if roleIcons[si] then tex:SetTexture(roleIcons[si]); tex:SetAlpha(1.0)
                     else tex:SetAlpha(0) end
+                end
+            end
+            -- Wire roleArea click/tooltip when filter active
+            if rf.roleArea then
+                if roleFilter and hasData then
+                    local charName = data.name
+                    rf.roleArea:SetScript("OnEnter", function()
+                        GameTooltip:SetOwner(rf.roleArea, "ANCHOR_RIGHT")
+                        GameTooltip:AddLine("Role", 1, 1, 1)
+                        local fr2 = PBM.GetFilterRolesByName(charName) or {}
+                        local roleLabels = {T="Tank",H="Healer",D="DPS",A="AoE"}
+                        local roleColors = {T={0.20,0.60,1.00},H={0.20,1.00,0.40},D={1.00,0.40,0.20},A={0.58,0.51,0.79}}
+                        local any = false
+                        for _, k in ipairs({"T","H","D","A"}) do
+                            if fr2[k] then
+                                local ic = PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[k] or ""
+                                local c = roleColors[k]
+                                GameTooltip:AddLine("|T"..ic..":14:14|t  "..roleLabels[k], c[1],c[2],c[3])
+                                any = true
+                            end
+                        end
+                        if not any then GameTooltip:AddLine("No role set", 0.5,0.5,0.5) end
+                        GameTooltip:AddLine("|cff888888Click to set  ·  Right-click to clear|r", 0.6,0.6,0.6)
+                        GameTooltip:Show()
+                    end)
+                    rf.roleArea:SetScript("OnClick", function(self, btn)
+                        local rIdx = PBM.GetRosterIdxByName(charName)
+                        if not rIdx then return end
+                        if btn == "RightButton" then
+                            local roster, _ = PBM.GetCurrentRoster()
+                            if roster[rIdx] then roster[rIdx].filterRoles = {} end
+                            PBM.RefreshOverviewRows()
+                            if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
+                        else
+                            if PBM.OpenRaidFilterRolePicker then PBM.OpenRaidFilterRolePicker(self, rIdx) end
+                        end
+                    end)
+                else
+                    -- Filter off: restore static tooltip, remove click
+                    rf.roleArea:SetScript("OnEnter", function()
+                        GameTooltip:SetOwner(rf.roleArea, "ANCHOR_RIGHT")
+                        GameTooltip:AddLine("Role", 1, 1, 1)
+                        if hasData then
+                            local roles = PBM.GetSortedVisRoles(data.name)
+                            local roleLabels = {T="Tank",H="Healer",D="DPS",A="AoE"}
+                            local roleColors = {T={0.20,0.60,1.00},H={0.20,1.00,0.40},D={1.00,0.40,0.20},A={0.58,0.51,0.79}}
+                            for _, k in ipairs(roles) do
+                                local ic = PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[k] or ""
+                                local c = roleColors[k] or {0.8,0.8,0.8}
+                                GameTooltip:AddLine("|T"..ic..":14:14|t  "..(roleLabels[k] or k), c[1],c[2],c[3])
+                            end
+                        end
+                        GameTooltip:Show()
+                    end)
+                    rf.roleArea:SetScript("OnClick", nil)
                 end
             end
         end
@@ -388,7 +467,7 @@ PBM.RefreshOverviewRows = function()
                 if btn == "RightButton" then
                     UninviteUnit(d.name)
                     SendChatMessage(".playerbots bot remove "..d.name, "SAY")
-                    LichborneOutput("|cffC69B3ALichborne:|r Removed "..hex..d.name.."|r from bots.", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r Removed "..hex..d.name.."|r from bots.", 1, 0.85, 0)
                     return
                 end
                 SendChatMessage(".playerbots bot add "..d.name, "SAY")
@@ -466,7 +545,7 @@ PBM.RefreshOverviewRows = function()
     -- Count bar
     if PBM.State.LichborneAllCountLabels then
         local allCounts = {}
-        for _, cls in ipairs(PBM.CLASS_TABS) do if cls ~= "Raid" and cls ~= "Overview" then allCounts[cls] = 0 end end
+        for _, cls in ipairs(PBM.CLASS_TABS) do if cls ~= "Raid" and cls ~= "Overview" and cls ~= "Group" then allCounts[cls] = 0 end end
         -- Count from ALL tracked rows, not just the current page
         for _, r in ipairs(LichborneTrackerDB.rows or {}) do
             if r and r.name and r.name ~= "" and r.cls and allCounts[r.cls] ~= nil then
@@ -497,6 +576,8 @@ local ALL_COL_W   = PBM.ALL_COL_W
 function PBM.BuildOverviewFrame(parent, fl)
     if PBM.State.overviewFrameBuilt then return end
     PBM.State.overviewFrameBuilt = true
+    PBM.State.mainParent = parent  -- stored so Group tab can lazily build groupViewFrame
+    PBM.State.mainFl     = fl
 
     PBM.State.LichborneOverviewFrame = CreateFrame("Frame","LichborneOverviewFrame",parent)
     PBM.State.LichborneOverviewFrame:SetPoint("TOPLEFT",parent,"TOPLEFT",15,-66)
@@ -542,6 +623,35 @@ function PBM.BuildOverviewFrame(parent, fl)
     LichborneAllPageNext = nil
     local allPrevBtn = {}
     local allNextBtn = {}
+
+    -- ToggleGroupView / UpdateGVFilterBtn live here; the button widget is in the MISC bar (PBM_TrackerCore.lua)
+    local function UpdateGVFilterBtn()
+        local tex = PBM.State.groupViewActive
+                    and "Interface\\Icons\\Achievement_pvp_g_10"
+                    or  "Interface\\Icons\\Achievement_pvp_h_10"
+        if PBM.State.gvFilterIcon     then PBM.State.gvFilterIcon:SetTexture(tex) end
+        if PBM.State.gvMiscFilterIcon then PBM.State.gvMiscFilterIcon:SetTexture(tex) end
+    end
+    PBM.State.UpdateGVFilterBtn = UpdateGVFilterBtn
+
+    local function ToggleGroupView()
+        PBM.State.groupViewActive = not PBM.State.groupViewActive
+        if PBM.State.groupViewActive and not PBM.State.groupViewBuilt then
+            PBM.BuildGroupView(parent, fl)
+        end
+        UpdateGVFilterBtn()
+        if PBM.State.groupViewActive then
+            PBM.State.LichborneOverviewFrame:Hide()
+            if PBM.State.groupViewFrame then
+                PBM.State.groupViewFrame:Show()
+                PBM.OpenGroupView()
+            end
+        else
+            if PBM.State.groupViewFrame then PBM.State.groupViewFrame:Hide() end
+            PBM.State.LichborneOverviewFrame:Show()
+        end
+    end
+    PBM.State.ToggleGroupView = ToggleGroupView
 
     -- Single group dropdown on the right (replaces both left Group: and page < > buttons)
     local function UpdateOverviewGroupDD()
@@ -720,6 +830,8 @@ function PBM.BuildOverviewFrame(parent, fl)
             GameTooltip:Show()
         end)
         roleArea:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        roleArea:RegisterForClicks("LeftButtonUp","RightButtonUp")
+        rf.roleArea = roleArea
         rf.roleSlots = {}
         for si = 1, 2 do
             local tex = roleArea:CreateTexture(nil,"ARTWORK")
@@ -804,7 +916,7 @@ function PBM.BuildOverviewFrame(parent, fl)
     PBM.State.LichborneAllCountLabels={}
     local acW=(ALL_NCOLS*ALL_COL_W-50)/10
     for ci,cls in ipairs(PBM.CLASS_TABS) do
-        if cls=="Raid" or cls=="All" then break end
+        if cls=="Raid" or cls=="All" or cls=="Group" then break end
         local c=PBM.CLASS_COLORS[cls]
         local sw=CreateFrame("Button",nil,allCB); sw:SetSize(acW-2,20); sw:SetPoint("LEFT",allCB,"LEFT",48+(ci-1)*acW,0)
         sw:SetFrameLevel(allCB:GetFrameLevel()+1)

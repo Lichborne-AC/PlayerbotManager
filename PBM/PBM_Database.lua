@@ -24,8 +24,9 @@ if not LichborneTrackerDB.allGroups then
     end
 end
 if not LichborneTrackerDB.allGroup then LichborneTrackerDB.allGroup = "A" end
-if not LichborneTrackerDB.botNotes then LichborneTrackerDB.botNotes = {} end
-if not LichborneTrackerDB.ipData then LichborneTrackerDB.ipData = {} end
+if not LichborneTrackerDB.botNotes  then LichborneTrackerDB.botNotes  = {} end
+if not LichborneTrackerDB.ipData    then LichborneTrackerDB.ipData    = {} end
+if not LichborneTrackerDB.charRoles then LichborneTrackerDB.charRoles = {} end
 
 -- Legacy migration: allRows → allGroups
 if LichborneTrackerDB.allRows then
@@ -39,11 +40,14 @@ end
 
 -- ── Filter state ───────────────────────────────────────────────
 PBM.State.LBFilter = PBM.State.LBFilter or {
-    groupActive = false,
-    showLevel   = false,
-    showIP      = false,
-    hideRaid    = false,
-    showTierKey = true,
+    groupActive        = false,
+    showLevel          = false,
+    showIP             = false,
+    hideRaid           = false,
+    hideGroupMembers   = false,  -- hides chars already in your party; shows who's left to add
+    showTierKey        = true,
+    raidNotesFilter    = false,  -- hides botNotes notes in Raid tab; enables manual note entry
+    raidRoleFilter     = false,  -- hides botNotes roles in Raid tab; enables manual role picker
 }
 
 -- ── DB functions ───────────────────────────────────────────────

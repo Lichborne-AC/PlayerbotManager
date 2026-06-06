@@ -26,7 +26,7 @@ local function CalcSpec()
     PBM.DBG("CalcSpec start: |cffffff88"..(rowData.name or "?").."|r cls=|cffffff88"..cls.."|r unit=|cffffff88"..(PBM.State.LichborneInspectUnit or "?").."|r UnitExists=|cffffff88"..tostring(UnitExists(PBM.State.LichborneInspectUnit or "target")).."|r")
     local specStartTime = GetTime()
     if not specNames then
-        LichborneOutput("|cffC69B3ALichborne:|r Unknown class: "..cls, 1, 0.5, 0.5)
+        LichborneOutput("|cffC69B3APBM:|r Unknown class: "..cls, 1, 0.5, 0.5)
         PBM.State.LichborneSpecTarget = nil; PBM.State.specRetries = 0
         return
     end

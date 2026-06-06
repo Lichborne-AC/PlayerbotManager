@@ -29,13 +29,15 @@ local BOTTOM_TABS = {
     { id="IndividualProgression",label="Ind. Prog.",  r=GOLD_R, g=GOLD_G, b=GOLD_B },
     { id="LevelSync",            label="LevelSync",   r=GOLD_R, g=GOLD_G, b=GOLD_B },
     { id="Notes",                label="Notes",       r=GOLD_R, g=GOLD_G, b=GOLD_B },
+    { id="Group",                label="Group",       r=GOLD_R, g=GOLD_G, b=GOLD_B },
 }
 
 -- ── Tab button layout (title bar row, right of Clear buttons) ─
-local TAB_W       = 100
+-- 5 tabs × 89px = 445px; start at x=633 → ends at 1078, clear of the close button at x≈1090
+local TAB_W       = 88
 local TAB_H       = 26
-local TAB_STEP    = 101
-local TAB_START_X = 675
+local TAB_STEP    = 89
+local TAB_START_X = 633
 local TAB_START_Y = -7
 
 -- ── Content panel dimensions ──────────────────────────────────
@@ -289,6 +291,14 @@ function PBM.BuildBottomTabs(parent, fl)
     local notesPanel = MakeContentFrame("PBMTabPanel_Notes", parent, fl, "Notes", false, GOLD_R, GOLD_G, GOLD_B)
     PBM.State.bottomTabPanels["Notes"] = notesPanel
     PBM.BuildNotesPanel(notesPanel, ctx)
+
+    -- ── Group View panel (built eagerly so the panel registration works) ─
+    if PBM.BuildGroupView then
+        PBM.BuildGroupView(parent, fl)
+        if PBM.State.groupViewFrame then
+            PBM.State.bottomTabPanels["Group"] = PBM.State.groupViewFrame
+        end
+    end
 
     -- ── Tab buttons ──────────────────────────────────────────
     for i, tabDef in ipairs(BOTTOM_TABS) do

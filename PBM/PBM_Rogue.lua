@@ -79,17 +79,23 @@ function PBM.OpenRogueMenu(row)
         local specBoxY   = TREE_TOP_Y - 16
         local specIconY  = specBoxY - 18 - 4
 
-        -- Combat header (4 buttons wide, centered)
-        local combatHdrW  = 4 * EXT_ICON_SIZE + 3 * BTN_GAP
-        local combatHdrX  = TREE_X + math.floor((TREE_TOTAL_W - combatHdrW) / 2)
-        local combatHdrY  = specIconY - EXT_ICON_SIZE - 15
-        local combatIconY = combatHdrY - 18 - 4
+        -- DPS section (3-wide, 1 row) — centred under spec columns
+        local dpsSectionW  = 3 * EXT_ICON_SIZE + 2 * BTN_GAP              -- 86px
+        local dpsHdrX      = TREE_X + math.floor((TREE_TOTAL_W - dpsSectionW) / 2)
+        local dpsHdrY      = specIconY - EXT_ICON_SIZE - 15
+        local dpsIconY     = dpsHdrY - 18 - 4
 
-        -- Assist header (3 buttons wide, centered)
-        local assistHdrW  = 3 * EXT_ICON_SIZE + 2 * BTN_GAP
-        local assistHdrX  = TREE_X + math.floor((TREE_TOTAL_W - assistHdrW) / 2)
-        local assistHdrY  = combatIconY - EXT_ICON_SIZE - 15
-        local assistIconY = assistHdrY - 18 - 4
+        -- Stealth section (2-wide, 1 row) — below DPS, centred
+        local stlSectionW  = 2 * EXT_ICON_SIZE + BTN_GAP                   -- 56px
+        local stlHdrX      = TREE_X + math.floor((TREE_TOTAL_W - stlSectionW) / 2)
+        local stlHdrY      = dpsIconY - EXT_ICON_SIZE - 15
+        local stlIconY     = stlHdrY - 18 - 4
+
+        -- Assist header (3 buttons wide, centred)
+        local assistHdrW   = 3 * EXT_ICON_SIZE + 2 * BTN_GAP
+        local assistHdrX   = TREE_X + math.floor((TREE_TOTAL_W - assistHdrW) / 2)
+        local assistHdrY   = stlIconY - EXT_ICON_SIZE - 15
+        local assistIconY  = assistHdrY - 18 - 4
 
         -- ── Backdrop template ────────────────────────────────────────
         local SPEC_BOX_BD = {
@@ -194,18 +200,39 @@ function PBM.OpenRogueMenu(row)
         end)
         LichborneRogueMenu.treeSubtletyBtn = treeSubtletyBtn
 
-        -- ── Combat header (4 buttons wide, centered) ─────────────────
-        MakeWideBox(combatHdrX, combatHdrY, combatHdrW, "Combat")
+        -- ── DPS section (3-wide, 1 row): DPS | Melee | Boost ────────────
+        MakeWideBox(dpsHdrX, dpsHdrY, dpsSectionW, "DPS")
 
-        local treeDpsAoeBtn = MakeTreeBtn(assistHdrX + 60, assistIconY,
-            "Interface\\Icons\\Spell_Shadow_RainOfFire", function()
-            GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cffFFF569aoe|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Switches to |cffffcc00AoE|r attacks on multiple targets.", 1, 1, 1)
+        local treeDpsBtn = MakeTreeBtn(dpsHdrX, dpsIconY,
+            "Interface\\Icons\\inv_sword_27", function()
+            GameTooltip:SetText("|cffffcc00Dps|r |cff999999- |r|cffFFF569dps|r |cffee4433CO|r")
+            GameTooltip:AddLine("|cffffcc00Single-target DPS mode|r", 1, 1, 1)
+            GameTooltip:AddLine("Uses the standard Combat rotation", 1, 1, 1)
+            GameTooltip:AddLine("on the current target.", 1, 1, 1)
         end)
-        LichborneRogueMenu.treeDpsAoeBtn = treeDpsAoeBtn
+        LichborneRogueMenu.treeDpsBtn = treeDpsBtn
 
-        local treeStealthBtn = MakeTreeBtn(combatHdrX + 30, combatIconY,
+        local treeMeleeBtn = MakeTreeBtn(dpsHdrX + 30, dpsIconY,
+            "Interface\\Icons\\inv_sword_35", function()
+            GameTooltip:SetText("|cffffcc00Melee|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r")
+            GameTooltip:AddLine("|cffffcc00Melee DPS mode|r", 1, 1, 1)
+            GameTooltip:AddLine("Core melee attack mode for", 1, 1, 1)
+            GameTooltip:AddLine("Assassination and Subtlety.", 1, 1, 1)
+        end)
+        LichborneRogueMenu.treeMeleeBtn = treeMeleeBtn
+
+        local treeBoostBtn = MakeTreeBtn(dpsHdrX + 60, dpsIconY,
+            "Interface\\Icons\\Ability_Mage_PotentSpirit", function()
+            GameTooltip:SetText("|cffffcc00Boost|r |cff999999- |r|cffFFF569boost|r |cffee4433CO|r")
+            GameTooltip:AddLine("|cffffcc00Offensive cooldown burst|r", 1, 1, 1)
+            GameTooltip:AddLine("Works alongside all DPS modes.", 1, 1, 1)
+        end)
+        LichborneRogueMenu.treeBoostBtn = treeBoostBtn
+
+        -- ── Stealth section (2-wide, 1 row): Stealth | Stealthed ─────────
+        MakeWideBox(stlHdrX, stlHdrY, stlSectionW, "Stealth")
+
+        local treeStealthBtn = MakeTreeBtn(stlHdrX, stlIconY,
             "Interface\\Icons\\Ability_Stealth", function()
             GameTooltip:SetText("|cffffcc00Stealth|r |cff999999- |r|cffFFF569stealth|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Activates Stealth mode|r", 1, 1, 1)
@@ -213,7 +240,7 @@ function PBM.OpenRogueMenu(row)
         end)
         LichborneRogueMenu.treeStealthBtn = treeStealthBtn
 
-        local treeStealthedBtn = MakeTreeBtn(combatHdrX + 60, combatIconY,
+        local treeStealthedBtn = MakeTreeBtn(stlHdrX + 30, stlIconY,
             "Interface\\Icons\\Ability_Sap", function()
             GameTooltip:SetText("|cffffcc00Stealthed|r |cff999999- |r|cffFFF569stealthed|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00In-combat stealth behavior|r", 1, 1, 1)
@@ -222,15 +249,7 @@ function PBM.OpenRogueMenu(row)
         end)
         LichborneRogueMenu.treeStealthedBtn = treeStealthedBtn
 
-        local treeBoostBtn = MakeTreeBtn(combatHdrX + 90, combatIconY,
-            "Interface\\Icons\\Ability_Mage_PotentSpirit", function()
-            GameTooltip:SetText("|cffffcc00Boost|r |cff999999- |r|cffFFF569boost|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Offensive cooldown burst|r", 1, 1, 1)
-            GameTooltip:AddLine("Works alongside all DPS modes.", 1, 1, 1)
-        end)
-        LichborneRogueMenu.treeBoostBtn = treeBoostBtn
-
-        -- ── Assist header (3 buttons wide, centered) ──────────────────
+        -- ── Assist header (3 buttons wide, centred) ───────────────────
         MakeWideBox(assistHdrX, assistHdrY, assistHdrW, "Assist")
 
         local treeTankAssistBtn = MakeTreeBtn(assistHdrX, assistIconY,
@@ -249,14 +268,13 @@ function PBM.OpenRogueMenu(row)
         end)
         LichborneRogueMenu.treeDpsAssistBtn = treeDpsAssistBtn
 
-        local treeDpsBtn = MakeTreeBtn(combatHdrX, combatIconY,
-            "Interface\\Icons\\inv_sword_27", function()
-            GameTooltip:SetText("|cffffcc00Dps|r |cff999999- |r|cffFFF569dps|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Single-target DPS mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Uses the standard Combat rotation", 1, 1, 1)
-            GameTooltip:AddLine("on the current target.", 1, 1, 1)
+        local treeDpsAoeBtn = MakeTreeBtn(assistHdrX + 60, assistIconY,
+            "Interface\\Icons\\Spell_Shadow_RainOfFire", function()
+            GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cffFFF569aoe|r |cffee4433CO|r")
+            GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
+            GameTooltip:AddLine("Switches to |cffffcc00AoE|r attacks on multiple targets.", 1, 1, 1)
         end)
-        LichborneRogueMenu.treeDpsBtn = treeDpsBtn
+        LichborneRogueMenu.treeDpsAoeBtn = treeDpsAoeBtn
 
         -- ── Wire: toggle logic ────────────────────────────────────────────
         do
@@ -328,6 +346,17 @@ function PBM.OpenRogueMenu(row)
                 end
             end)
 
+            -- Melee (independent CO)
+            treeMeleeBtn:SetScript("OnClick", function()
+                local bot = LichborneRogueMenu.botName or ""
+                LichborneRogueMenu._specUserSet = true
+                if treeMeleeBtn.state then
+                    PBM.SendToBot("co -melee,?", bot); IconOff(treeMeleeBtn)
+                else
+                    PBM.SendToBot("co +melee,?", bot); IconOn(treeMeleeBtn)
+                end
+            end)
+
             -- Dps: clears Stealthed
             treeDpsBtn:SetScript("OnClick", function()
                 local bot = LichborneRogueMenu.botName or ""
@@ -381,7 +410,8 @@ function PBM.OpenRogueMenu(row)
                 -- class-specific tree buttons only (food/loot/gather handled by base)
                 IconOff(treeAsBtn); IconOff(treeCombatBtn); IconOff(treeSubtletyBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
-                IconOff(treeDpsBtn); IconOff(treeStealthBtn); IconOff(treeStealthedBtn); IconOff(treeBoostBtn)
+                IconOff(treeDpsBtn); IconOff(treeMeleeBtn); IconOff(treeBoostBtn)
+                IconOff(treeStealthBtn); IconOff(treeStealthedBtn)
             end
 
             -- onStrategyUpdate
@@ -399,6 +429,7 @@ function PBM.OpenRogueMenu(row)
                         if activeSet["dps assist"]  then IconOn(treeDpsAssistBtn)  else IconOff(treeDpsAssistBtn)  end
                         if activeSet["aoe"]         then IconOn(treeDpsAoeBtn)     else IconOff(treeDpsAoeBtn)     end
                         if activeSet["dps"]         then IconOn(treeDpsBtn)        else IconOff(treeDpsBtn)        end
+                        if activeSet["melee"]       then IconOn(treeMeleeBtn)      else IconOff(treeMeleeBtn)      end
                         if activeSet["stealth"]     then IconOn(treeStealthBtn)    else IconOff(treeStealthBtn)    end
                         if activeSet["stealthed"]   then IconOn(treeStealthedBtn)  else IconOff(treeStealthedBtn)  end
                         if activeSet["boost"]       then IconOn(treeBoostBtn)      else IconOff(treeBoostBtn)      end

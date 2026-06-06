@@ -2,7 +2,7 @@
 ## Title: PlayerBot Manager
 ## Notes: Manage and configure playerbot strategies, specs, and profiles.
 ## Author: Lichborne
-## Version: 1.2
+## Version: 1.3
 ## SavedVariables: LichborneTrackerDB, LichborneMinimapIconDB, PBMConfig
 
 # Libraries
@@ -38,6 +38,7 @@ PBM\PBM_Warlock.lua
 PBM\PBM_Warrior.lua
 PBM\PBM_Raid.lua
 PBM\PBM_Overview.lua
+PBM\PBM_GroupView.lua
 PBM\PBM_BotSettings.lua
 PBM\PBM_Tab_Playerbots.lua
 PBM\PBM_Tab_IndividualProgression.lua

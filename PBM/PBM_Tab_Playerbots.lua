@@ -164,38 +164,11 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
 
     if not StaticPopupDialogs["PBM_RESET_INSTANCES"] then
         StaticPopupDialogs["PBM_RESET_INSTANCES"] = {
-            text = "|cffd4af37Reset Instances|r\n\nSend |cffFF8C00.levelsync unbindall|r for every\nmember in your group/raid?",
+            text = "|cffd4af37Reset Instances|r\n\nSend |cffFF8C00.playerbots bot refresh=raid *|r\nfor your current group/raid?",
             button1 = "Yes, Reset All",
             button2 = "Cancel",
             OnAccept = function()
-                local names = {}
-                if GetNumRaidMembers() > 0 then
-                    for i = 1, GetNumRaidMembers() do
-                        local n = UnitName("raid" .. i)
-                        if n then names[#names + 1] = n end
-                    end
-                else
-                    names[#names + 1] = UnitName("player")
-                    for i = 1, GetNumPartyMembers() do
-                        local n = UnitName("party" .. i)
-                        if n then names[#names + 1] = n end
-                    end
-                end
-                local idx    = 1
-                local timer  = 0
-                local ticker = CreateFrame("Frame")
-                ticker:SetScript("OnUpdate", function(self, dt)
-                    timer = timer + dt
-                    if timer >= 0.4 then
-                        timer = 0
-                        if idx <= #names then
-                            SendChatMessage(".levelsync unbindall " .. names[idx], "SAY")
-                            idx = idx + 1
-                        else
-                            self:SetScript("OnUpdate", nil)
-                        end
-                    end
-                end)
+                SendChatMessage(".playerbots bot refresh=raid *", "SAY")
             end,
             timeout      = 0,
             whileDead    = true,
@@ -209,10 +182,8 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:AddLine("Reset Instances", 0.78, 0.61, 0.23)
         GameTooltip:AddLine("Resets instances for entire group using", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine(".levelsync unbindall <name>", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("Requires mod-levelsync", 1, 0.55, 0.0)
-        GameTooltip:AddLine("This button wipes all raids for your current", 1, 0.15, 0.15)
-        GameTooltip:AddLine("group (NOT YOUR LEVELSYNC GROUP)", 1, 0.15, 0.15)
+        GameTooltip:AddLine(".playerbots bot refresh=raid *", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine("Requires AiPlayerbot.ResetInstanceIdForAltBots = 1", 1, 0.2, 0.2)
         GameTooltip:Show()
     end)
     resetInstBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -220,68 +191,8 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     local riyl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     riyl:SetPoint("LEFT", resetInstBtn, "RIGHT", 6, 0)
     riyl:SetJustifyH("LEFT")
-    riyl:SetText("|cffffffffReset Instances for group|r\n|cffFF8C00Requires mod-levelsync|r")
+    riyl:SetText("|cffffffffReset Instances for group|r")
     ey1 = ey1 + PB_STEP
-
-    if not StaticPopupDialogs["PBM_RESET_INSTANCES_GM"] then
-        StaticPopupDialogs["PBM_RESET_INSTANCES_GM"] = {
-            text = "|cffd4af37GM Reset Instances|r\n\nSend |cffFF8C00.levelsync gm unbindall|r for every\nmember in your group/raid?\n\n|cffFF4444Requires GM privileges.|r",
-            button1 = "Yes, Reset All",
-            button2 = "Cancel",
-            OnAccept = function()
-                local names = {}
-                if GetNumRaidMembers() > 0 then
-                    for i = 1, GetNumRaidMembers() do
-                        local n = UnitName("raid" .. i)
-                        if n then names[#names + 1] = n end
-                    end
-                else
-                    names[#names + 1] = UnitName("player")
-                    for i = 1, GetNumPartyMembers() do
-                        local n = UnitName("party" .. i)
-                        if n then names[#names + 1] = n end
-                    end
-                end
-                local idx    = 1
-                local timer  = 0
-                local ticker = CreateFrame("Frame")
-                ticker:SetScript("OnUpdate", function(self, dt)
-                    timer = timer + dt
-                    if timer >= 0.4 then
-                        timer = 0
-                        if idx <= #names then
-                            SendChatMessage(".levelsync gm unbindall " .. names[idx], "SAY")
-                            idx = idx + 1
-                        else
-                            self:SetScript("OnUpdate", nil)
-                        end
-                    end
-                end)
-            end,
-            timeout      = 0,
-            whileDead    = true,
-            hideOnEscape = true,
-        }
-    end
-
-    local gmResetInstBtn = PBIconBtn(CMD_X1, ey1, PB_ICON.."inv_misc_key_06", "GM Reset Instances", nil)
-    gmResetInstBtn:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:AddLine("GM Reset Instances", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Resets instances for entire group using", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine(".levelsync gm unbindall <name>", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("Requires mod-levelsync", 1, 0.55, 0.0)
-        GameTooltip:AddLine("Requires GM Access", 1, 0.2, 0.2)
-        GameTooltip:AddLine("This button wipes all raids for your current", 1, 0.15, 0.15)
-        GameTooltip:AddLine("group (NOT YOUR LEVELSYNC GROUP)", 1, 0.15, 0.15)
-        GameTooltip:Show()
-    end)
-    gmResetInstBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-    gmResetInstBtn:SetScript("OnClick", function() StaticPopup_Show("PBM_RESET_INSTANCES_GM") end)
-    local gmriyl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    gmriyl:SetPoint("LEFT", gmResetInstBtn, "RIGHT", 6, 0)
-    gmriyl:SetJustifyH("LEFT")
-    gmriyl:SetText("|cffffffffGM Reset Instances for group|r\n|cffFF8C00Requires mod-levelsync|r\n|cffff4444Requires GM Access|r")
 
     -- ── Universal Strategies List ─────────────────────────────────
     -- Alphabetical, two columns, colored per strat-tree reference.
@@ -295,10 +206,12 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     PBLabel(SL_X1, PB_ROW_TOP, "Universal Strategies")
     PBDivider(SL_X1, PB_ROW_TOP + 16, 285)
 
-    -- 37 entries, alphabetical — left col = 1-19, right col = 20-37
+    -- 38 entries, alphabetical — left col = 1-19, right col = 20-38
     local STRAT_LIST = {
         { n="adds",        hex="aaaaaa", tp="CO",    tphex="aaaaaa",
           desc="Abort the pull if extra mobs are detected near the target" },
+        { n="aggressive",  hex="aabb55", tp="CO",    tphex="aaaaaa",
+          desc="Proactively engages nearby threats" },
         { n="avoid aoe",   hex="7799ff", tp="CO",    tphex="aaaaaa",
           desc="Reposition to avoid AoE damage patterns" },
         { n="boost",       hex="ff9900", tp="CO",    tphex="aaaaaa",

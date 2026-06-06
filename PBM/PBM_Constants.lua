@@ -90,7 +90,8 @@ PBM.PROF_SLOTS = {
     { key="cooking",        icon="Interface\\Icons\\INV_Misc_Food_15",             label="Cooking"        },
     { key="fishing",        icon="Interface\\Icons\\Trade_Fishing",                label="Fishing"        },
 }
-PBM.MAX_PROFS = 2
+PBM.MAX_PROFS      = 2
+PBM.MAX_CHAR_ROLES = 2
 
 -- ── Column layout ──────────────────────────────────────────────
 PBM.COL_NAME_W  = 140
@@ -164,10 +165,15 @@ PBM.CLASS_COLORS = {
     ["Warlock"]={r=0.53,g=0.53,b=0.93},      ["Warrior"]={r=0.78,g=0.61,b=0.23},
 }
 PBM.CLASS_TABS = {"Death Knight","Druid","Hunter","Mage","Paladin","Priest","Rogue","Shaman","Warlock","Warrior","Raid","Overview"}
+-- Overrides TAB_LABELS for the tab buttons only (avg bars etc still use TAB_LABELS)
+PBM.TAB_BUTTON_LABELS = {
+    ["Death Knight"] = "Death Knight",
+}
+
 PBM.TAB_LABELS = {
     ["Death Knight"]="DK",["Druid"]="Druid",["Hunter"]="Hunter",["Mage"]="Mage",
     ["Paladin"]="Paladin",["Priest"]="Priest",["Rogue"]="Rogue",["Shaman"]="Shaman",
-    ["Warlock"]="Warlock",["Warrior"]="Warrior",["Raid"]="Raid",["Overview"]="Overview",
+    ["Warlock"]="Warlock",["Warrior"]="Warrior",["Group"]="Group",["Raid"]="Raid",["Overview"]="Overview",
 }
 
 -- Tier tables moved to IPTiersColor.lua (single source of truth).

@@ -21,12 +21,13 @@ local function PBM_TimerAfter(delay, func)
 end
 
 local DK_TALENT_SPECS = {
-    { label="Blood |cffffcc00PvE|r",  spec="blood pve",  wowSpec="Blood",    icon="Interface\\Icons\\Spell_DeathKnight_BloodPresence"  },
-    { label="Frost |cffffcc00PvE|r",  spec="frost pve",  wowSpec="Frost DK", icon="Interface\\Icons\\Spell_DeathKnight_FrostPresence"  },
-    { label="Unholy |cffffcc00PvE|r", spec="unholy pve", wowSpec="Unholy",   icon="Interface\\Icons\\Spell_DeathKnight_UnholyPresence" },
-    { label="Blood |cffff4444PvP|r",  spec="blood pvp",  wowSpec="Blood",    icon="Interface\\Icons\\Spell_DeathKnight_BloodPresence"  },
-    { label="Frost |cffff4444PvP|r",  spec="frost pvp",  wowSpec="Frost DK", icon="Interface\\Icons\\Spell_DeathKnight_FrostPresence"  },
-    { label="Unholy |cffff4444PvP|r", spec="unholy pvp", wowSpec="Unholy",   icon="Interface\\Icons\\Spell_DeathKnight_UnholyPresence" },
+    { label="Blood |cffffcc00PvE|r",       spec="blood pve",            wowSpec="Blood",    icon="Interface\\Icons\\Spell_DeathKnight_BloodPresence"  },
+    { label="Frost |cffffcc00PvE|r",       spec="frost pve",            wowSpec="Frost DK", icon="Interface\\Icons\\Spell_DeathKnight_FrostPresence"  },
+    { label="Unholy |cffffcc00PvE|r",      spec="unholy pve",           wowSpec="Unholy",   icon="Interface\\Icons\\Spell_DeathKnight_UnholyPresence" },
+    { label="Double Aura Blood |cffffcc00PvE|r", spec="double aura blood pve", wowSpec="Blood", icon="Interface\\Icons\\Spell_DeathKnight_BloodPresence"  },
+    { label="Blood |cffff4444PvP|r",       spec="blood pvp",            wowSpec="Blood",    icon="Interface\\Icons\\Spell_DeathKnight_BloodPresence"  },
+    { label="Frost |cffff4444PvP|r",       spec="frost pvp",            wowSpec="Frost DK", icon="Interface\\Icons\\Spell_DeathKnight_FrostPresence"  },
+    { label="Unholy |cffff4444PvP|r",      spec="unholy pvp",           wowSpec="Unholy",   icon="Interface\\Icons\\Spell_DeathKnight_UnholyPresence" },
 }
 
 local LichborneDKMenu

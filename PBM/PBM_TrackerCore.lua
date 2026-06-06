@@ -28,7 +28,7 @@ local function OnFirstShow()
     tabFrame:SetPoint("TOP", f, "TOP", 0, -36)
     tabFrame:SetSize(1090, 28)
     tabFrame:SetFrameLevel(fl + 8)
-    local tabW = 1090 / 12
+    local tabW = 1090 / #PBM.CLASS_TABS
     for i, cls in ipairs(PBM.CLASS_TABS) do
         local btn = CreateFrame("Button", "LichborneTab"..i, tabFrame)
         btn:SetSize(tabW - 1, 26)
@@ -46,6 +46,8 @@ local function OnFirstShow()
         local hex
         if cls == "Raid" or cls == "Overview" then
             hex = cls == "Overview" and "|cffd4af37" or "|cffC69B3A"
+        elseif cls == "Group" then
+            hex = "|cff248FFF"   -- blue matching Invite Group button hue
         elseif cls == "Settings" then
             hex = "|cff7799ff"
         else
@@ -53,7 +55,7 @@ local function OnFirstShow()
         end
         local lbl = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         lbl:SetAllPoints(btn); lbl:SetJustifyH("CENTER"); lbl:SetJustifyV("MIDDLE")
-        lbl:SetText(hex..(PBM.TAB_LABELS[cls] or cls).."|r")
+        lbl:SetText(hex..(PBM.TAB_BUTTON_LABELS[cls] or PBM.TAB_LABELS[cls] or cls).."|r")
         btn:SetScript("OnClick", function()
             PBM.State.activeTab = cls
             PBM.UpdateTabs()
@@ -72,6 +74,9 @@ local function OnFirstShow()
                 elseif cls == "Overview" then
                     btn.bg:SetTexture(0.14, 0.30, 0.14, 1)
                     btn.bottomLine:SetTexture(0.40, 0.90, 0.40, 0.6)
+                elseif cls == "Group" then
+                    btn.bg:SetTexture(0.035, 0.14, 0.245, 1)
+                    btn.bottomLine:SetTexture(0.14, 0.56, 1.0, 0.6)
                 elseif cls == "Settings" then
                     btn.bg:SetTexture(0.14, 0.18, 0.30, 1)
                     btn.bottomLine:SetTexture(0.467, 0.600, 1.000, 0.6)
@@ -202,7 +207,7 @@ local function OnFirstShow()
     local swW = swTotalW / 10
     local avgIdx = 0
     for i, cls in ipairs(PBM.CLASS_TABS) do
-        if cls == "Raid" then break end
+        if cls == "Raid" or cls == "Group" then break end
         avgIdx = avgIdx + 1
         local c = PBM.CLASS_COLORS[cls]
         local sw = CreateFrame("Button", "LichborneAvgSwatch"..avgIdx, avgFrame)
@@ -349,7 +354,7 @@ local function OnFirstShow()
         end
         LichborneTrackerDB.rows[slot].name = targetName
         LichborneTrackerDB.rows[slot].level = UnitLevel("target")
-        LichborneOutput("|cffC69B3ALichborne:|r Added "..hex..targetName.."|r ("..cls..")", 1, 0.85, 0)
+        LichborneOutput("|cffC69B3APBM:|r Added "..hex..targetName.."|r ("..cls..")", 1, 0.85, 0)
         if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
         if PBM.State.rowFrames and #PBM.State.rowFrames > 0 then PBM.RefreshRows() end
         return targetName, true
@@ -411,7 +416,7 @@ local function OnFirstShow()
                 local lvlNote = skipped > 0 and " Levels updated." or ""
                 LichborneAddStatus:SetText("|cff44ff44Added "..added.." new, skipped "..skipped.." duplicates."..lvlNote.."|r")
             end
-            LichborneOutput("|cffC69B3ALichborne:|r Group scan complete. Added: "..added..", Skipped: "..skipped..(skipped > 0 and ". Levels updated." or ""), 1, 0.85, 0)
+            LichborneOutput("|cffC69B3APBM:|r Group scan complete. Added: "..added..", Skipped: "..skipped..(skipped > 0 and ". Levels updated." or ""), 1, 0.85, 0)
         end)
     end)
 
@@ -536,12 +541,12 @@ local function OnFirstShow()
             LichborneTrackerDB.rows[foundDi].level = UnitLevel("target")
             if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
             local cA = PBM.CLASS_COLORS[clsGS]; local hA = cA and string.format("|cff%02x%02x%02x",math.floor(cA.r*255),math.floor(cA.g*255),math.floor(cA.b*255)) or "|cffffffff"
-            LichborneOutput("|cffC69B3ALichborne:|r Added "..hA..targetName.."|r to tracker.", 1, 0.85, 0)
+            LichborneOutput("|cffC69B3APBM:|r Added "..hA..targetName.."|r to tracker.", 1, 0.85, 0)
         end
         local rowData = LichborneTrackerDB.rows[foundDi]
         local c = PBM.CLASS_COLORS[rowData.cls or ""]; local hex = c and string.format("|cff%02x%02x%02x",math.floor(c.r*255),math.floor(c.g*255),math.floor(c.b*255)) or "|cffffffff"
         LichborneAddStatus:SetText("Updating Gear for "..hex..targetName.."|r...")
-        LichborneOutput("|cffC69B3ALichborne:|r Updating Gear for "..hex..targetName.."|r...", 1, 0.85, 0)
+        LichborneOutput("|cffC69B3APBM:|r Updating Gear for "..hex..targetName.."|r...", 1, 0.85, 0)
         local gsDi = foundDi
         -- Lock all buttons (including Stop and invite) during single-target scan
         SetScanActive(true)
@@ -564,7 +569,7 @@ local function OnFirstShow()
                 SetScanActive(false)
                 if stopBtn then stopBtn:Enable(); stopBtn:SetAlpha(1.0) end
                 if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444GS scan timed out.|r") end
-                LichborneOutput("|cffC69B3ALichborne:|r |cffff4444Target GS scan timed out.|r", 1, 0.85, 0)
+                LichborneOutput("|cffC69B3APBM:|r |cffff4444Target GS scan timed out.|r", 1, 0.85, 0)
                 return
             end
             if gsPhase == "delay" then
@@ -621,12 +626,12 @@ local function OnFirstShow()
             LichborneTrackerDB.rows[foundDi].level = UnitLevel("target")
             if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
             local cA = PBM.CLASS_COLORS[clsSP]; local hA = cA and string.format("|cff%02x%02x%02x",math.floor(cA.r*255),math.floor(cA.g*255),math.floor(cA.b*255)) or "|cffffffff"
-            LichborneOutput("|cffC69B3ALichborne:|r Added "..hA..targetName.."|r to tracker.", 1, 0.85, 0)
+            LichborneOutput("|cffC69B3APBM:|r Added "..hA..targetName.."|r to tracker.", 1, 0.85, 0)
         end
         local rowData = LichborneTrackerDB.rows[foundDi]
         local c = PBM.CLASS_COLORS[rowData.cls or ""]; local hex = c and string.format("|cff%02x%02x%02x",math.floor(c.r*255),math.floor(c.g*255),math.floor(c.b*255)) or "|cffffffff"
         LichborneAddStatus:SetText("Adding Specialization for "..hex..targetName.."|r...")
-        LichborneOutput("|cffC69B3ALichborne:|r Adding Specialization for "..hex..targetName.."|r...", 1, 0.85, 0)
+        LichborneOutput("|cffC69B3APBM:|r Adding Specialization for "..hex..targetName.."|r...", 1, 0.85, 0)
         local spDi = foundDi
         -- Lock all buttons (including Stop and invite) during single-target scan
         SetScanActive(true)
@@ -649,7 +654,7 @@ local function OnFirstShow()
                 SetScanActive(false)
                 if stopBtn then stopBtn:Enable(); stopBtn:SetAlpha(1.0) end
                 if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444Specialization scan timed out.|r") end
-                LichborneOutput("|cffC69B3ALichborne:|r |cffff4444Target Specialization scan timed out.|r", 1, 0.85, 0)
+                LichborneOutput("|cffC69B3APBM:|r |cffff4444Target Specialization scan timed out.|r", 1, 0.85, 0)
                 return
             end
             if spPhase == "delay" then
@@ -722,7 +727,7 @@ local function OnFirstShow()
             if #units == 0 then SetScanActive(false); LichborneAddStatus:SetText("|cffff4444No group members found.|r"); return end
             local totalTime = math.ceil(#units*2.5)
             LichborneAddStatus:SetText("|cffff9900Added "..added.." new, skipped "..skipped.." duplicates"..(skipped > 0 and ". Levels updated." or ".").."\nInspecting "..#units.." players (~"..totalTime.."s)...|r")
-            LichborneOutput("|cffC69B3ALichborne:|r Group synced (+"..added..", skipped "..skipped..(skipped > 0 and ". Levels updated." or "")..").\nStarting GS scan for "..#units.." players.", 1, 0.85, 0)
+            LichborneOutput("|cffC69B3APBM:|r Group synced (+"..added..", skipped "..skipped..(skipped > 0 and ". Levels updated." or "")..").\nStarting GS scan for "..#units.." players.", 1, 0.85, 0)
             local scanGsStartTime = GetTime()  -- PBM.DBG: group scan timing
             local idx,elapsed,inspecting = 1,0,false
             local gFrame = CreateFrame("Frame")
@@ -743,7 +748,7 @@ local function OnFirstShow()
                     PBM.State.LichborneGroupScanActive = false
                     SetScanActive(false)
                     LichborneAddStatus:SetText("|cff44ff44Group GS update complete!|r")
-                    LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44Group GS update complete.|r", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r |cff44ff44Group GS update complete.|r", 1, 0.85, 0)
                     PBM.DBG("|cff44ff44Group GS scan done|r - "..#units.." units, elapsed |cffffff88"..string.format("%.1f", GetTime()-scanGsStartTime).."s|r")
                     PBM.RefreshRows(); return
                 end
@@ -752,7 +757,7 @@ local function OnFirstShow()
                 if not targetName then PBM.DBG("|cffff4444[NIL]|r UnitName("..unit..") returned nil - skipping"); idx=idx+1; return end
                 local foundDi = nil
                 for i, row in ipairs(LichborneTrackerDB.rows) do if row.name and row.name:lower()==targetName:lower() then foundDi=i; break end end
-                if not foundDi then LichborneOutput("|cffC69B3ALichborne:|r Skipping "..tostring(targetName).." (not tracked)",1,0.6,0.3); idx=idx+1; return end
+                if not foundDi then LichborneOutput("|cffC69B3APBM:|r Skipping "..tostring(targetName).." (not tracked)",1,0.6,0.3); idx=idx+1; return end
                 LichborneAddStatus:SetText("Updating Gear for |cffffff88"..tostring(targetName).."|r... ("..(idx).."/"..#units..")")
                 PBM.State.LichborneInspectTarget = foundDi; PBM.State.LichborneInspectUnit = unit
                 PBM.DBG("InspectUnit("..unit..") -> group GS for |cffffff88"..tostring(targetName).."|r ("..idx.."/"..#units..") UnitExists=|cffffff88"..tostring(UnitExists(unit)).."|r InRange=|cffffff88"..tostring(CheckInteractDistance(unit,1)).."|r")
@@ -790,7 +795,7 @@ local function OnFirstShow()
             if #units == 0 then SetScanActive(false); LichborneAddStatus:SetText("|cffff4444No group members found.|r"); return end
             local totalTime = math.ceil(#units*3)
             LichborneAddStatus:SetText("|cffff9900Added "..added.." new, skipped "..skipped.." duplicates"..(skipped > 0 and ". Levels updated." or ".").."\nReading Specialization for "..#units.." players (~"..totalTime.."s)...|r")
-            LichborneOutput("|cffC69B3ALichborne:|r Group synced (+"..added..", skipped "..skipped..(skipped > 0 and ". Levels updated." or "")..").\nStarting Specialization scan for "..#units.." players.", 1, 0.85, 0)
+            LichborneOutput("|cffC69B3APBM:|r Group synced (+"..added..", skipped "..skipped..(skipped > 0 and ". Levels updated." or "")..").\nStarting Specialization scan for "..#units.." players.", 1, 0.85, 0)
             local scanSpecStartTime = GetTime()  -- PBM.DBG: group scan timing
             local idx,elapsed,inspecting = 1,0,false
             local sFrame = CreateFrame("Frame")
@@ -812,7 +817,7 @@ local function OnFirstShow()
                     PBM.State.LichborneGroupScanActive = false
                     SetScanActive(false)
                     LichborneAddStatus:SetText("|cff44ff44Group Specialization update complete!|r")
-                    LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44Group Specialization update complete.|r", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r |cff44ff44Group Specialization update complete.|r", 1, 0.85, 0)
                     PBM.DBG("|cff44ff44Group Spec scan done|r - "..#units.." units, elapsed |cffffff88"..string.format("%.1f", GetTime()-scanSpecStartTime).."s|r")
                     PBM.RefreshRows(); if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end; return
                 end
@@ -821,7 +826,7 @@ local function OnFirstShow()
                 if not targetName then PBM.DBG("|cffff4444[NIL]|r UnitName("..unit..") returned nil - skipping"); idx=idx+1; return end
                 local foundDi = nil
                 for i, row in ipairs(LichborneTrackerDB.rows) do if row.name and row.name:lower()==targetName:lower() then foundDi=i; break end end
-                if not foundDi then LichborneOutput("|cffC69B3ALichborne:|r Skipping "..tostring(targetName).." (not tracked)",1,0.6,0.3); idx=idx+1; return end
+                if not foundDi then LichborneOutput("|cffC69B3APBM:|r Skipping "..tostring(targetName).." (not tracked)",1,0.6,0.3); idx=idx+1; return end
                 LichborneAddStatus:SetText("Reading Specialization |cffffff88"..tostring(targetName).."|r... ("..(idx).."/"..#units..")")
                 PBM.State.LichborneSpecTarget = foundDi; PBM.State.LichborneInspectUnit = unit
                 if LichborneTrackerDB.rows[foundDi] then LichborneTrackerDB.rows[foundDi].spec="" end
@@ -852,7 +857,7 @@ local function OnFirstShow()
         PBM.State.ipQueryActive = false
         SetScanActive(false)
         LichborneAddStatus:SetText("|cffff4444Scan stopped.|r")
-        LichborneOutput("|cffC69B3ALichborne:|r |cffff4444Scan stopped.|r", 1, 0.85, 0)
+        LichborneOutput("|cffC69B3APBM:|r |cffff4444Scan stopped.|r", 1, 0.85, 0)
     end)
 
     -- Row y=10: Add Target / Add Group (existing buttons stay here)
@@ -873,7 +878,7 @@ local function OnFirstShow()
     local cswW = cswTotalW / 10
     local cswIdx = 0
     for i, cls in ipairs(PBM.CLASS_TABS) do
-        if cls == "Raid" or cls == "Overview" then break end
+        if cls == "Raid" or cls == "Overview" or cls == "Group" then break end
         cswIdx = cswIdx + 1
         local c = PBM.CLASS_COLORS[cls]
         local csw = CreateFrame("Button", "LichborneClassSwatch"..cswIdx, clsFrame)
@@ -1016,7 +1021,7 @@ local function OnFirstShow()
             -- ── Phase 2: GS scan ──────────────────────────────────────────
             local totalTime = math.ceil(#units * 6)
             LichborneAddStatus:SetText("|cffff9900Added "..added.." new, skipped "..skipped.." duplicates"..(skipped > 0 and ". Levels updated." or ".").."\nFull scan: "..#units.." players (~"..totalTime.."s)...|r")
-            LichborneOutput("|cffC69B3ALichborne:|r Full Group Scan started (+"..added..", skipped "..skipped..(skipped > 0 and ". Levels updated." or "")..").\nGS phase: "..#units.." players.", 1, 0.85, 0)
+            LichborneOutput("|cffC69B3APBM:|r Full Group Scan started (+"..added..", skipped "..skipped..(skipped > 0 and ". Levels updated." or "")..").\nGS phase: "..#units.." players.", 1, 0.85, 0)
             local scanStartTime = GetTime()
             local idx, elapsed, inspecting = 1, 0, false
             local gFrame = CreateFrame("Frame")
@@ -1037,7 +1042,7 @@ local function OnFirstShow()
                     PBM.DBG("|cff44ff44FullScan GS phase done|r — elapsed |cffffff88"..string.format("%.1f", GetTime()-scanStartTime).."s|r")
                     -- ── Phase 3: Spec scan ────────────────────────────────
                     LichborneAddStatus:SetText("|cffff9900GS done. Starting Specialization scan ("..#units.." players)...|r")
-                    LichborneOutput("|cffC69B3ALichborne:|r GS phase complete. Starting Specialization phase.", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r GS phase complete. Starting Specialization phase.", 1, 0.85, 0)
                     local sIdx, sElapsed, sInspecting = 1, 0, false
                     local sFrame = CreateFrame("Frame")
                     activeInspectFrame = sFrame
@@ -1057,7 +1062,7 @@ local function OnFirstShow()
                             PBM.State.LichborneGroupScanActive = false
                             SetScanActive(false)
                             LichborneAddStatus:SetText("|cff44ff44Full Group Scan complete!|r")
-                            LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44Full Group Scan complete.|r", 1, 0.85, 0)
+                            LichborneOutput("|cffC69B3APBM:|r |cff44ff44Full Group Scan complete.|r", 1, 0.85, 0)
                             PBM.DBG("|cff44ff44FullScan complete|r — total elapsed |cffffff88"..string.format("%.1f", GetTime()-scanStartTime).."s|r")
                             PBM.RefreshRows(); if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
                             -- Trigger group strategies query for all scanned members
@@ -1085,7 +1090,7 @@ local function OnFirstShow()
                             if row.name and row.name:lower() == targetName:lower() then foundDi = i; break end
                         end
                         if not foundDi then
-                            LichborneOutput("|cffC69B3ALichborne:|r Skipping "..tostring(targetName).." (not tracked)", 1, 0.6, 0.3)
+                            LichborneOutput("|cffC69B3APBM:|r Skipping "..tostring(targetName).." (not tracked)", 1, 0.6, 0.3)
                             sIdx = sIdx + 1; return
                         end
                         LichborneAddStatus:SetText("Specialization scan |cffffff88"..tostring(targetName).."|r... ("..sIdx.."/"..#units..")")
@@ -1104,7 +1109,7 @@ local function OnFirstShow()
                     if row.name and row.name:lower() == targetName:lower() then foundDi = i; break end
                 end
                 if not foundDi then
-                    LichborneOutput("|cffC69B3ALichborne:|r Skipping "..tostring(targetName).." (not tracked)", 1, 0.6, 0.3)
+                    LichborneOutput("|cffC69B3APBM:|r Skipping "..tostring(targetName).." (not tracked)", 1, 0.6, 0.3)
                     idx = idx + 1; return
                 end
                 LichborneAddStatus:SetText("Updating Gear for |cffffff88"..tostring(targetName).."|r... ("..idx.."/"..#units..")")
@@ -1190,11 +1195,11 @@ local function OnFirstShow()
             end
         end
         if #botNames == 0 then
-            LichborneOutput("|cffC69B3ALichborne:|r No orphaned bots found.", 1, 0.5, 0.5)
+            LichborneOutput("|cffC69B3APBM:|r No orphaned bots found.", 1, 0.5, 0.5)
             if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444No orphaned bots found.|r") end
             return
         end
-        LichborneOutput("|cffC69B3ALichborne:|r Logging out "..#botNames.." orphaned bots...", 1, 0.85, 0)
+        LichborneOutput("|cffC69B3APBM:|r Logging out "..#botNames.." orphaned bots...", 1, 0.85, 0)
         if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Logging out "..#botNames.." orphaned bots...") end
         SetScanActive(true)
         local stopBtn = _G["LichborneStopInspectBtn"]
@@ -1211,7 +1216,7 @@ local function OnFirstShow()
                 SetScanActive(false)
                 local stopBtn2 = _G["LichborneStopInspectBtn"]
                 if stopBtn2 then stopBtn2:Enable(); stopBtn2:SetAlpha(1.0) end
-                LichborneOutput("|cffC69B3ALichborne:|r |cff44ff44All "..#botNames.." orphaned bots logged out.|r", 1, 0.85, 0)
+                LichborneOutput("|cffC69B3APBM:|r |cff44ff44All "..#botNames.." orphaned bots logged out.|r", 1, 0.85, 0)
                 if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44Orphaned bots logged out ("..#botNames..").|r") end
                 return
             end
@@ -1360,7 +1365,7 @@ local function OnFirstShow()
                     end
                 end
                 lockExtra(true)
-                LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Disbanding group...|r", 1, 0.85, 0)
+                LichborneOutput("|cffC69B3APBM:|r |cffd4af37Disbanding group...|r", 1, 0.85, 0)
                 SendChatMessage(".playerbots bot remove *", "SAY")
                 local waited = 0
                 local disbFrame = CreateFrame("Frame")
@@ -1370,7 +1375,7 @@ local function OnFirstShow()
                     LeaveParty()
                     PBM.SetButtonsLocked(false)
                     lockExtra(false)
-                    LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Group disbanded.|r", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r |cffd4af37Group disbanded.|r", 1, 0.85, 0)
                     disbFrame:SetScript("OnUpdate", nil)
                 end)
             end,
@@ -1726,7 +1731,7 @@ local function OnFirstShow()
         expEditBox:SetFocus()
         expEditBox:HighlightText()
         exportPopup:Show()
-        LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Export ready — click Select All, then press Ctrl+C.|r")
+        LichborneOutput("|cffC69B3APBM:|r |cffd4af37Export ready — click Select All, then press Ctrl+C.|r")
     end)
 
     -- ── Import popup ────────────────────────────────────────────
@@ -1869,7 +1874,7 @@ local function OnFirstShow()
         if LichborneRaidFrame then PBM.RefreshRaidRows() end
         if PBM.State.LichborneOverviewFrame  then PBM.RefreshOverviewRows()  end
         PBM.UpdateSummary()
-        LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Import complete — tracker data loaded.|r")
+        LichborneOutput("|cffC69B3APBM:|r |cffd4af37Import complete — tracker data loaded.|r")
     end)
 
     impDoBtn:SetScript("OnClick", function()
@@ -2013,7 +2018,7 @@ local function OnFirstShow()
         GameTooltip:AddLine(" ", 1, 1, 1)
         GameTooltip:AddLine("TIP: Click any column header to |cffC69B3ASort|r.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: Use the |cffC69B3AProf|r cell to track a character's", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     profession.", 0.4, 0.8, 1)
+        GameTooltip:AddLine("     profession, gear needs, or role.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: You can change the spec by clicking the icon.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: Click |cff00cc00[+]|r on a PlayerBot row to add to the", 0.4, 0.8, 1)
         GameTooltip:AddLine("     |cffC69B3ARaid Tab|r.  Right-click |cffFF6600[+]|r to remove.", 0.4, 0.8, 1)
@@ -2039,7 +2044,7 @@ local function OnFirstShow()
     local setupHelpIcon = setupHelpBtn:CreateTexture(nil, "OVERLAY")
     setupHelpIcon:SetPoint("CENTER", setupHelpBtn, "CENTER", 0, 0)
     setupHelpIcon:SetSize(22, 22)
-    setupHelpIcon:SetTexture("Interface\\Icons\\inv_gizmo_06")
+    setupHelpIcon:SetTexture("Interface\\Icons\\inv_misc_book_11")
     setupHelpBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(setupHelpBtn, "ANCHOR_LEFT")
         GameTooltip:AddLine("SETTING UP PLAYERBOTS", 0.78, 0.61, 0.23)
@@ -2093,8 +2098,6 @@ local function OnFirstShow()
         GameTooltip:AddLine("   |cffC69B3APage|r dropdown in the header to view overflow.", 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
         GameTooltip:AddLine("TIP: Click any column header to |cffC69B3ASort|r.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Use the |cffC69B3AProf|r cell to track a character's", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     profession.", 0.4, 0.8, 1)
         GameTooltip:AddLine("TIP: Use Delete Character |cffff3333[x]|r to remove", 0.4, 0.8, 1)
         GameTooltip:AddLine("     PlayerBots from your tracker.", 0.4, 0.8, 1)
         GameTooltip:Show()
@@ -2173,13 +2176,6 @@ local function OnFirstShow()
         GameTooltip:AddLine("conditions are met. Syncs do not run automatically", 0.9, 0.9, 0.9)
         GameTooltip:AddLine("— you must enter the toggle command to fire each sync.", 0.9, 0.9, 0.9)
         GameTooltip:AddLine("  |cff69CCF0.levelsync level on|r  /  |cff69CCF0.levelsync IP on|r", 1, 1, 1)
-        GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffd4af37Reset Instances|r", 1, 1, 1)
-        GameTooltip:AddLine("The unbindall command loops through every member", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("of your group or raid and resets their instances", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("one by one with a short delay between each.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("  |cff69CCF0.levelsync unbindall <name>|r", 1, 1, 1)
-        GameTooltip:AddLine("Use the |cffd4af37Playerbots Tab|r to run this for the whole group.", 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
         GameTooltip:AddLine("|cffd4af37Pool Gold|r", 1, 1, 1)
         GameTooltip:AddLine("Collects all gold from every member of your level", 0.9, 0.9, 0.9)
@@ -2296,7 +2292,7 @@ local function OnFirstShow()
                         LichborneTrackerDB.allGroups[g][i] = {name="",cls="",spec="",gs=0,realGs=0}
                     end
                 end
-                LichborneOutput("|cffC69B3ALichborne:|r |cffff4444All data wiped.|r", 1, 0.5, 0.5)
+                LichborneOutput("|cffC69B3APBM:|r |cffff4444All data wiped.|r", 1, 0.5, 0.5)
                 PBM.RefreshRows()
                 if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
                 if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
@@ -2365,7 +2361,7 @@ local function OnFirstShow()
                 expEditBox:SetText(blob)
                 expEditBox:SetFocus(); expEditBox:HighlightText()
                 exportPopup:Show()
-                LichborneOutput("|cffC69B3ALichborne:|r |cffd4af37Export ready — click Select All, then press Ctrl+C.|r")
+                LichborneOutput("|cffC69B3APBM:|r |cffd4af37Export ready — click Select All, then press Ctrl+C.|r")
             end)
 
         OptActionBtn(-104,
@@ -2530,7 +2526,7 @@ local function OnFirstShow()
     end)
 
     local chgChild = CreateFrame("Frame", nil, chgScroll)
-    chgChild:SetSize(440, 480)
+    chgChild:SetSize(440, 1160)
     chgChild:SetFrameLevel(chgFL + 1)
     chgScroll:SetScrollChild(chgChild)
 
@@ -2551,46 +2547,112 @@ local function OnFirstShow()
         t:SetVertexColor(0.78, 0.61, 0.23, 0.4)
     end
 
-    ChgLine("|cffC69B3ARecent Changes|r", -14, 14, "CENTER")
+    ChgLine("|cffFF8C00Recent Changes|r", -14, 14, "LEFT")
     ChgDiv(-34)
 
-    ChgLine("|cffd4af37Release v1.2|r  |cff888888May 30, 2026|r", -48, 11, "CENTER")
+    ChgLine("|cffd4af37Release v1.3|r  |cffFF8C00June 5, 2026|r", -48, 13, "CENTER")
     ChgDiv(-63)
 
-    -- Bug Fixes
-    ChgLine("|cffC69B3ABug Fixes|r", -76, 10)
+    -- Hunter
+    ChgLine("|cffABD473Hunter|r", -76, 10)
     ChgDiv(-89)
-    ChgLine("|cff888888-|r  Fixed: Invite Raid no longer kicks and reinvites members in partial groups", -102)
-    ChgLine("|cff888888-|r  Stop Scan now stops |cffffcc00+Add IP Tiers|r mid-run", -115)
-    ChgLine("|cff888888-|r  Clear All no longer resets Raid tier/raid selection", -128)
+    ChgLine("|cff888888-|r  Removed |cffABD473dps|r button from character sheet (CO)", -102)
+    ChgLine("|cff888888-|r  Removed |cffABD473dps debuff|r button from character sheet (CO)", -115)
+    ChgLine("|cff888888-|r  Removed |cffABD473bviper|r aspect from character sheet (CO + NC)", -128)
+
+    -- Paladin
+    ChgLine("|cffF58CBAPaladin|r", -148, 10)
+    ChgDiv(-161)
+    ChgLine("|cff888888-|r  |cffF58CBABlessings renamed|r — mod-playerbots |cff66ccffPR #2432|r", -174)
+    ChgLine("|cff888888-|r  |cffd4af37bstats|r  ->  |cffF58CBAbkings   |cffF58CBA(Blessing of Kings)|r", -187)
+    ChgLine("|cff888888-|r  |cffd4af37bhealth|r  ->  |cffF58CBAbsanc   |cffF58CBA(Blessing of Sanctuary)|r", -200)
+    ChgLine("|cff888888-|r  |cffd4af37bmana|r  ->  |cffF58CBAbwisdom   |cffF58CBA(Blessing of Wisdom)|r", -213)
+    ChgLine("|cff888888-|r  |cffd4af37bdps|r  ->  |cffF58CBAbmight   |cffF58CBA(Blessing of Might)|r", -226)
+
+    -- Rogue
+    ChgLine("|cffFFF569Rogue|r", -246, 10)
+    ChgDiv(-259)
+    ChgLine("|cff888888-|r  Added |cffFFF569Melee|r button — DPS column: DPS / Melee / Boost", -272)
+    ChgLine("|cff888888-|r  Combat section split into |cffFFF569DPS|r and |cffFFF569Stealth|r columns", -285)
+
+    -- Playerbots Tab
+    ChgLine("|cffC69B3APlayerbots Tab|r", -305, 10)
+    ChgDiv(-318)
+    ChgLine("|cff888888-|r  Reset Instances now uses |cff66ccff.playerbots bot refresh=raid *|r", -331)
+    ChgLine("|cff888888-|r  Removed GM Reset Instances button", -344)
+
+    -- Bug Fixes (merged from v1.3)
+    ChgLine("|cffC69B3ABug Fixes|r", -364, 10)
+    ChgDiv(-377)
+    ChgLine("|cff888888-|r  Fixed: |cffFF7D0ADruid|r offheal strategy showing up red in notes", -390)
 
     -- UI
-    ChgLine("|cffC69B3AUI|r", -148, 10)
-    ChgDiv(-161)
-    ChgLine("|cff888888-|r  Show/Hide menu added: toggle tab and button visibility per bot row", -174)
-    ChgLine("|cff888888-|r  Needs column restored — shares the Prof. column |cff888888(use either)|r", -187)
-    ChgLine("|cff888888-|r  Raid tab: note color brightened for readability", -200)
-    ChgLine("|cff888888-|r  Tracker section header renamed: |cffffcc00Admin:|r  ->  |cffffcc00Menu:|r", -213)
-    ChgLine("|cff888888-|r  Character sheet: name on its own line in class color", -226)
-    ChgLine("|cff888888-|r  PvP tooltip: moved above button, wording cleaned up", -239)
-    ChgLine("|cff888888-|r  Several AoE icons updated to Blizzard |cff888888(spell_frost_icestorm)|r", -252)
-    ChgLine("|cff888888-|r  Reset Instances: tooltips updated", -265)
+    ChgLine("|cffC69B3AUI|r", -410, 10)
+    ChgDiv(-423)
+    ChgLine("|cff888888-|r  New |cffffcc00Group|r tab added — shows current group members", -436)
+    ChgLine("|cff888888-|r  Character sheet: bag colors now correspond to how full the inventory is", -449)
 
-    -- Class Menus
-    ChgLine("|cffC69B3AClass Menus|r", -285, 10)
-    ChgDiv(-298)
-    ChgLine("|cff888888-|r  Removed ability rotation lines from all 10 class spec tooltips", -311)
-    ChgLine("    |cff999999Due to time restraints and constantly evolving Playerbot strategies.|r", -324)
-    ChgLine("|cff888888-|r  Warlock: removed DPS toggle button, Combat row shrunk to 3 icons", -337)
-    ChgLine("|cff888888-|r  Warlock & Shaman: increased vertical row spacing |cff888888(15 px gap)|r", -350)
-    ChgLine("|cff888888-|r  Shaman: Caster AoE + Melee AoE merged into single |cffffcc00AoE|r button", -363)
-    ChgLine("|cff888888-|r  Shaman Totem section removed — use |cffffcc00Multibot|r for totem functions", -376)
-    ChgLine("|cff888888-|r  Druid: added |cffffcc00Tranquility|r, |cffffcc00Blanketing|r, and |cffffcc00Feral Charge|r strategies", -389)
+    -- Filters
+    ChgLine("|cffC69B3AFilters|r", -469, 10)
+    ChgDiv(-482)
+    ChgLine("|cff888888-|r  New filter: removes generated notes in the |cffFF8C00Raid|r tab — allows for manual entry", -495)
+    ChgLine("|cff888888-|r  New filter: removes generated roles in the |cffFF8C00Raid|r/|cffABD473Overview|r tab —", -508)
+    ChgLine("    allows for manual entry", -521)
+    ChgLine("|cff888888-|r  New filter: Show/Hide new |cffffcc00Group|r tab", -534)
+    ChgLine("|cff888888-|r  New filter: Show/Hide |cff66ccffStrategy|r responses in output box", -547)
+    ChgLine("|cff888888-|r  New filter: Show/Hide |cff66ccff+Add Target/Group Strategies|r buttons", -560)
+    ChgLine("|cff888888-|r  New filter: Show/Hide Who response (when opening character menus)", -573)
+    ChgLine("|cff888888-|r  New filter: |cffffcc00Hide Group Members|r — hides chars in your party", -586)
+    ChgLine("|cff888888-|r  New toggles: name-click char sheet — |cffffcc00Group|r + Class tabs", -599)
 
     -- Buttons
-    ChgLine("|cffC69B3AButtons|r", -409, 10)
-    ChgDiv(-422)
-    ChgLine("|cff888888-|r  Buttons disabled while |cffffcc00+Add IP Tiers|r is running", -435)
+    ChgLine("|cffC69B3AButtons|r", -619, 10)
+    ChgDiv(-632)
+    ChgLine("|cff888888-|r  Added |cffff8c00\"Does not work for rndbots.\"|r note in Invite Group & Raid buttons", -645)
+
+    -- Templates
+    ChgLine("|cffC69B3ATemplates|r", -665, 10)
+    ChgDiv(-678)
+    ChgLine("|cff888888-|r  |cffC41F3BDK:|r |cffC69B3ADbl Aura Blood PvE|r (43-26-2) added — spec \"double aura blood pve\"", -691)
+
+    ChgDiv(-711)
+    ChgLine("|cffd4af37Release v1.2|r  |cffFF8C00May 30, 2026|r", -731, 13, "CENTER")
+    ChgDiv(-746)
+
+    -- Bug Fixes
+    ChgLine("|cffC69B3ABug Fixes|r", -759, 10)
+    ChgDiv(-772)
+    ChgLine("|cff888888-|r  Fixed: Invite Raid no longer kicks and reinvites members in partial groups", -785)
+    ChgLine("|cff888888-|r  Stop Scan now stops |cffffcc00+Add IP Tiers|r mid-run", -798)
+    ChgLine("|cff888888-|r  Clear All no longer resets Raid tier/raid selection", -811)
+
+    -- UI
+    ChgLine("|cffC69B3AUI|r", -831, 10)
+    ChgDiv(-844)
+    ChgLine("|cff888888-|r  Show/Hide menu added: toggle tab and button visibility per bot row", -857)
+    ChgLine("|cff888888-|r  Needs column restored — shares the Prof. column |cff888888(use either)|r", -870)
+    ChgLine("|cff888888-|r  Raid tab: note color brightened for readability", -883)
+    ChgLine("|cff888888-|r  Tracker section header renamed: |cffffcc00Admin:|r  ->  |cffffcc00Menu:|r", -896)
+    ChgLine("|cff888888-|r  Character sheet: name on its own line in class color", -909)
+    ChgLine("|cff888888-|r  PvP tooltip: moved above button, wording cleaned up", -922)
+    ChgLine("|cff888888-|r  Several AoE icons updated to Blizzard |cff888888(spell_frost_icestorm)|r", -935)
+    ChgLine("|cff888888-|r  Reset Instances: tooltips updated", -948)
+
+    -- Class Menus
+    ChgLine("|cffC69B3AClass Menus|r", -968, 10)
+    ChgDiv(-981)
+    ChgLine("|cff888888-|r  Removed ability rotation lines from all 10 class spec tooltips", -994)
+    ChgLine("    |cff999999Due to time restraints and constantly evolving Playerbot strategies.|r", -1007)
+    ChgLine("|cff888888-|r  |cff8787EDWarlock:|r removed DPS toggle button, Combat row shrunk to 3 icons", -1020)
+    ChgLine("|cff888888-|r  |cff8787EDWarlock|r & |cff0070DEShaman:|r increased vertical row spacing |cff888888(15 px gap)|r", -1033)
+    ChgLine("|cff888888-|r  |cff0070DEShaman:|r Caster AoE + Melee AoE merged into single |cffffcc00AoE|r button", -1046)
+    ChgLine("|cff888888-|r  |cff0070DEShaman|r Totem section removed — use |cffffcc00Multibot|r for totem functions", -1059)
+    ChgLine("|cff888888-|r  |cffFF7D0ADruid:|r added |cffffcc00Tranquility|r, |cffffcc00Blanketing|r, and |cffffcc00Feral Charge|r strategies", -1072)
+
+    -- Buttons
+    ChgLine("|cffC69B3AButtons|r", -1092, 10)
+    ChgDiv(-1105)
+    ChgLine("|cff888888-|r  Buttons disabled while |cffffcc00+Add IP Tiers|r is running", -1118)
 
     -- ── Credits tab content ───────────────────────────────────────────
     local optsCreditsBox = CreateFrame("Frame", nil, optionsPanel)
@@ -2643,6 +2705,53 @@ local function OnFirstShow()
     CreditsDivider(-270)
     CreditsLine("|cffd4af37Questions & Support:|r  lichborne.wow@proton.me  —  |cffd4af37Discord:|r jared2219", -292, nil, "CENTER")
 
+    -- ── Store bottom-button refs for Show/Hide menu ──────────────────
+    PBM.State.trackerBtns = {
+        addTarget      = _G["LichborneAddTargetBtn"],
+        addGroup       = _G["LichborneAddGroupBtn"],
+        addTargetGS    = _G["LichborneUpdateGSBtn"],
+        addGroupGS     = _G["LichborneUpdateGroupGSBtn"],
+        addTargetSpec  = _G["LichborneUpdateTargetSpecBtn"],
+        addGroupSpec   = _G["LichborneUpdateGroupSpecBtn"],
+        addTargetStrat = _G["LichborneTargetStrategiesBtn"],
+        addGroupStrat  = _G["LichborneGroupStrategiesBtn"],
+        stop           = _G["LichborneStopInspectBtn"],
+        maintBtn       = _G["LichborneMaintBtn"],
+    }
+
+    -- Repositions/resizes bottom-column buttons when strategy row is shown or hidden
+    function PBM.RefreshStrategyBtnLayout()
+        local b = PBM.State.trackerBtns
+        if not b then return end
+        local shown = not (PBMConfig and PBMConfig.hiddenButtons and PBMConfig.hiddenButtons.strategies)
+        if b.addTargetStrat then if shown then b.addTargetStrat:Show() else b.addTargetStrat:Hide() end end
+        if b.addGroupStrat  then if shown then b.addGroupStrat:Show()  else b.addGroupStrat:Hide()  end end
+        local par = f  -- main tracker frame
+        if shown then
+            -- Standard layout: 5 rows of 29px at y = 8, 42, 76, 110, 144
+            if b.stop          then b.stop:ClearAllPoints();          b.stop:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",15, 8);   b.stop:SetSize(155,29) end
+            if b.maintBtn      then b.maintBtn:ClearAllPoints();      b.maintBtn:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",175,8); b.maintBtn:SetSize(155,29) end
+            if b.addTargetStrat then b.addTargetStrat:ClearAllPoints(); b.addTargetStrat:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",15,42);  b.addTargetStrat:SetSize(155,29) end
+            if b.addGroupStrat  then b.addGroupStrat:ClearAllPoints();  b.addGroupStrat:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",175,42); b.addGroupStrat:SetSize(155,29) end
+            if b.addTargetSpec then b.addTargetSpec:ClearAllPoints();  b.addTargetSpec:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",15,76);  b.addTargetSpec:SetSize(155,29) end
+            if b.addGroupSpec  then b.addGroupSpec:ClearAllPoints();   b.addGroupSpec:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",175,76); b.addGroupSpec:SetSize(155,29) end
+            if b.addTargetGS   then b.addTargetGS:ClearAllPoints();   b.addTargetGS:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",15,110); b.addTargetGS:SetSize(155,29) end
+            if b.addGroupGS    then b.addGroupGS:ClearAllPoints();    b.addGroupGS:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",175,110); b.addGroupGS:SetSize(155,29) end
+            if b.addTarget     then b.addTarget:ClearAllPoints();     b.addTarget:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",15,144);  b.addTarget:SetSize(155,29) end
+            if b.addGroup      then b.addGroup:ClearAllPoints();      b.addGroup:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",175,144); b.addGroup:SetSize(155,29) end
+        else
+            -- Expanded layout: 4 rows of 37px at y = 8, 50, 92, 134
+            if b.stop          then b.stop:ClearAllPoints();         b.stop:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",15, 8);   b.stop:SetSize(155,37) end
+            if b.maintBtn      then b.maintBtn:ClearAllPoints();     b.maintBtn:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",175,8); b.maintBtn:SetSize(155,37) end
+            if b.addTargetSpec then b.addTargetSpec:ClearAllPoints(); b.addTargetSpec:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",15, 50);  b.addTargetSpec:SetSize(155,37) end
+            if b.addGroupSpec  then b.addGroupSpec:ClearAllPoints();  b.addGroupSpec:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",175,50); b.addGroupSpec:SetSize(155,37) end
+            if b.addTargetGS   then b.addTargetGS:ClearAllPoints();  b.addTargetGS:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",15, 92);  b.addTargetGS:SetSize(155,37) end
+            if b.addGroupGS    then b.addGroupGS:ClearAllPoints();   b.addGroupGS:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",175,92); b.addGroupGS:SetSize(155,37) end
+            if b.addTarget     then b.addTarget:ClearAllPoints();    b.addTarget:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",15, 134); b.addTarget:SetSize(155,37) end
+            if b.addGroup      then b.addGroup:ClearAllPoints();     b.addGroup:SetPoint("BOTTOMLEFT",par,"BOTTOMLEFT",175,134); b.addGroup:SetSize(155,37) end
+        end
+    end
+
     -- ── Options tab content (Section Visibility) ──────────────────────
     local optsVisBox = CreateFrame("Frame", nil, optionsPanel)
     optsVisBox:SetPoint("TOPLEFT",     optionsPanel, "TOPLEFT",    6, -66)
@@ -2659,11 +2768,31 @@ local function OnFirstShow()
     optsVisBox:Hide()
 
     do
-        local VIS_FL   = optionsPanel:GetFrameLevel() + 2
+        -- ── Scroll frame wrapper so the vis content is mousewheel-scrollable ──
+        local visScrollFL = optionsPanel:GetFrameLevel() + 3
+        local visSF = CreateFrame("ScrollFrame", nil, optsVisBox)
+        visSF:SetPoint("TOPLEFT",     optsVisBox, "TOPLEFT",     2,  -2)
+        visSF:SetPoint("BOTTOMRIGHT", optsVisBox, "BOTTOMRIGHT", -2,  2)
+        visSF:SetFrameLevel(visScrollFL)
+        visSF:EnableMouseWheel(true)
+        visSF:SetScript("OnMouseWheel", function(self, delta)
+            local cur = self:GetVerticalScroll()
+            local max = self:GetVerticalScrollRange()
+            self:SetVerticalScroll(math.max(0, math.min(max, cur - delta * 20)))
+        end)
+        local visSC = CreateFrame("Frame", nil, visSF)
+        visSC:SetSize(620, 640)   -- tall content frame; scroll range auto-calculated
+        visSC:SetFrameLevel(visScrollFL + 1)
+        visSF:SetScrollChild(visSC)
+        -- Shadow optsVisBox so every widget below is parented to the scroll child
+        local optsVisBox = visSC
+
+        local VIS_FL   = visScrollFL + 2
         local VIS_FONT = "Fonts\\FRIZQT__.TTF"
         local VIS_GR, VIS_GG, VIS_GB = 0.78, 0.61, 0.23
         local VIS_MX   = 14
         local VIS_BTN_H = 30
+        local COL2_X   = VIS_MX + 190 + 20
 
         local visHdr = optsVisBox:CreateFontString(nil, "OVERLAY")
         visHdr:SetFont(VIS_FONT, 11, "OUTLINE")
@@ -2683,14 +2812,14 @@ local function OnFirstShow()
             {id = "IndividualProgression", label = "Ind. Prog. Tab"},
             {id = "LevelSync",             label = "LevelSync Tab"},
             {id = "Notes",                 label = "Notes Tab"},
-            {id = "IPTiers",               label = "+Add IP Tiers (button)"},
+            {id = "Group",                 label = "Group Tab"},
         }
 
         PBM.State.visToggleBtns = {}
 
-        local function MakeVisToggle(yTop, sectionId, sectionLabel)
+        local function MakeVisToggle(yTop, sectionId, sectionLabel, xOff)
             local btn = CreateFrame("Button", nil, optsVisBox)
-            btn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", VIS_MX, yTop)
+            btn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", xOff or VIS_MX, yTop)
             btn:SetSize(190, VIS_BTN_H)
             btn:SetFrameLevel(VIS_FL)
             btn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
@@ -2724,6 +2853,19 @@ local function OnFirstShow()
                 PBMConfig.hiddenTabs[sectionId] = nowHidden or nil
                 PBM.RefreshBottomTabPositions()
                 if sectionId == "IPTiers" then RefreshIPColumn() end
+                if sectionId == "Group" then
+                    local tb = PBM.State.tabButtons and PBM.State.tabButtons["Group"]
+                    if tb then
+                        if nowHidden then
+                            tb:Hide()
+                            if PBM.State.activeTab == "Group" then
+                                PBM.State.activeTab = "Overview"
+                            end
+                        else
+                            tb:Show()
+                        end
+                    end
+                end
                 for _, b in ipairs(PBM.State.visToggleBtns) do b:Refresh() end
                 PBM.UpdateTabs()
                 PBM.RefreshRows()
@@ -2739,61 +2881,272 @@ local function OnFirstShow()
             yPos = yPos - VIS_BTN_H - 6
         end
 
-        -- Divider before Hide All / Show All
-        local hideAllDiv = optsVisBox:CreateTexture(nil, "ARTWORK")
-        hideAllDiv:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", VIS_MX, yPos)
-        hideAllDiv:SetWidth(190)
-        hideAllDiv:SetHeight(1)
-        hideAllDiv:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
-        hideAllDiv:SetVertexColor(VIS_GR, VIS_GG, VIS_GB, 0.4)
-        yPos = yPos - 8
+        -- ── Second column (no header; shares the Show/Hide divider line) ──
+        -- Order: Add IP Tiers, Strategy Buttons, Strategy Whispers, Who Commands, Role Filter, Notes Filter
 
-        local hideAllBtn = CreateFrame("Button", nil, optsVisBox)
-        hideAllBtn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", VIS_MX, yPos)
-        hideAllBtn:SetSize(190, VIS_BTN_H)
-        hideAllBtn:SetFrameLevel(VIS_FL)
-        hideAllBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
-        hideAllBtn:SetBackdropBorderColor(VIS_GR, VIS_GG, VIS_GB, 0.85)
-        hideAllBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+        -- (1) Add IP Tiers — tab/button visibility toggle, reuses MakeVisToggle
+        local ipTiersToggle = MakeVisToggle(-34, "IPTiers", "+Add IP Tiers (button)", COL2_X)
+        PBM.State.visToggleBtns[#PBM.State.visToggleBtns + 1] = ipTiersToggle
 
-        local hideAllLbl = hideAllBtn:CreateFontString(nil, "OVERLAY")
-        hideAllLbl:SetFont(VIS_FONT, 10, "OUTLINE")
-        hideAllLbl:SetAllPoints(hideAllBtn)
-        hideAllLbl:SetJustifyH("CENTER"); hideAllLbl:SetJustifyV("MIDDLE")
+        -- (2) Strategy Buttons show/hide toggle
+        local stratVisBtn = CreateFrame("Button", nil, optsVisBox)
+        stratVisBtn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", COL2_X, -34 - (VIS_BTN_H + 6))
+        stratVisBtn:SetSize(190, VIS_BTN_H); stratVisBtn:SetFrameLevel(VIS_FL)
+        stratVisBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
+        stratVisBtn:SetBackdropBorderColor(VIS_GR, VIS_GG, VIS_GB, 0.85)
+        stratVisBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+        local svNLbl = stratVisBtn:CreateFontString(nil,"OVERLAY"); svNLbl:SetFont(VIS_FONT,10,"OUTLINE")
+        svNLbl:SetPoint("LEFT",stratVisBtn,"LEFT",10,0); svNLbl:SetText("|cffd4af37+Add Strategy Buttons|r")
+        local svSLbl = stratVisBtn:CreateFontString(nil,"OVERLAY"); svSLbl:SetFont(VIS_FONT,10,"OUTLINE")
+        svSLbl:SetPoint("RIGHT",stratVisBtn,"RIGHT",-10,0)
+        function stratVisBtn:Refresh()
+            local hidden = PBMConfig and PBMConfig.hiddenButtons and PBMConfig.hiddenButtons.strategies
+            if hidden then stratVisBtn:SetBackdropColor(0.18,0.04,0.04,1); svSLbl:SetText("|cffff6666Hidden|r")
+            else            stratVisBtn:SetBackdropColor(0.04,0.14,0.06,1); svSLbl:SetText("|cff55dd77Visible|r") end
+        end
+        stratVisBtn:Refresh()
+        stratVisBtn:SetScript("OnClick", function()
+            if not PBMConfig.hiddenButtons then PBMConfig.hiddenButtons = {} end
+            PBMConfig.hiddenButtons.strategies = not PBMConfig.hiddenButtons.strategies or nil
+            stratVisBtn:Refresh()
+            PBM.RefreshStrategyBtnLayout()
+            for _, b in ipairs(PBM.State.visToggleBtns) do b:Refresh() end
+        end)
+        stratVisBtn:SetScript("OnEnter", function()
+            GameTooltip:SetOwner(stratVisBtn, "ANCHOR_TOP")
+            GameTooltip:AddLine("+Add Strategy Buttons", 0.78, 0.61, 0.23)
+            GameTooltip:AddLine("Hides +Add Target/Group Strategies buttons", 0.7, 0.7, 0.7)
+            GameTooltip:AddLine("and expands the remaining buttons to fill the gap.", 0.7, 0.7, 0.7)
+            GameTooltip:Show()
+        end)
+        stratVisBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        PBM.State.visToggleBtns[#PBM.State.visToggleBtns+1] = stratVisBtn
 
-        function hideAllBtn:Refresh()
-            local allHidden = true
-            for _, sec in ipairs(VIS_SECTIONS) do
-                if not (PBMConfig.hiddenTabs and PBMConfig.hiddenTabs[sec.id]) then
-                    allHidden = false; break
-                end
-            end
-            if allHidden then
-                hideAllBtn:SetBackdropColor(0.04, 0.14, 0.06, 1)
-                hideAllLbl:SetText("|cff55dd77Show All|r")
+        -- Apply strategy-button layout on load
+        PBM.RefreshStrategyBtnLayout()
+
+        -- (3) Strategy Whispers
+        local stratBtn = CreateFrame("Button", nil, optsVisBox)
+        stratBtn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", COL2_X, -34 - (VIS_BTN_H + 6) * 2)
+        stratBtn:SetSize(190, VIS_BTN_H)
+        stratBtn:SetFrameLevel(VIS_FL)
+        stratBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
+        stratBtn:SetBackdropBorderColor(VIS_GR, VIS_GG, VIS_GB, 0.85)
+        stratBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+
+        local stratNameLbl = stratBtn:CreateFontString(nil, "OVERLAY")
+        stratNameLbl:SetFont(VIS_FONT, 10, "OUTLINE")
+        stratNameLbl:SetPoint("LEFT", stratBtn, "LEFT", 10, 0)
+        stratNameLbl:SetText("|cffd4af37Strategy Whispers|r")
+
+        local stratStateLbl = stratBtn:CreateFontString(nil, "OVERLAY")
+        stratStateLbl:SetFont(VIS_FONT, 10, "OUTLINE")
+        stratStateLbl:SetPoint("RIGHT", stratBtn, "RIGHT", -10, 0)
+
+        function stratBtn:Refresh()
+            if PBMConfig and PBMConfig.hideStrategyOutput then
+                stratBtn:SetBackdropColor(0.18, 0.04, 0.04, 1)
+                stratStateLbl:SetText("|cffff6666Hidden|r")
             else
-                hideAllBtn:SetBackdropColor(0.18, 0.04, 0.04, 1)
-                hideAllLbl:SetText("|cffff6666Hide All|r")
+                stratBtn:SetBackdropColor(0.04, 0.14, 0.06, 1)
+                stratStateLbl:SetText("|cff55dd77Visible|r")
             end
         end
-        hideAllBtn:Refresh()
-        PBM.State.visToggleBtns[#PBM.State.visToggleBtns + 1] = hideAllBtn
+        stratBtn:Refresh()
+        PBM.State.visToggleBtns[#PBM.State.visToggleBtns + 1] = stratBtn
 
-        hideAllBtn:SetScript("OnClick", function()
-            if not PBMConfig.hiddenTabs then PBMConfig.hiddenTabs = {} end
-            local allHidden = true
-            for _, sec in ipairs(VIS_SECTIONS) do
-                if not PBMConfig.hiddenTabs[sec.id] then allHidden = false; break end
-            end
-            for _, sec in ipairs(VIS_SECTIONS) do
-                PBMConfig.hiddenTabs[sec.id] = (not allHidden) or nil
-            end
-            PBM.RefreshBottomTabPositions()
-            RefreshIPColumn()
-            for _, b in ipairs(PBM.State.visToggleBtns) do b:Refresh() end
-            PBM.UpdateTabs()
-            PBM.RefreshRows()
+        stratBtn:SetScript("OnClick", function()
+            if not PBMConfig then PBMConfig = {} end
+            PBMConfig.hideStrategyOutput = (not PBMConfig.hideStrategyOutput) or nil
+            stratBtn:Refresh()
         end)
+        stratBtn:SetScript("OnEnter", function()
+            GameTooltip:SetOwner(stratBtn, "ANCHOR_TOP")
+            GameTooltip:AddLine("Strategy Whispers", 0.78, 0.61, 0.23)
+            GameTooltip:AddLine("Filters bot strategy replies from the", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("PBM output box when you open a bot menu.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(" ", 1, 1, 1)
+            GameTooltip:AddLine("Filtered messages:", 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37[Bot] whispers: Strategies: tank, heal ...|r", 0.8, 0.8, 0.8)
+            GameTooltip:Show()
+        end)
+        stratBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+        -- (4) Who Commands
+        local whoBtn = CreateFrame("Button", nil, optsVisBox)
+        whoBtn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", COL2_X, -34 - (VIS_BTN_H + 6) * 3)
+        whoBtn:SetSize(190, VIS_BTN_H)
+        whoBtn:SetFrameLevel(VIS_FL)
+        whoBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
+        whoBtn:SetBackdropBorderColor(VIS_GR, VIS_GG, VIS_GB, 0.85)
+        whoBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+
+        local whoNameLbl = whoBtn:CreateFontString(nil, "OVERLAY")
+        whoNameLbl:SetFont(VIS_FONT, 10, "OUTLINE")
+        whoNameLbl:SetPoint("LEFT", whoBtn, "LEFT", 10, 0)
+        whoNameLbl:SetText("|cffd4af37Who Commands|r")
+
+        local whoStateLbl = whoBtn:CreateFontString(nil, "OVERLAY")
+        whoStateLbl:SetFont(VIS_FONT, 10, "OUTLINE")
+        whoStateLbl:SetPoint("RIGHT", whoBtn, "RIGHT", -10, 0)
+
+        function whoBtn:Refresh()
+            if PBMConfig and PBMConfig.hideWhoCommands then
+                whoBtn:SetBackdropColor(0.18, 0.04, 0.04, 1)
+                whoStateLbl:SetText("|cffff6666Hidden|r")
+            else
+                whoBtn:SetBackdropColor(0.04, 0.14, 0.06, 1)
+                whoStateLbl:SetText("|cff55dd77Visible|r")
+            end
+        end
+        whoBtn:Refresh()
+        PBM.State.visToggleBtns[#PBM.State.visToggleBtns + 1] = whoBtn
+
+        whoBtn:SetScript("OnClick", function()
+            if not PBMConfig then PBMConfig = {} end
+            PBMConfig.hideWhoCommands = (not PBMConfig.hideWhoCommands) or nil
+            whoBtn:Refresh()
+        end)
+        whoBtn:SetScript("OnEnter", function()
+            GameTooltip:SetOwner(whoBtn, "ANCHOR_TOP")
+            GameTooltip:AddLine("Who Commands", 0.78, 0.61, 0.23)
+            GameTooltip:AddLine("Filters the bot query commands and their", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("responses from your chat window.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(" ", 1, 1, 1)
+            GameTooltip:AddLine("Filtered outgoing:", 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37To [Bot]: co ?  /  nc ?  /  stats  /  who  /  ss ?|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("Filtered incoming:", 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37[Bot] whispers: stats, bag, durability line|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("|cffd4af37[Bot] whispers: race/class/level/GS line|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("|cffd4af37[Bot] whispers: Ignored spell list ...|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(" ", 1, 1, 1)
+            GameTooltip:AddLine("|cffaaaaaa\"who\" is sent automatically when opening", 0.7, 0.7, 0.7)
+            GameTooltip:AddLine("|cffaaaaaaa character's strategy menu.|r", 0.7, 0.7, 0.7)
+            GameTooltip:Show()
+        end)
+        whoBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+        -- (5) Talent Whispers — hides the Templates-menu talents exchange
+        local talBtn = CreateFrame("Button", nil, optsVisBox)
+        talBtn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", COL2_X, -34 - (VIS_BTN_H + 6) * 4)
+        talBtn:SetSize(190, VIS_BTN_H)
+        talBtn:SetFrameLevel(VIS_FL)
+        talBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
+        talBtn:SetBackdropBorderColor(VIS_GR, VIS_GG, VIS_GB, 0.85)
+        talBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+        local talNameLbl = talBtn:CreateFontString(nil, "OVERLAY")
+        talNameLbl:SetFont(VIS_FONT, 10, "OUTLINE")
+        talNameLbl:SetPoint("LEFT", talBtn, "LEFT", 10, 0)
+        talNameLbl:SetText("|cffd4af37Talent Whispers|r")
+        local talStateLbl = talBtn:CreateFontString(nil, "OVERLAY")
+        talStateLbl:SetFont(VIS_FONT, 10, "OUTLINE")
+        talStateLbl:SetPoint("RIGHT", talBtn, "RIGHT", -10, 0)
+        function talBtn:Refresh()
+            if PBMConfig and PBMConfig.hideTalentsOutput then
+                talBtn:SetBackdropColor(0.18, 0.04, 0.04, 1); talStateLbl:SetText("|cffff6666Hidden|r")
+            else
+                talBtn:SetBackdropColor(0.04, 0.14, 0.06, 1); talStateLbl:SetText("|cff55dd77Visible|r")
+            end
+        end
+        talBtn:Refresh()
+        PBM.State.visToggleBtns[#PBM.State.visToggleBtns + 1] = talBtn
+        talBtn:SetScript("OnClick", function()
+            if not PBMConfig then PBMConfig = {} end
+            PBMConfig.hideTalentsOutput = (not PBMConfig.hideTalentsOutput) or nil
+            talBtn:Refresh()
+        end)
+        talBtn:SetScript("OnEnter", function()
+            GameTooltip:SetOwner(talBtn, "ANCHOR_TOP")
+            GameTooltip:AddLine("Talent Whispers", 0.78, 0.61, 0.23)
+            GameTooltip:AddLine("Filters the talents exchange triggered by the", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("Templates menu (same for all 10 classes).", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(" ", 1, 1, 1)
+            GameTooltip:AddLine("Filtered outgoing:", 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37To [Bot]: talents  /  talents spec list ...|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("Filtered incoming:", 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37[Bot] whispers: My current talent spec is ...|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("|cffd4af37[Bot] whispers: numbered spec list, Total N specs|r", 0.8, 0.8, 0.8)
+            GameTooltip:Show()
+        end)
+        talBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+        -- ── Col2 continued: Role Filter (6th) / Notes Filter (7th) ──
+        -- Col2 slots from -34, step (VIS_BTN_H+6): 1=IPTiers 2=StratBtns 3=StratWhisper 4=Who 5=Talents 6=Role 7=Notes
+        local col2Y = -34 - (VIS_BTN_H + 6) * 5  -- 6th slot = Role Filter
+
+        local function MakeMenuFilterBtn(yTop, label, getState, onToggle, ttLines, xOff)
+            local btn = CreateFrame("Button", nil, optsVisBox)
+            btn:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", xOff or COL2_X, yTop)
+            btn:SetSize(190, VIS_BTN_H); btn:SetFrameLevel(VIS_FL)
+            btn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=3,right=3,top=3,bottom=3}})
+            btn:SetBackdropBorderColor(VIS_GR, VIS_GG, VIS_GB, 0.85)
+            btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+            local nLbl = btn:CreateFontString(nil,"OVERLAY"); nLbl:SetFont(VIS_FONT,10,"OUTLINE")
+            nLbl:SetPoint("LEFT",btn,"LEFT",10,0); nLbl:SetText("|cffd4af37"..label.."|r")
+            local sLbl = btn:CreateFontString(nil,"OVERLAY"); sLbl:SetFont(VIS_FONT,10,"OUTLINE")
+            sLbl:SetPoint("RIGHT",btn,"RIGHT",-10,0)
+            function btn:Refresh()
+                if getState() then
+                    btn:SetBackdropColor(0.04,0.14,0.06,1); sLbl:SetText("|cff55dd77On|r")
+                else
+                    btn:SetBackdropColor(0.18,0.04,0.04,1); sLbl:SetText("|cffff6666Off|r")
+                end
+            end
+            btn:Refresh()
+            PBM.State.visToggleBtns[#PBM.State.visToggleBtns+1] = btn
+            btn:SetScript("OnClick", function() onToggle(); btn:Refresh() end)
+            if ttLines then
+                btn:SetScript("OnEnter", function()
+                    GameTooltip:SetOwner(btn,"ANCHOR_TOP")
+                    for _,l in ipairs(ttLines) do GameTooltip:AddLine(l[1],l[2] or 1,l[3] or 1,l[4] or 1) end
+                    GameTooltip:Show()
+                end)
+                btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+            end
+            return btn
+        end
+
+        MakeMenuFilterBtn(col2Y, "Role Filter",
+            function() return PBM.State.LBFilter and PBM.State.LBFilter.raidRoleFilter end,
+            function()
+                PBM.State.LBFilter.raidRoleFilter = not PBM.State.LBFilter.raidRoleFilter
+                LichborneTrackerDB.raidRoleFilter = PBM.State.LBFilter.raidRoleFilter
+                local updFn = _G["UpdateRaidRoleFilterBtn"]  -- updates MISC bar icon if visible
+                if type(updFn) == "function" then pcall(updFn) end
+                if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
+                if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
+                if PBM.State.groupViewFrame then PBM.RefreshGroupViewRows() end
+            end,
+            {{"Role Filter",0.78,0.61,0.23},{"Hides strategy roles in the Raid tab.",0.7,0.7,0.7},{"Allows manual role assignment per slot.",0.7,0.7,0.7}})
+
+        MakeMenuFilterBtn(col2Y - (VIS_BTN_H + 6), "Notes Filter",
+            function() return PBM.State.LBFilter and PBM.State.LBFilter.raidNotesFilter end,
+            function()
+                PBM.State.LBFilter.raidNotesFilter = not PBM.State.LBFilter.raidNotesFilter
+                LichborneTrackerDB.raidNotesFilter = PBM.State.LBFilter.raidNotesFilter
+                if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
+            end,
+            {{"Notes Filter",0.78,0.61,0.23},{"Hides strategy notes in the Raid tab.",0.7,0.7,0.7},{"Enables manual note entry per slot.",0.7,0.7,0.7}})
+
+        -- Col1 slots 6 & 7: Char Sheet toggles (under Group Tab)
+        -- Col1 step = VIS_BTN_H+6 = 36; 5 tabs placed, so next y = -34 - 36*5 = -214
+        MakeMenuFilterBtn(-214, "Group Tab: Char Sheet",
+            function() return PBM.State.LBFilter and PBM.State.LBFilter.gvCharSheet ~= false end,
+            function()
+                PBM.State.LBFilter.gvCharSheet = not (PBM.State.LBFilter.gvCharSheet ~= false)
+                LichborneTrackerDB.gvCharSheet = PBM.State.LBFilter.gvCharSheet
+            end,
+            {{"Group Tab: Char Sheet",0.78,0.61,0.23},{"Enable or disable clicking a name in the",0.7,0.7,0.7},{"Group tab to open their character sheet.",0.7,0.7,0.7}},
+            VIS_MX)
+
+        MakeMenuFilterBtn(-250, "Class Tabs: Char Sheet",
+            function() return PBM.State.LBFilter and PBM.State.LBFilter.classCharSheet ~= false end,
+            function()
+                PBM.State.LBFilter.classCharSheet = not (PBM.State.LBFilter.classCharSheet ~= false)
+                LichborneTrackerDB.classCharSheet = PBM.State.LBFilter.classCharSheet
+            end,
+            {{"Class Tabs: Char Sheet",0.78,0.61,0.23},{"Enable or disable clicking a name in any",0.7,0.7,0.7},{"class tab to open their character sheet.",0.7,0.7,0.7}},
+            VIS_MX)
     end
 
     -- ── Tab switching ─────────────────────────────────────────────────
@@ -2874,8 +3227,8 @@ local function OnFirstShow()
         end
     end)
 
-    -- Forward-declare both update functions so each OnClick can reference the other
-    local UpdateGroupFilterBtn, UpdateHideRaidBtn
+    -- Forward-declare update functions so each OnClick can reference the others
+    local UpdateGroupFilterBtn, UpdateHideRaidBtn, UpdateHideGroupBtn
 
     -- Group filter button: pvp icon swaps red/green with filter state
     local groupFilterBtn = CreateFrame("Button", "LichborneGroupFilterBtn", f)
@@ -2898,7 +3251,7 @@ local function OnFirstShow()
     groupFilterBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(groupFilterBtn, "ANCHOR_TOP")
         GameTooltip:AddLine("Party Filter", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Hides characters not in your party or raid.", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine("Hides characters |cffFF8C00not|r in your group/raid.", 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     groupFilterBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2909,6 +3262,9 @@ local function OnFirstShow()
             PBM.State.LBFilter.hideRaid = false
             LichborneTrackerDB.hideRaid = false
             UpdateHideRaidBtn()
+            PBM.State.LBFilter.hideGroupMembers = false
+            LichborneTrackerDB.hideGroupMembers = false
+            UpdateHideGroupBtn()
         end
         UpdateGroupFilterBtn()
         PBM.RefreshRows()
@@ -2940,7 +3296,7 @@ local function OnFirstShow()
     hideRaidBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(hideRaidBtn, "ANCHOR_TOP")
         GameTooltip:AddLine("Raid Tab Filter", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Shows only characters in your currently selected raid.", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine("Shows characters that have been added to the raid tab.", 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     hideRaidBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2951,12 +3307,58 @@ local function OnFirstShow()
             PBM.State.LBFilter.groupActive = false
             LichborneTrackerDB.groupActive = false
             UpdateGroupFilterBtn()
+            PBM.State.LBFilter.hideGroupMembers = false
+            LichborneTrackerDB.hideGroupMembers = false
+            UpdateHideGroupBtn()
         end
         UpdateHideRaidBtn()
         PBM.RefreshRows()
         if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
     end)
     UpdateHideRaidBtn()
+
+    -- ── Hide Group Members filter button — hides tracked chars already in your party ──
+    local hideGroupBtn = CreateFrame("Button", "LichborneHideGroupBtn", f)
+    hideGroupBtn:SetSize(24, 24)
+    hideGroupBtn:SetFrameLevel(fl + 12)
+    hideGroupBtn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",tile=true,tileSize=16,insets={left=0,right=0,top=0,bottom=0}})
+    hideGroupBtn:SetBackdropColor(0.05, 0.08, 0.18, 1)
+    hideGroupBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    local hgIcon = hideGroupBtn:CreateTexture(nil, "OVERLAY")
+    hgIcon:SetPoint("CENTER", hideGroupBtn, "CENTER", 0, 0)
+    hgIcon:SetSize(22, 22)
+    UpdateHideGroupBtn = function()
+        if PBM.State.LBFilter.hideGroupMembers then
+            hgIcon:SetTexture("Interface\\Icons\\Achievement_pvp_g_10")
+            hideGroupBtn:SetBackdropColor(0.05, 0.35, 0.10, 1)
+        else
+            hgIcon:SetTexture("Interface\\Icons\\Achievement_pvp_h_10")
+            hideGroupBtn:SetBackdropColor(0.05, 0.08, 0.18, 1)
+        end
+    end
+    hideGroupBtn:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(hideGroupBtn, "ANCHOR_TOP")
+        GameTooltip:AddLine("Hide Group Members", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("Hides characters in your current group.", 0.7, 0.7, 0.7)
+        GameTooltip:Show()
+    end)
+    hideGroupBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    hideGroupBtn:SetScript("OnClick", function()
+        PBM.State.LBFilter.hideGroupMembers = not PBM.State.LBFilter.hideGroupMembers
+        LichborneTrackerDB.hideGroupMembers = PBM.State.LBFilter.hideGroupMembers
+        if PBM.State.LBFilter.hideGroupMembers then
+            PBM.State.LBFilter.groupActive = false
+            LichborneTrackerDB.groupActive = false
+            UpdateGroupFilterBtn()
+            PBM.State.LBFilter.hideRaid = false
+            LichborneTrackerDB.hideRaid = false
+            UpdateHideRaidBtn()
+        end
+        UpdateHideGroupBtn()
+        PBM.RefreshRows()
+        if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
+    end)
+    UpdateHideGroupBtn()
 
     -- ── Filter button 2 — Show Level ──────────────────────────
     local UpdateIPBtn  -- forward declared; assigned after filterBtn3 is created
@@ -2998,6 +3400,7 @@ local function OnFirstShow()
         PBM.RefreshRows()
         if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
         if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
+        if PBM.State.groupViewActive and PBM.State.groupViewFrame then PBM.RefreshGroupViewRows() end
     end)
     UpdateLevelBtn()
 
@@ -3040,6 +3443,7 @@ local function OnFirstShow()
         PBM.RefreshRows()
         if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
         if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
+        if PBM.State.groupViewActive and PBM.State.groupViewFrame then PBM.RefreshGroupViewRows() end
     end)
     UpdateIPBtn()
 
@@ -3135,12 +3539,13 @@ local function OnFirstShow()
     UpdateTierKeyToggleBtn()
 
     -- Full right-side chain (left to right):
-    --   Filters: | [group] | [hideRaid] | [level] | [IP] | Help: | [tier key] | [help icons] | Admin: | settings
+    --   Filters: | [group] | [hideRaid] | [groupView] | [level] | [IP] | Help: | [tier key] | [help icons] | settings
     exportBtn:Hide()
     importBtn:Hide()
-    adminLbl:SetPoint("RIGHT", settingsBtn, "LEFT", -4, 0)
+    -- Menu: label removed to make room for the Hide Group Members filter button
+    adminLbl:Hide()
     levelSyncHelpBtn:ClearAllPoints()
-    levelSyncHelpBtn:SetPoint("RIGHT", adminLbl, "LEFT", -2, 0)
+    levelSyncHelpBtn:SetPoint("RIGHT", settingsBtn, "LEFT", -4, 0)
     bookHelpBtn:ClearAllPoints()
     bookHelpBtn:SetPoint("RIGHT", levelSyncHelpBtn, "LEFT", -2, 0)
     overviewHelpBtn:ClearAllPoints()
@@ -3157,16 +3562,20 @@ local function OnFirstShow()
     tkLabel:Hide()
     tierKeyAllBtn:ClearAllPoints()
     tierKeyAllBtn:SetPoint("RIGHT", helpBtn, "LEFT", -2, 0)
-    infoHelpLbl:SetPoint("RIGHT", tierKeyAllBtn, "LEFT", -4, 0)
-    -- Filters: immediately left of Help label, uniform 2px gaps throughout
+    infoHelpLbl:SetPoint("RIGHT", tierKeyAllBtn, "LEFT", -1, 0)
+    -- Filters: shifted right to sit closer to Help label
     filterBtn3:ClearAllPoints()
-    filterBtn3:SetPoint("RIGHT", infoHelpLbl, "LEFT", -2, 0)
+    filterBtn3:SetPoint("RIGHT", infoHelpLbl, "LEFT", -6, 0)
     filterBtn2:ClearAllPoints()
     filterBtn2:SetPoint("RIGHT", filterBtn3, "LEFT", -2, 0)
+    -- Full right-side chain (left to right):
+    --   Filters: | [group] | [hideGroup] | [hideRaid] | [level] | [IP] | Help: | ...
     hideRaidBtn:ClearAllPoints()
     hideRaidBtn:SetPoint("RIGHT", filterBtn2, "LEFT", -2, 0)
+    hideGroupBtn:ClearAllPoints()
+    hideGroupBtn:SetPoint("RIGHT", hideRaidBtn, "LEFT", -2, 0)
     groupFilterBtn:ClearAllPoints()
-    groupFilterBtn:SetPoint("RIGHT", hideRaidBtn, "LEFT", -2, 0)
+    groupFilterBtn:SetPoint("RIGHT", hideGroupBtn, "LEFT", -2, 0)
     filtersLbl:ClearAllPoints()
     filtersLbl:SetPoint("RIGHT", groupFilterBtn, "LEFT", -2, 0)
 
@@ -3258,7 +3667,7 @@ local function BuildFrameBG()
     title:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -12)
     title:SetPoint("TOPRIGHT", f, "TOPRIGHT", -280, -12)
     title:SetJustifyH("LEFT")
-    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.2|r")
+    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.3|r")
     local closeBtn = CreateFrame("Button", "LichborneCloseBtn", f, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 2, 2)
     closeBtn:SetScript("OnClick", function() f:Hide() end)
@@ -3329,7 +3738,7 @@ local function BuildFrameBG()
                     LichborneTrackerDB.allGroups[g][i] = {name="",cls="",spec="",gs=0,realGs=0}
                 end
             end
-            LichborneOutput("|cffC69B3ALichborne:|r |cffff4444All data wiped.|r", 1, 0.5, 0.5)
+            LichborneOutput("|cffC69B3APBM:|r |cffff4444All data wiped.|r", 1, 0.5, 0.5)
             PBM.RefreshRows()
             if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
             if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
@@ -3393,6 +3802,16 @@ do
             PBM.State.LBFilter.groupActive = LichborneTrackerDB.groupActive
             if LichborneTrackerDB.hideRaid == nil then LichborneTrackerDB.hideRaid = false end
             PBM.State.LBFilter.hideRaid = LichborneTrackerDB.hideRaid
+            if LichborneTrackerDB.raidNotesFilter == nil then LichborneTrackerDB.raidNotesFilter = false end
+            PBM.State.LBFilter.raidNotesFilter = LichborneTrackerDB.raidNotesFilter
+            if LichborneTrackerDB.raidRoleFilter == nil then LichborneTrackerDB.raidRoleFilter = false end
+            PBM.State.LBFilter.raidRoleFilter = LichborneTrackerDB.raidRoleFilter
+            if LichborneTrackerDB.gvCharSheet == nil then LichborneTrackerDB.gvCharSheet = true end
+            PBM.State.LBFilter.gvCharSheet = LichborneTrackerDB.gvCharSheet
+            if LichborneTrackerDB.classCharSheet == nil then LichborneTrackerDB.classCharSheet = true end
+            PBM.State.LBFilter.classCharSheet = LichborneTrackerDB.classCharSheet
+            if LichborneTrackerDB.hideGroupMembers == nil then LichborneTrackerDB.hideGroupMembers = false end
+            PBM.State.LBFilter.hideGroupMembers = LichborneTrackerDB.hideGroupMembers
             -- Repair all raid rosters: fill any nil/missing slots
             if LichborneTrackerDB and LichborneTrackerDB.raidRosters then
                 for key, roster in pairs(LichborneTrackerDB.raidRosters) do

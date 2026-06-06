@@ -14,6 +14,14 @@ PBM.State.profPickerOwner = nil
 PBM.State.profCellFrames = {}
 PBM.State.profSelectSeq = 0
 
+-- Role slots for the prof picker (T/H/D/A — stored in LichborneTrackerDB.charRoles)
+local ROLE_PICKER_SLOTS = {
+    { key="T", label="Tank",   icon="Interface\\Icons\\Ability_Warrior_DefensiveStance", color={r=0.20,g=0.60,b=1.00} },
+    { key="H", label="Healer", icon="Interface\\Icons\\Spell_ChargePositive",             color={r=0.20,g=1.00,b=0.40} },
+    { key="D", label="DPS",    icon="Interface\\Icons\\Ability_DualWield",                color={r=1.00,g=0.40,b=0.20} },
+    { key="A", label="AoE",    icon="Interface\\Icons\\Spell_Shadow_RainOfFire",          color={r=0.58,g=0.51,b=0.79} },
+}
+
 function PBM.GetNeeds(charName)
     if not charName or charName == "" then return {} end
     local k = charName:lower()
@@ -28,9 +36,14 @@ function PBM.SetNeed(charName, slotKey, val)
     local k = charName:lower()
     if not LichborneTrackerDB.needs[k] then LichborneTrackerDB.needs[k] = {} end
     if val then
-        local count = 0
-        for _ in pairs(LichborneTrackerDB.needs[k]) do count = count + 1 end
-        if count < PBM.MAX_NEEDS then
+        -- Global 2-total limit: count across profs + needs + roles
+        local total = 0
+        for _ in pairs(LichborneTrackerDB.needs[k]) do total = total + 1 end
+        local profs = LichborneTrackerDB.profs and LichborneTrackerDB.profs[k] or {}
+        for _ in pairs(profs) do total = total + 1 end
+        local roles = LichborneTrackerDB.charRoles and LichborneTrackerDB.charRoles[k] or {}
+        for _ in pairs(roles) do total = total + 1 end
+        if total < PBM.MAX_PROFS then
             LichborneTrackerDB.needs[k][slotKey] = true
         end
     else
@@ -257,9 +270,14 @@ function PBM.SetProf(charName, profKey, val)
     local k = charName:lower()
     if not LichborneTrackerDB.profs[k] then LichborneTrackerDB.profs[k] = {} end
     if val then
-        local count = 0
-        for _ in pairs(LichborneTrackerDB.profs[k]) do count = count + 1 end
-        if count < PBM.MAX_PROFS then
+        -- Global 2-total limit: count across profs + needs + roles
+        local total = 0
+        for _ in pairs(LichborneTrackerDB.profs[k]) do total = total + 1 end
+        local needs = LichborneTrackerDB.needs and LichborneTrackerDB.needs[k] or {}
+        for _ in pairs(needs) do total = total + 1 end
+        local roles = LichborneTrackerDB.charRoles and LichborneTrackerDB.charRoles[k] or {}
+        for _ in pairs(roles) do total = total + 1 end
+        if total < PBM.MAX_PROFS then
             PBM.State.profSelectSeq = PBM.State.profSelectSeq + 1
             LichborneTrackerDB.profs[k][profKey] = PBM.State.profSelectSeq
         end
@@ -268,10 +286,45 @@ function PBM.SetProf(charName, profKey, val)
     end
 end
 
+function PBM.GetCharRoles(charName)
+    if not charName or charName == "" then return {} end
+    local k = charName:lower()
+    if not LichborneTrackerDB.charRoles then LichborneTrackerDB.charRoles = {} end
+    if not LichborneTrackerDB.charRoles[k] then LichborneTrackerDB.charRoles[k] = {} end
+    return LichborneTrackerDB.charRoles[k]
+end
+
+function PBM.SetCharRole(charName, roleKey, val)
+    if not charName or charName == "" then return end
+    if not LichborneTrackerDB.charRoles then LichborneTrackerDB.charRoles = {} end
+    local k = charName:lower()
+    if not LichborneTrackerDB.charRoles[k] then LichborneTrackerDB.charRoles[k] = {} end
+    if val then
+        -- Global 2-total limit: count across profs + needs + roles
+        local total = 0
+        for _ in pairs(LichborneTrackerDB.charRoles[k]) do total = total + 1 end
+        local profs = LichborneTrackerDB.profs and LichborneTrackerDB.profs[k] or {}
+        for _ in pairs(profs) do total = total + 1 end
+        local needs = LichborneTrackerDB.needs and LichborneTrackerDB.needs[k] or {}
+        for _ in pairs(needs) do total = total + 1 end
+        if total < PBM.MAX_PROFS then
+            LichborneTrackerDB.charRoles[k][roleKey] = true
+        end
+    else
+        LichborneTrackerDB.charRoles[k][roleKey] = nil
+    end
+end
+
 function PBM.RefreshProfCell(cf, charName)
     if not cf or not cf.icons then return end
-    -- Build combined display: profs (by selection order) then needs
+    -- Build combined display: roles (T→H→D→A) → profs (by select order) → needs
     local combined = {}
+    -- 1. Character roles
+    local charRoles = PBM.GetCharRoles(charName)
+    for _, slot in ipairs(ROLE_PICKER_SLOTS) do
+        if charRoles[slot.key] then combined[#combined+1] = slot.icon end
+    end
+    -- 2. Profs (by selection order)
     local profs = PBM.GetProfs(charName)
     local profActive = {}
     for _, slot in ipairs(PBM.PROF_SLOTS) do
@@ -280,6 +333,7 @@ function PBM.RefreshProfCell(cf, charName)
     end
     table.sort(profActive, function(a, b) return a.seq < b.seq end)
     for _, p in ipairs(profActive) do combined[#combined+1] = p.icon end
+    -- 3. Needs
     local needs = PBM.GetNeeds(charName)
     for _, slot in ipairs(PBM.NEEDS_SLOTS) do
         if needs[slot.key] then combined[#combined+1] = slot.icon end
@@ -310,12 +364,15 @@ end
 function PBM.BuildProfPickerIfNeeded()
     if PBM.State.profPicker then return end
     local COLS, BSIZE, PAD = 7, 26, 4
-    local ROWS_P     = math.ceil(#PBM.PROF_SLOTS  / COLS)
-    local ROWS_N     = math.ceil(#PBM.NEEDS_SLOTS / COLS)
-    local PROF_H     = 20 + PAD + ROWS_P*(BSIZE+PAD)   -- title + prof rows
+    local ROWS_P      = math.ceil(#PBM.PROF_SLOTS  / COLS)
+    local ROWS_N      = math.ceil(#PBM.NEEDS_SLOTS / COLS)
+    local PROF_H      = 20 + PAD + ROWS_P*(BSIZE+PAD)   -- title + prof rows
     local NEEDS_HDR_H = 16                               -- "Needs" label strip
+    local ROLE_HDR_H  = 16                               -- "Role" label strip
     local W = COLS*(BSIZE+PAD)+PAD
+    -- Height: profs + needs section + role section (1-row, 4 buttons)
     local H = PROF_H + PAD + NEEDS_HDR_H + PAD + ROWS_N*(BSIZE+PAD) + PAD
+             + 1 + PAD + ROLE_HDR_H + PAD + (BSIZE+PAD)
     local pf = CreateFrame("Frame","LichborneProfPicker",UIParent)
     pf:SetFrameStrata("TOOLTIP"); pf:SetFrameLevel(200)
     pf:SetSize(W,H)
@@ -361,12 +418,14 @@ function PBM.BuildProfPickerIfNeeded()
             local cur=PBM.GetProfs(PBM.State.profPickerOwner)[k]
             if mouseButton=="RightButton" then PBM.SetProf(PBM.State.profPickerOwner,k,false)
             else PBM.SetProf(PBM.State.profPickerOwner,k,not cur) end
-            -- combined count across profs + needs
+            -- combined count across roles + profs + needs (global 2-total limit)
             local profs2=PBM.GetProfs(PBM.State.profPickerOwner)
             local needs2=PBM.GetNeeds(PBM.State.profPickerOwner)
+            local roles2c=PBM.GetCharRoles(PBM.State.profPickerOwner)
             local count2=0
-            for _ in pairs(profs2) do count2=count2+1 end
-            for _ in pairs(needs2) do count2=count2+1 end
+            for _ in pairs(profs2)  do count2=count2+1 end
+            for _ in pairs(needs2)  do count2=count2+1 end
+            for _ in pairs(roles2c) do count2=count2+1 end
             for _,sb in ipairs(pf.slotBtns) do
                 if profs2[sb.slotKey] then
                     sb.hi:Show(); sb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); sb.tex:SetAlpha(1)
@@ -384,6 +443,21 @@ function PBM.BuildProfPickerIfNeeded()
                         nb.hi:Hide(); nb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); nb.tex:SetAlpha(0.35)
                     else
                         nb.hi:Hide(); nb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); nb.tex:SetAlpha(1)
+                    end
+                end
+            end
+            -- Grey out role buttons too when global limit reached
+            if pf.roleBtns then
+                local roles2 = roles2c
+                local roleCount2 = 0
+                for _ in pairs(roles2) do roleCount2=roleCount2+1 end
+                for _,rb in ipairs(pf.roleBtns) do
+                    if roles2[rb.slotKey] then
+                        rb.hi:Show(); rb:SetBackdropBorderColor(rb.slotColor.r,rb.slotColor.g,rb.slotColor.b,0.9); rb.tex:SetAlpha(1)
+                    elseif count2 >= PBM.MAX_PROFS then
+                        rb.hi:Hide(); rb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); rb.tex:SetAlpha(0.35)
+                    else
+                        rb.hi:Hide(); rb:SetBackdropBorderColor(rb.slotColor.r*0.5,rb.slotColor.g*0.5,rb.slotColor.b*0.5,0.8); rb.tex:SetAlpha(1)
                     end
                 end
             end
@@ -443,12 +517,14 @@ function PBM.BuildProfPickerIfNeeded()
             local cur=PBM.GetNeeds(PBM.State.profPickerOwner)[k]
             if mouseButton=="RightButton" then PBM.SetNeed(PBM.State.profPickerOwner,k,false)
             else PBM.SetNeed(PBM.State.profPickerOwner,k,not cur) end
-            -- combined count across profs + needs
+            -- combined count across roles + profs + needs (global 2-total limit)
             local profs2=PBM.GetProfs(PBM.State.profPickerOwner)
             local needs2=PBM.GetNeeds(PBM.State.profPickerOwner)
+            local roles2c=PBM.GetCharRoles(PBM.State.profPickerOwner)
             local count2=0
-            for _ in pairs(profs2) do count2=count2+1 end
-            for _ in pairs(needs2) do count2=count2+1 end
+            for _ in pairs(profs2)  do count2=count2+1 end
+            for _ in pairs(needs2)  do count2=count2+1 end
+            for _ in pairs(roles2c) do count2=count2+1 end
             for _,nb in ipairs(pf.needsBtns) do
                 if needs2[nb.slotKey] then
                     nb.hi:Show(); nb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); nb.tex:SetAlpha(1)
@@ -467,11 +543,124 @@ function PBM.BuildProfPickerIfNeeded()
                     sb.hi:Hide(); sb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); sb.tex:SetAlpha(1)
                 end
             end
+            if pf.roleBtns then
+                local roles2 = roles2c
+                for _,rb in ipairs(pf.roleBtns) do
+                    if roles2[rb.slotKey] then
+                        rb.hi:Show(); rb:SetBackdropBorderColor(rb.slotColor.r,rb.slotColor.g,rb.slotColor.b,0.9); rb.tex:SetAlpha(1)
+                    elseif count2 >= PBM.MAX_PROFS then
+                        rb.hi:Hide(); rb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); rb.tex:SetAlpha(0.35)
+                    else
+                        rb.hi:Hide(); rb:SetBackdropBorderColor(rb.slotColor.r*0.5,rb.slotColor.g*0.5,rb.slotColor.b*0.5,0.8); rb.tex:SetAlpha(1)
+                    end
+                end
+            end
             PBM.RefreshAllNeedsCells()
             PBM.RefreshAllProfCells()
         end)
         btn:RegisterForClicks("LeftButtonUp","RightButtonUp")
         pf.needsBtns[si]=btn
+    end
+
+    -- ── Role section separator + header ──────────────────────────────────────
+    local needsBottomY = -(PROF_H + PAD + NEEDS_HDR_H + PAD + ROWS_N*(BSIZE+PAD) + PAD)
+    local roleSep = pf:CreateTexture(nil,"ARTWORK")
+    roleSep:SetPoint("TOPLEFT",  pf,"TOPLEFT",  PAD,  needsBottomY)
+    roleSep:SetPoint("TOPRIGHT", pf,"TOPRIGHT", -PAD, needsBottomY)
+    roleSep:SetHeight(1)
+    roleSep:SetTexture(0.78,0.61,0.23,0.5)
+
+    local roleHdrLbl = pf:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
+    roleHdrLbl:SetPoint("TOPLEFT",pf,"TOPLEFT",6, needsBottomY - PAD)
+    roleHdrLbl:SetText("|cffC69B3ARole|r")
+
+    -- Store role section frames so OpenProfPicker can hide them when hideRole=true
+    pf.roleSectionFrames = { roleSep, roleHdrLbl }
+
+    -- ── Role buttons (T/H/D/A — max MAX_CHAR_ROLES selected) ─────────────────
+    local roleBtnBaseY = needsBottomY - 1 - PAD - ROLE_HDR_H - PAD
+    pf.roleBtns = {}
+    for si, slot in ipairs(ROLE_PICKER_SLOTS) do
+        local col = si - 1  -- 0-indexed
+        local btn = CreateFrame("Button",nil,pf)
+        btn:SetSize(BSIZE,BSIZE)
+        btn:SetPoint("TOPLEFT",pf,"TOPLEFT",PAD+col*(BSIZE+PAD), roleBtnBaseY)
+        btn:SetFrameLevel(pf:GetFrameLevel()+1)
+        local bg=btn:CreateTexture(nil,"BACKGROUND"); bg:SetAllPoints(btn); bg:SetTexture(0.08,0.10,0.18,1)
+        local tex=btn:CreateTexture(nil,"ARTWORK")
+        tex:SetPoint("CENTER",btn,"CENTER",0,0); tex:SetSize(BSIZE-4,BSIZE-4); tex:SetTexture(slot.icon)
+        btn.tex=tex
+        local hi=btn:CreateTexture(nil,"OVERLAY")
+        hi:SetAllPoints(btn); hi:SetTexture(0.3,0.8,0.3,0.35); hi:Hide(); btn.hi=hi
+        btn:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=8,edgeSize=6,insets={left=1,right=1,top=1,bottom=1}})
+        btn:SetBackdropColor(0.08,0.10,0.18,1)
+        local sc = slot.color
+        btn:SetBackdropBorderColor(sc.r*0.5,sc.g*0.5,sc.b*0.5,0.8)
+        btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
+        btn.slotKey=slot.key; btn.slotLabel=slot.label; btn.slotColor=sc
+        pf.roleSectionFrames[#pf.roleSectionFrames+1] = btn
+        btn:SetScript("OnEnter",function()
+            if pf.title then
+                local owned = PBM.State.profPickerOwner and PBM.GetCharRoles(PBM.State.profPickerOwner)[slot.key]
+                local hint = owned and "|cffff6666  (click to remove)|r" or "|cff66ff66  click to add|r"
+                pf.title:SetText("|cffC69B3A"..slot.label.."|r"..hint)
+            end
+        end)
+        btn:SetScript("OnLeave",function()
+            if pf.title and PBM.State.profPickerOwner then
+                pf.title:SetText("|cffC69B3AProfs: |r|cffffff00"..PBM.State.profPickerOwner.."|r")
+            end
+        end)
+        btn:SetScript("OnClick",function(_, mouseButton)
+            if not PBM.State.profPickerOwner or PBM.State.profPickerOwner=="" then return end
+            local k = slot.key
+            local cur = PBM.GetCharRoles(PBM.State.profPickerOwner)[k]
+            if mouseButton=="RightButton" or cur then
+                PBM.SetCharRole(PBM.State.profPickerOwner,k,false)
+            else
+                PBM.SetCharRole(PBM.State.profPickerOwner,k,true)
+            end
+            -- Refresh all section states with global 2-total limit
+            local roles2  = PBM.GetCharRoles(PBM.State.profPickerOwner)
+            local profs2r = PBM.GetProfs(PBM.State.profPickerOwner)
+            local needs2r = PBM.GetNeeds(PBM.State.profPickerOwner)
+            local totalCount = 0
+            for _ in pairs(roles2)  do totalCount = totalCount + 1 end
+            for _ in pairs(profs2r) do totalCount = totalCount + 1 end
+            for _ in pairs(needs2r) do totalCount = totalCount + 1 end
+            for _, rb in ipairs(pf.roleBtns) do
+                if roles2[rb.slotKey] then
+                    rb.hi:Show(); rb:SetBackdropBorderColor(rb.slotColor.r,rb.slotColor.g,rb.slotColor.b,0.9); rb.tex:SetAlpha(1)
+                elseif totalCount >= PBM.MAX_PROFS then
+                    rb.hi:Hide(); rb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); rb.tex:SetAlpha(0.35)
+                else
+                    rb.hi:Hide(); rb:SetBackdropBorderColor(rb.slotColor.r*0.5,rb.slotColor.g*0.5,rb.slotColor.b*0.5,0.8); rb.tex:SetAlpha(1)
+                end
+            end
+            for _, sb in ipairs(pf.slotBtns) do
+                if profs2r[sb.slotKey] then
+                    sb.hi:Show(); sb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); sb.tex:SetAlpha(1)
+                elseif totalCount >= PBM.MAX_PROFS then
+                    sb.hi:Hide(); sb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); sb.tex:SetAlpha(0.35)
+                else
+                    sb.hi:Hide(); sb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); sb.tex:SetAlpha(1)
+                end
+            end
+            if pf.needsBtns then
+                for _, nb in ipairs(pf.needsBtns) do
+                    if needs2r[nb.slotKey] then
+                        nb.hi:Show(); nb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); nb.tex:SetAlpha(1)
+                    elseif totalCount >= PBM.MAX_PROFS then
+                        nb.hi:Hide(); nb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); nb.tex:SetAlpha(0.35)
+                    else
+                        nb.hi:Hide(); nb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); nb.tex:SetAlpha(1)
+                    end
+                end
+            end
+            PBM.RefreshAllProfCells()
+        end)
+        btn:RegisterForClicks("LeftButtonUp","RightButtonUp")
+        pf.roleBtns[si]=btn
     end
 
     pf.closeTimer = 0
@@ -493,17 +682,25 @@ function PBM.BuildProfPickerIfNeeded()
     PBM.State.profPicker=pf
 end
 
-function PBM.OpenProfPicker(anchorFrame, charName)
+function PBM.OpenProfPicker(anchorFrame, charName, hideRole)
     if not charName or charName=="" then return end
     PBM.BuildProfPickerIfNeeded()
     PBM.State.profPickerOwner=charName
     PBM.State.profPicker.title:SetText("|cffC69B3AProfs: |r|cffffff00"..charName.."|r")
+    -- Show or hide the Role section
+    if PBM.State.profPicker.roleSectionFrames then
+        for _, f in ipairs(PBM.State.profPicker.roleSectionFrames) do
+            if hideRole then f:Hide() else f:Show() end
+        end
+    end
     -- combined count for limit enforcement across both sections
     local profs3=PBM.GetProfs(charName)
     local needs3=PBM.GetNeeds(charName)
+    local roles3=PBM.GetCharRoles(charName)
     local count3=0
     for _ in pairs(profs3) do count3=count3+1 end
     for _ in pairs(needs3) do count3=count3+1 end
+    for _ in pairs(roles3) do count3=count3+1 end
     for _,sb in ipairs(PBM.State.profPicker.slotBtns) do
         if profs3[sb.slotKey] then
             sb.hi:Show(); sb:SetBackdropBorderColor(0.3,0.8,0.3,0.9); sb.tex:SetAlpha(1)
@@ -521,6 +718,23 @@ function PBM.OpenProfPicker(anchorFrame, charName)
                 nb.hi:Hide(); nb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); nb.tex:SetAlpha(0.35)
             else
                 nb.hi:Hide(); nb:SetBackdropBorderColor(0.25,0.35,0.55,0.8); nb.tex:SetAlpha(1)
+            end
+        end
+    end
+    -- Sync role button highlight states with limit enforcement
+    if PBM.State.profPicker.roleBtns then
+        local roles4 = PBM.GetCharRoles(charName)
+        local roleCount4 = 0
+        for _ in pairs(roles4) do roleCount4 = roleCount4 + 1 end
+        for _, rb in ipairs(PBM.State.profPicker.roleBtns) do
+            if roles4[rb.slotKey] then
+                rb.hi:Show(); rb:SetBackdropBorderColor(rb.slotColor.r,rb.slotColor.g,rb.slotColor.b,0.9)
+                rb.tex:SetAlpha(1)
+            elseif roleCount4 >= PBM.MAX_CHAR_ROLES then
+                rb.hi:Hide(); rb:SetBackdropBorderColor(0.15,0.15,0.15,0.5); rb.tex:SetAlpha(0.35)
+            else
+                rb.hi:Hide(); rb:SetBackdropBorderColor(rb.slotColor.r*0.5,rb.slotColor.g*0.5,rb.slotColor.b*0.5,0.8)
+                rb.tex:SetAlpha(1)
             end
         end
     end
@@ -550,13 +764,15 @@ function PBM.MakeProfCell(parent, xOff, rowH, getCharName, hovTex, overrideW)
         local cname=getCharName()
         if not cname or cname=="" then return end
         if mouseButton=="RightButton" then
-            if LichborneTrackerDB.profs then LichborneTrackerDB.profs[cname:lower()]={} end
-            PBM.RefreshAllProfCells(); PBM.CloseProfPicker(); return
+            if LichborneTrackerDB.profs      then LichborneTrackerDB.profs[cname:lower()]      = {} end
+            if LichborneTrackerDB.charRoles  then LichborneTrackerDB.charRoles[cname:lower()]  = {} end
+            if LichborneTrackerDB.needs      then LichborneTrackerDB.needs[cname:lower()]       = {} end
+            PBM.RefreshAllProfCells(); PBM.RefreshAllNeedsCells(); PBM.CloseProfPicker(); return
         end
         if PBM.State.profPicker and PBM.State.profPicker:IsShown() and PBM.State.profPickerOwner==cname then
             PBM.CloseProfPicker()
         else
-            PBM.CloseProfPicker(); PBM.OpenProfPicker(cf,cname)
+            PBM.CloseProfPicker(); PBM.OpenProfPicker(cf, cname, cf.hideRoleInPicker)
         end
     end)
     cf:SetScript("OnEnter",function()
@@ -565,14 +781,25 @@ function PBM.MakeProfCell(parent, xOff, rowH, getCharName, hovTex, overrideW)
         local cname=getCharName()
         if cname and cname~="" then
             GameTooltip:SetOwner(cf,"ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cffC69B3AProfs:|r "..cname,1,1,1)
-            local profs4=PBM.GetProfs(cname)
+            GameTooltip:AddLine("|cffC69B3AProf / Role:|r "..cname,1,1,1)
             local any=false
+            -- Roles
+            local roles4=PBM.GetCharRoles(cname)
+            local roleLabels={T="Tank",H="Healer",D="DPS",A="AoE"}
+            local roleColors={T={0.20,0.60,1.00},H={0.20,1.00,0.40},D={1.00,0.40,0.20},A={0.58,0.51,0.79}}
+            for _,slot in ipairs(ROLE_PICKER_SLOTS) do
+                if roles4[slot.key] then
+                    local rc=roleColors[slot.key]
+                    GameTooltip:AddLine("  "..slot.label,rc[1],rc[2],rc[3]); any=true
+                end
+            end
+            -- Profs
+            local profs4=PBM.GetProfs(cname)
             for _,slot in ipairs(PBM.PROF_SLOTS) do
                 if profs4[slot.key] then GameTooltip:AddLine("  "..slot.label,1,0.6,0.2); any=true end
             end
             if not any then GameTooltip:AddLine("  Nothing marked",0.5,0.5,0.5) end
-            GameTooltip:AddLine("|cff888888Click to edit  (max 2)  Right-click clears all|r",0.6,0.6,0.6)
+            GameTooltip:AddLine("|cff888888Click to edit  ·  Right-click clears all|r",0.6,0.6,0.6)
             GameTooltip:Show()
         end
     end)

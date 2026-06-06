@@ -97,6 +97,16 @@ function PBM.GetClassRows(cls)
         end
         allIdx = raidFiltered
     end
+    -- Apply hide-group filter: hide characters already in your current party/group
+    if PBM.State.LBFilter.hideGroupMembers then
+        local gnames = PBM.GetGroupMemberNameSet()
+        local groupFiltered = {}
+        for _, ai in ipairs(allIdx) do
+            local nm = LichborneTrackerDB.rows[ai].name or ""
+            if nm == "" or not gnames[nm] then groupFiltered[#groupFiltered+1] = ai end
+        end
+        allIdx = groupFiltered
+    end
     -- Apply header-click sort if active; always compact filled before empty
     local curKey = PBM.State.classSortKey[cls]
     local curAsc = PBM.State.classSortAsc[cls]
@@ -230,6 +240,9 @@ function PBM.UpdateTabs()
             elseif cls == "Overview" then
                 btn.bg:SetTexture(0.20, 0.45, 0.20, 1)
                 btn.bottomLine:SetTexture(0.40, 0.90, 0.40, 1)
+            elseif cls == "Group" then
+                btn.bg:SetTexture(0.035, 0.14, 0.245, 1)
+                btn.bottomLine:SetTexture(0.14, 0.56, 1.0, 1)
             elseif cls == "Settings" then
                 btn.bg:SetTexture(0.21, 0.27, 0.45, 1)
                 btn.bottomLine:SetTexture(0.467, 0.600, 1.000, 1)
@@ -244,9 +257,32 @@ function PBM.UpdateTabs()
     if LichborneRaidFrame then
         local isRaid     = PBM.State.activeTab == "Raid"
         local isAll      = PBM.State.activeTab == "Overview"
+        local isGroup    = PBM.State.activeTab == "Group"
         local isSettings = PBM.State.activeTab == "Settings"
-        if isAll then
-            if PBM.State.LichborneOverviewFrame then PBM.State.LichborneOverviewFrame:Show() end
+        if isGroup then
+            -- Build group view frame lazily the first time
+            if not PBM.State.groupViewBuilt and PBM.State.mainParent then
+                PBM.BuildGroupView(PBM.State.mainParent, PBM.State.mainFl)
+            end
+            if PBM.State.groupViewFrame then PBM.State.groupViewFrame:Show() end
+            if PBM.State.LichborneOverviewFrame then PBM.State.LichborneOverviewFrame:Hide() end
+            if LichborneRaidFrame then LichborneRaidFrame:Hide() end
+            if PBM.State.LichborneBotSettingsFrame then PBM.State.LichborneBotSettingsFrame:Hide() end
+            if LichborneHeaderBar then LichborneHeaderBar:Hide() end
+            if LichborneAvgBar then LichborneAvgBar:Hide() end
+            if LichborneCountBar then LichborneCountBar:Hide() end
+            if _G["LichborneRaidCountBar"] then _G["LichborneRaidCountBar"]:Hide() end
+            for _, rf in ipairs(PBM.State.rowFrames) do rf:Hide() end
+            PBM.UpdateInviteButtons()
+        elseif isAll then
+            -- Show either the standard overview or the group-view depending on filter state
+            if PBM.State.groupViewActive and PBM.State.groupViewFrame then
+                if PBM.State.LichborneOverviewFrame then PBM.State.LichborneOverviewFrame:Hide() end
+                PBM.State.groupViewFrame:Show()
+            else
+                if PBM.State.LichborneOverviewFrame then PBM.State.LichborneOverviewFrame:Show() end
+                if PBM.State.groupViewFrame then PBM.State.groupViewFrame:Hide() end
+            end
             if PBM.State.LichborneBotSettingsFrame then PBM.State.LichborneBotSettingsFrame:Hide() end
             if LichborneRaidFrame then LichborneRaidFrame:Hide() end
             if LichborneHeaderBar then LichborneHeaderBar:Hide() end
@@ -258,6 +294,7 @@ function PBM.UpdateTabs()
         elseif isRaid then
             LichborneRaidFrame:Show()
             if PBM.State.LichborneOverviewFrame then PBM.State.LichborneOverviewFrame:Hide() end
+            if PBM.State.groupViewFrame then PBM.State.groupViewFrame:Hide() end
             if PBM.State.LichborneBotSettingsFrame then PBM.State.LichborneBotSettingsFrame:Hide() end
             if LichborneHeaderBar then LichborneHeaderBar:Hide() end
             if LichborneAvgBar then LichborneAvgBar:Hide() end
@@ -268,6 +305,7 @@ function PBM.UpdateTabs()
         elseif isSettings then
             if PBM.State.LichborneBotSettingsFrame then PBM.State.LichborneBotSettingsFrame:Show() end
             if PBM.State.LichborneOverviewFrame then PBM.State.LichborneOverviewFrame:Hide() end
+            if PBM.State.groupViewFrame then PBM.State.groupViewFrame:Hide() end
             LichborneRaidFrame:Hide()
             if LichborneHeaderBar then LichborneHeaderBar:Hide() end
             if LichborneAvgBar then LichborneAvgBar:Hide() end
@@ -279,6 +317,7 @@ function PBM.UpdateTabs()
             local panel = PBM.State.bottomTabPanels[PBM.State.activeTab]
             if PBM.State.LichborneBotSettingsFrame then PBM.State.LichborneBotSettingsFrame:Hide() end
             if PBM.State.LichborneOverviewFrame then PBM.State.LichborneOverviewFrame:Hide() end
+            if PBM.State.groupViewFrame then PBM.State.groupViewFrame:Hide() end
             LichborneRaidFrame:Hide()
             if LichborneHeaderBar then LichborneHeaderBar:Hide() end
             if LichborneAvgBar then LichborneAvgBar:Hide() end
@@ -290,6 +329,7 @@ function PBM.UpdateTabs()
         else
             LichborneRaidFrame:Hide()
             if PBM.State.LichborneOverviewFrame then PBM.State.LichborneOverviewFrame:Hide() end
+            if PBM.State.groupViewFrame then PBM.State.groupViewFrame:Hide() end
             if PBM.State.LichborneBotSettingsFrame then PBM.State.LichborneBotSettingsFrame:Hide() end
             if LichborneHeaderBar then LichborneHeaderBar:Hide() end
             if LichborneAvgBar then LichborneAvgBar:Hide() end

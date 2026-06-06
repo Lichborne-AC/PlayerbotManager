@@ -563,14 +563,18 @@ function PBM.CreateCharSheet(config)
     end
 
     -- ── onStatsResponse ───────────────────────────────────────────────────────
-    menu.onStatsResponse = function(sender, msg)
+    menu.onStatsResponse = function(sender, msg, rawMsg)
         local gold = msg:match("(%d+)g") or msg:match("(%d+), %d+/%d+ Bag")
         local bag  = msg:match("(%d+/%d+) Bag")
         local dur  = msg:match("(%d+)%% %(")
         menu.statLine1:SetText(gold and ("|cffFFD100" .. gold .. "g|r") or "")
         if bag then
             local used, total = bag:match("(%d+)/(%d+)")
-            menu.statLine2:SetText("|cffAAAAAA" .. used .. "/|r|cffFFFFFF" .. total .. " Bag|r")
+            -- Use the exact color the playerbot applied to the bag count in its whisper.
+            -- rawMsg still has the |cAARRGGBB code immediately before the "N/N" value.
+            local bagHex = rawMsg and rawMsg:match("|c(%x%x%x%x%x%x%x%x)%d+/%d+")
+            local colorTag = bagHex and ("|c" .. bagHex) or "|cffFFFFFF"
+            menu.statLine2:SetText(colorTag .. used .. "/" .. total .. "|r|cffFFFFFF Bag|r")
         else
             menu.statLine2:SetText("")
         end
