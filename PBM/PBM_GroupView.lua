@@ -449,18 +449,6 @@ function PBM.BuildGroupView(parent, fl)
         end)
         nameBtn:SetScript("OnEnter", function()
             hov:SetTexture(0.78, 0.61, 0.23, 0.12)
-            if rf.charName and rf.dbIndex then
-                GameTooltip:SetOwner(nameBtn, "ANCHOR_LEFT")
-                local d = rf.dbIndex and LichborneTrackerDB.rows[rf.dbIndex]
-                local clr = d and d.cls and PBM.CLASS_COLORS[d.cls]
-                if clr then
-                    GameTooltip:AddLine(rf.charName, clr.r, clr.g, clr.b)
-                else
-                    GameTooltip:AddLine(rf.charName, 1, 1, 1)
-                end
-                GameTooltip:AddLine("Click to open character sheet", 1, 0.65, 0)
-                GameTooltip:Show()
-            end
         end)
         nameBtn:SetScript("OnLeave", function()
             hov:SetTexture(0, 0, 0, 0)

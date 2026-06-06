@@ -2836,6 +2836,7 @@ local function OnFirstShow()
             stateLbl:SetPoint("RIGHT", btn, "RIGHT", -10, 0)
 
             function btn:Refresh()
+                if not PBMConfig then PBMConfig = {} end
                 local isHidden = PBMConfig.hiddenTabs and PBMConfig.hiddenTabs[sectionId]
                 if isHidden then
                     btn:SetBackdropColor(0.18, 0.04, 0.04, 1)
@@ -2848,6 +2849,7 @@ local function OnFirstShow()
             btn:Refresh()
 
             btn:SetScript("OnClick", function()
+                if not PBMConfig then PBMConfig = {} end
                 if not PBMConfig.hiddenTabs then PBMConfig.hiddenTabs = {} end
                 local nowHidden = not PBMConfig.hiddenTabs[sectionId]
                 PBMConfig.hiddenTabs[sectionId] = nowHidden or nil
