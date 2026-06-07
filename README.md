@@ -30,7 +30,7 @@ The four blessing strategy keys have been renamed to match their actual spell na
 
 ### Group Tab
 
-* Column layout now matches the class tabs — spec icon only, class icon removed, all column widths aligned
+* Column layout now matches the class tabs.
 
 ### Playerbots Tab — Reset Instances
 
