@@ -10,7 +10,7 @@
 
 ### Paladin — Blessing Strategy Renames *(mod-playerbots PR #2432)*
 
-The four blessing strategy keys have been renamed to match their actual spell names. **Bots will need a one-time strategy reset after updating.**
+The four blessing strategy keys have been renamed to match their actual spell names.
 
 | Old key | New key | Blessing |
 |---|---|---|
