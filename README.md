@@ -6,60 +6,37 @@
 
 ---
 
-## Recent Changes — v1.3 (June 5, 2026)
+## Recent Changes — v1.4 (July 3, 2026)
 
-### Paladin — Blessing Strategy Renames *(mod-playerbots PR #2432)*
+### Reorder Rows
 
-The four blessing strategy keys have been renamed to match their actual spell names.
+* Drag to reorder — grab the `#` handle at the left of a row and drag. Works in Class, Raid, and Group tabs
+* Manual order is saved and clears the active column sort
 
-| Old key | New key | Blessing |
-|---|---|---|
-| `bstats` | `bkings` | Blessing of Kings |
-| `bhealth` | `bsanc` | Blessing of Sanctuary |
-| `bmana` | `bwisdom` | Blessing of Wisdom |
-| `bdps` | `bmight` | Blessing of Might |
+### LevelSync
 
-### Rogue Character Sheet
+* New Export button (bottom-right) — copies synced characters (name, class, level, IP tier) into the tracker
 
-* **Melee button** added — `co +/- melee` with `inv_sword_35` icon
-* Combat section reorganised into two side-by-side rows: **DPS** (DPS / Melee / Boost) and **Stealth** (Stealth / Stealthed)
+### Individual Progression
 
-### Hunter Character Sheet
+* New `.ip attune onyxia/blacktemple` command added to the Commands list
 
-* Removed `dps`, `dps debuff`, and `bviper` (Aspect of the Viper CO + NC) buttons — these strategies are no longer relevant or have been superseded
+### Class Tabs
 
-### Group Tab
+* Gear cells now highlight on hover, matching the Group tab
 
-* Column layout now matches the class tabs.
+### CC Button — Mage, Priest, Warlock, Druid
 
-### Playerbots Tab — Reset Instances
+Added a **CC** button to the character sheet for these four classes, toggling the `cc` crowd control strategy:
 
-* Reset Instances button now sends `.playerbots bot refresh=raid *` (single command via Playerbot module)
-* GM Reset Instances button removed
-* Requires `AiPlayerbot.ResetInstanceIdForAltBots = 1`
+* **Mage** — Polymorph
+* **Priest** — Shackle Undead
+* **Warlock** — Fear / Banish
+* **Druid** — Cyclone / Hibernate / Entangling Roots
 
-### Filters & UI
+### Invite Raid *(mod-playerbots PR #2502)*
 
-* Several new filter options added and refined across the class and overview tabs
-* Party Filter, Raid Tab Filter, and Hide Group Members filters are now mutually exclusive
-
----
-
-## Recent Changes — v1.2 (May 30, 2026)
-
-### Show/Hide Tab
-
-A dedicated **Show/Hide** tab in the addon Options panel lets you control which sections are visible per bot row. Changes take effect immediately without a reload.
-
-### Druid Overhaul
-
-The Druid character sheet has been significantly expanded:
-
-* **Tranquility** — dedicated strategy button for the Tranquility healing cooldown
-* **Blanketing** — Blanketing Rejuvenation raid-wide HoT strategy
-* **Feral Charge** — Feral Charge combat strategy for melee/bear specs
-* **Restoration** fixed — the Resto spec button and strategy list now correctly use the `resto` key that the server sends, resolving a long-standing issue where the button would not light up when Restoration was active
-* Role notes for Resto Druids now correctly display `[Rest]` in the Raid and Overview tabs
+* Removed the 6th-member pause/re-add workaround — party→raid conversion is now handled server-side
 
 ---
 
