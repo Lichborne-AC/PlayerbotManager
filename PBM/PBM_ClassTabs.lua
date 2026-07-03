@@ -1,6 +1,73 @@
 ﻿PBM = PBM or {}
 PBM.State = PBM.State or {}
 
+-- ── Class-tab drag-to-reorder state (mirrors LichborneTracker) ────
+-- classMouseHeld is toggled by the drag handle's OnMouseDown/OnMouseUp.
+-- Dragging reorders LichborneTrackerDB.rows directly and clears the active
+-- class sort so the manual order sticks.
+local classDragPoll   = CreateFrame("Frame")
+local classMouseHeld  = false
+local classDragSource = nil   -- row frame currently being dragged
+
+classDragPoll:SetScript("OnUpdate", function()
+    if not classDragSource then return end
+    if not classMouseHeld then
+        -- Released — find the row under the cursor and move there
+        local cx, cy = GetCursorPosition()
+        local sc = UIParent:GetEffectiveScale()
+        cx, cy = cx/sc, cy/sc
+        local targetRow = nil
+        for _, rf in ipairs(PBM.State.rowFrames) do
+            if rf:IsShown() and rf ~= classDragSource and rf.dbIndex then
+                local d = LichborneTrackerDB.rows[rf.dbIndex]
+                if d and d.name and d.name ~= "" then
+                    local l,r,b,t = rf:GetLeft(),rf:GetRight(),rf:GetBottom(),rf:GetTop()
+                    if l and cx>=l and cx<=r and cy>=b and cy<=t then
+                        targetRow = rf; break
+                    end
+                end
+            end
+        end
+        if targetRow then
+            local a = classDragSource.dbIndex
+            local b = targetRow.dbIndex
+            if a and b and a ~= b then
+                local rows = LichborneTrackerDB.rows
+                local item = rows[a]
+                table.remove(rows, a)
+                local insertAt = b > a and b - 1 or b
+                table.insert(rows, insertAt, item)
+                if PBM.State.classSortKey then PBM.State.classSortKey[PBM.State.activeTab] = nil end
+                if PBM.UpdateClassSortHeaders then PBM.UpdateClassSortHeaders() end
+                PBM.RefreshRows()
+                if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
+            end
+        end
+        for _, rf in ipairs(PBM.State.rowFrames) do
+            if rf.hov then rf.hov:SetTexture(0,0,0,0) end
+            if rf.dropHi then rf.dropHi:SetTexture(0,0,0,0) end
+            if rf.dragTex then rf.dragTex:SetVertexColor(0.3,0.4,0.6,0) end
+        end
+        classDragSource = nil
+        return
+    end
+    -- Still dragging — highlight whichever row the cursor is over
+    local cx, cy = GetCursorPosition()
+    local sc = UIParent:GetEffectiveScale()
+    cx, cy = cx/sc, cy/sc
+    for _, rf in ipairs(PBM.State.rowFrames) do
+        if rf:IsShown() and rf ~= classDragSource and rf.dropHi then
+            local d = rf.dbIndex and LichborneTrackerDB.rows[rf.dbIndex]
+            local l,r,b,t = rf:GetLeft(),rf:GetRight(),rf:GetBottom(),rf:GetTop()
+            if l and d and d.name and d.name ~= "" and cx>=l and cx<=r and cy>=b and cy<=t then
+                rf.dropHi:SetTexture(0.9,0.7,0.1,0.20)
+            else
+                rf.dropHi:SetTexture(0,0,0,0)
+            end
+        end
+    end
+end)
+
 -- Installs gear slot tooltip handlers on a character menu's header cells.
 -- Call once at menu build time. menuFrame._gearLinks must be set on open.
 function PBM.InstallGearTooltips(menuFrame, hdr)
@@ -210,74 +277,9 @@ end
 -- ─────────────────────────────────────────────────────────────────────────────
 -- BuildRows
 -- ─────────────────────────────────────────────────────────────────────────────
--- ── Character Name Dropdown ───────────────────────────────────
-local NAME_MENU_W = PBM.GEAR_OFF + PBM.GEAR_SLOTS * PBM.COL_GEAR_W  -- left edge to end of Rngd
-local NAME_MENU_H = PBM.ROW_HEIGHT * 2
-
-local LichborneNameMenu
-local LichborneNameMenuCatcher
-
--- Strategy toggle definitions
-local CO_TOGGLES = {
-    {key="aoe",         label="aoe",    tip="AoE attacks"},
-    {key="avoid aoe",   label="avoid",  tip="Avoid AoE"},
-    {key="dps assist",  label="assist", tip="DPS Assist"},
-    {key="boost",       label="boost",  tip="Boost mode"},
-    {key="potions",     label="pots",   tip="Use potions"},
-    {key="racials",     label="racial", tip="Use racials"},
-    {key="frost",       label="frost",  tip="Frost strategies"},
-    {key="formation",   label="form",   tip="Formation mode"},
-    {key="cast time",   label="cast",   tip="Cast time"},
-    {key="cure",        label="cure",   tip="Cure (CO)"},
-}
-local NC_TOGGLES = {
-    {key="food",   label="food",   tip="Food and Drink|cff999999 - toggles |r|cff666666food|r |cff666666NC|r"},
-    {key="loot",   label="loot",   tip="Loot|cff999999 - toggles |r|cff666666loot|r |cff666666NC|r"},
-    {key="gather", label="gather", tip="Gather|cff999999 - toggles |r|cff666666gather|r |cff666666NC|r"},
-    {key="mount",  label="mount",  tip="Use mounts"},
-    {key="buff",   label="buff",   tip="Buff players"},
-    {key="cure",   label="cure",   tip="Cure (NC)"},
-    {key="bmana",  label="bmana",  tip="Mana management"},
-    {key="bdps",   label="bdps",   tip="Balanced DPS"},
-    {key="guard",  label="guard",  tip="Guard target|cff999999 - toggles |r|cff666666guard|r |cff666666NC|r"},
-    {key="pvp",    label="pvp",    tip="PvP mode"},
-}
-
--- Set the visual state of a strategy toggle button.
--- ON: strategy's unique color for text + border; OFF: unchanged dark/gray.
-function PBM.SetToggleVisual(btn)
-    if btn.active then
-        local hex = btn.stratKey and PBM and PBM.STRATEGY_COLORS and PBM.STRATEGY_COLORS[btn.stratKey]
-        if hex then
-            local r = tonumber(hex:sub(1,2), 16) / 255
-            local g = tonumber(hex:sub(3,4), 16) / 255
-            local b = tonumber(hex:sub(5,6), 16) / 255
-            btn:SetBackdropColor(0.08, 0.10, 0.18, 1.0)         -- neutral dark ON bg
-            btn:SetBackdropBorderColor(r * 0.8, g * 0.8, b * 0.8, 1.0)
-            btn.label:SetTextColor(r, g, b, 1)
-        else
-            -- fallback: generic blue (no stratKey or color not mapped)
-            btn:SetBackdropColor(0.10, 0.30, 0.70, 1.0)
-            btn:SetBackdropBorderColor(0.30, 0.60, 1.00, 1.0)
-            btn.label:SetTextColor(1.0, 1.0, 1.0, 1)
-        end
-    else
-        btn:SetBackdropColor(0.03, 0.05, 0.10, 1.0)
-        btn:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.6)
-        btn.label:SetTextColor(0.55, 0.55, 0.55, 1)
-    end
-end
-
--- Called by PBM_Core when a "Strategies: ..." whisper arrives for this menu
+-- Called by PBM_Core when a "Strategies: ..." whisper arrives for a class menu
 function PBM.UpdateStrategyToggles(menuFrame, stratType, activeSet)
     if not menuFrame then return end
-    local toggles = (stratType == "co") and menuFrame.coToggles or menuFrame.ncToggles
-    if toggles then
-        for _, btn in ipairs(toggles) do
-            btn.active = activeSet[btn.stratKey] or false
-            PBM.SetToggleVisual(btn)
-        end
-    end
     -- Frame-specific callback (used by class overlay menus)
     if menuFrame.onStrategyUpdate then
         menuFrame.onStrategyUpdate(stratType, activeSet)
@@ -338,178 +340,29 @@ local CLASS_MENU_FRAMES = {
 }
 
 function PBM.OpenNameMenu(row)
-    -- Route to class-specific overlay panel
-    do
-        local _rd = row.dbIndex and LichborneTrackerDB.rows[row.dbIndex]
-        if _rd then
-            local opener = CLASS_MENU_OPEN[_rd.cls]
-            if opener and PBM[opener] then
-                local frameName = CLASS_MENU_FRAMES[_rd.cls]
-                local menuFrame = frameName and _G[frameName]
-                -- Toggle off: same menu + same row already open
-                if menuFrame and menuFrame:IsShown() and menuFrame.sourceRow == row then
-                    PBM.CloseAllClassMenus()
-                    return
-                end
-                -- Close only OTHER class menus — don't hide+reshow this one
-                for cls, closeFn in pairs(CLASS_MENU_CLOSE_MAP) do
-                    if cls ~= _rd.cls and PBM[closeFn] then
-                        PBM[closeFn]()
-                    end
-                end
-                PBM[opener](row)
-                menuFrame = frameName and _G[frameName]
-                if menuFrame then PBM.ShowIgnoredSpellTable(menuFrame) end
-                return
-            end
-        end
-    end
-    if not LichborneNameMenu then
-        -- Full-screen invisible button — closes menu on click outside
-        LichborneNameMenuCatcher = CreateFrame("Button", "LichborneNameMenuCatcher", UIParent)
-        LichborneNameMenuCatcher:SetAllPoints(UIParent)
-        LichborneNameMenuCatcher:SetFrameStrata("DIALOG")
-        LichborneNameMenuCatcher:SetFrameLevel(100)
-        LichborneNameMenuCatcher:EnableMouse(true)
-        LichborneNameMenuCatcher:SetScript("OnMouseDown", function()
-            LichborneNameMenuCatcher:Hide()
-            LichborneNameMenu:Hide()
-        end)
-        LichborneNameMenuCatcher:Hide()
+    -- Route to class-specific overlay panel. Rows without a recognized
+    -- class (unscanned/empty) simply have no menu.
+    local _rd = row.dbIndex and LichborneTrackerDB.rows[row.dbIndex]
+    if not _rd then return end
+    local opener = CLASS_MENU_OPEN[_rd.cls]
+    if not (opener and PBM[opener]) then return end
 
-        LichborneNameMenu = CreateFrame("Frame", "LichborneNameMenu", UIParent)
-        LichborneNameMenu:SetFrameStrata("TOOLTIP")
-        LichborneNameMenu:SetSize(NAME_MENU_W, NAME_MENU_H)
-        LichborneNameMenu:SetBackdrop({
-            bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile = true, tileSize = 16, edgeSize = 8,
-            insets = {left=2, right=2, top=2, bottom=2},
-        })
-        LichborneNameMenu:SetBackdropColor(0.05, 0.07, 0.14, 1.0)
-        LichborneNameMenu:SetBackdropBorderColor(0.78, 0.61, 0.23, 1)
-
-        -- ── Build interior ────────────────────────────────────────
-        local HALF_W   = math.floor(NAME_MENU_W * 0.5)
-        local N_TOGS   = 10
-        local GAP      = 2
-        local BOX_H    = 19
-        local TOGGLE_Y = -15  -- from top of frame to top of boxes
-        local BOX_W    = math.floor((HALF_W - 6 - (N_TOGS - 1) * GAP) / N_TOGS)
-
-        -- CO section label (centered in left half)
-        local coHdr = LichborneNameMenu:CreateFontString(nil, "OVERLAY")
-        coHdr:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
-        coHdr:SetTextColor(0.78, 0.61, 0.23, 1)
-        coHdr:SetText("CO")
-        coHdr:SetPoint("TOPLEFT", LichborneNameMenu, "TOPLEFT", math.floor(HALF_W * 0.5) - 6, -3)
-
-        -- NC section label (centered in right half)
-        local ncHdr = LichborneNameMenu:CreateFontString(nil, "OVERLAY")
-        ncHdr:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
-        ncHdr:SetTextColor(0.78, 0.61, 0.23, 1)
-        ncHdr:SetText("NC")
-        ncHdr:SetPoint("TOPLEFT", LichborneNameMenu, "TOPLEFT", HALF_W + math.floor(HALF_W * 0.5) - 6, -3)
-
-        -- Vertical gold divider between CO and NC sides
-        local divLine = LichborneNameMenu:CreateTexture(nil, "OVERLAY")
-        divLine:SetWidth(1)
-        divLine:SetPoint("TOPLEFT",    LichborneNameMenu, "TOPLEFT",    HALF_W,  0)
-        divLine:SetPoint("BOTTOMLEFT", LichborneNameMenu, "BOTTOMLEFT", HALF_W,  0)
-        divLine:SetTexture(0.78, 0.61, 0.23, 0.8)
-
-        -- Toggle factory
-        LichborneNameMenu.coToggles = {}
-        LichborneNameMenu.ncToggles = {}
-
-        local function MakeToggle(pool, idx, def, xBase, cmdPrefix)
-            local x   = xBase + (idx - 1) * (BOX_W + GAP)
-            local btn = CreateFrame("Button", nil, LichborneNameMenu)
-            btn:SetPoint("TOPLEFT", LichborneNameMenu, "TOPLEFT", x, TOGGLE_Y)
-            btn:SetSize(BOX_W, BOX_H)
-            btn:SetBackdrop({
-                bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
-                edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-                tile=true, tileSize=8, edgeSize=5,
-                insets={left=1,right=1,top=1,bottom=1},
-            })
-            btn.stratKey  = def.key
-            btn.cmdPrefix = cmdPrefix
-            btn.active    = false
-
-            local lbl = btn:CreateFontString(nil, "OVERLAY")
-            lbl:SetFont("Fonts\\FRIZQT__.TTF", 8)
-            lbl:SetAllPoints()
-            lbl:SetJustifyH("CENTER"); lbl:SetJustifyV("MIDDLE")
-            lbl:SetText(def.label)
-            btn.label = lbl
-
-            PBM.SetToggleVisual(btn)
-
-            btn:SetScript("OnEnter", function()
-                GameTooltip:SetOwner(btn, "ANCHOR_TOP")
-                GameTooltip:AddLine(def.tip, 1, 1, 1)
-                GameTooltip:Show()
-            end)
-            btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-            btn:SetScript("OnClick", function()
-                local botName = LichborneNameMenu.botName
-                if not botName or botName == "" then return end
-                btn.active = not btn.active
-                PBM.SetToggleVisual(btn)
-                local sign = btn.active and "+" or "-"
-                if PBM and PBM.SendToBot then
-                    PBM.SendToBot(cmdPrefix .. " " .. sign .. def.key .. ",?", botName)
-                end
-            end)
-
-            pool[idx] = btn
-        end
-
-        for i, def in ipairs(CO_TOGGLES) do
-            MakeToggle(LichborneNameMenu.coToggles, i, def, 3, "co")
-        end
-        for i, def in ipairs(NC_TOGGLES) do
-            MakeToggle(LichborneNameMenu.ncToggles, i, def, HALF_W + 3, "nc")
-        end
-
-        LichborneNameMenu:Hide()
-    end
-
-    -- Toggle: clicking the same row while open closes the menu
-    if LichborneNameMenu:IsShown() and LichborneNameMenu.sourceRow == row then
-        LichborneNameMenuCatcher:Hide()
-        LichborneNameMenu:Hide()
+    local frameName = CLASS_MENU_FRAMES[_rd.cls]
+    local menuFrame = frameName and _G[frameName]
+    -- Toggle off: same menu + same row already open
+    if menuFrame and menuFrame:IsShown() and menuFrame.sourceRow == row then
+        PBM.CloseAllClassMenus()
         return
     end
-
-    LichborneNameMenu.sourceRow = row
-    LichborneNameMenu:ClearAllPoints()
-    LichborneNameMenu:SetPoint("TOPLEFT", row, "BOTTOMLEFT", 0, 0)
-
-    -- Resolve bot name from the clicked row
-    local rowData = row.dbIndex and LichborneTrackerDB.rows[row.dbIndex]
-    local botName = (rowData and rowData.name) or ""
-    LichborneNameMenu.botName = botName
-
-    -- Reset all toggles to OFF while waiting for bot response
-    for _, btn in ipairs(LichborneNameMenu.coToggles) do
-        btn.active = false
-        PBM.SetToggleVisual(btn)
+    -- Close only OTHER class menus — don't hide+reshow this one
+    for cls, closeFn in pairs(CLASS_MENU_CLOSE_MAP) do
+        if cls ~= _rd.cls and PBM[closeFn] then
+            PBM[closeFn]()
+        end
     end
-    for _, btn in ipairs(LichborneNameMenu.ncToggles) do
-        btn.active = false
-        PBM.SetToggleVisual(btn)
-    end
-
-    -- Query the bot for its current strategies
-    if botName ~= "" and PBM and PBM.QueryBotStrategies then
-        PBM.QueryBotStrategies(botName, LichborneNameMenu)
-    end
-
-    LichborneNameMenu:Show()
-    LichborneNameMenuCatcher:Show()
-    GameTooltip:Hide()
+    PBM[opener](row)
+    menuFrame = frameName and _G[frameName]
+    if menuFrame then PBM.ShowIgnoredSpellTable(menuFrame) end
 end
 
 function PBM.BuildRows(parent, yStart)
@@ -531,12 +384,18 @@ function PBM.BuildRows(parent, yStart)
         hov:SetTexture(0, 0, 0, 0)
         row.hov = hov
 
+        -- Drop-target highlight (shown while dragging another row over this one)
+        local dropHi = row:CreateTexture(nil, "OVERLAY")
+        dropHi:SetAllPoints(row)
+        dropHi:SetTexture(0, 0, 0, 0)
+        row.dropHi = dropHi
+
         row:EnableMouse(true)
         row:SetScript("OnEnter", function()
-            row.hov:SetTexture(0.78, 0.61, 0.23, 0.12)
+            if not classDragSource then row.hov:SetTexture(0.78, 0.61, 0.23, 0.12) end
         end)
         row:SetScript("OnLeave", function()
-            row.hov:SetTexture(0, 0, 0, 0)
+            if not classDragSource then row.hov:SetTexture(0, 0, 0, 0) end
         end)
 
         -- Row number / level label
@@ -545,6 +404,44 @@ function PBM.BuildRows(parent, yStart)
         nl:SetWidth(18); nl:SetJustifyH("CENTER")
         nl:SetTextColor(0.4, 0.5, 0.6)
         row.numLbl = nl
+
+        -- Drag handle (over the reserved drag column) — drag to reorder the list
+        local dragBtn = CreateFrame("Button", nil, row)
+        dragBtn:SetPoint("LEFT", row, "LEFT", PBM.DRAG_OFF, 0); dragBtn:SetSize(PBM.COL_DRAG_W, PBM.ROW_HEIGHT)
+        dragBtn:SetFrameLevel(row:GetFrameLevel() + 5)
+        local dragTex = dragBtn:CreateTexture(nil, "ARTWORK")
+        dragTex:SetAllPoints(dragBtn)
+        dragTex:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+        dragTex:SetVertexColor(0.3, 0.4, 0.6, 0)  -- invisible until hovered/dragged
+        row.dragTex = dragTex
+        dragBtn:SetScript("OnEnter", function()
+            if not classDragSource and row.dbIndex then
+                local d = LichborneTrackerDB.rows[row.dbIndex]
+                if d and d.name and d.name ~= "" then
+                    dragTex:SetVertexColor(0.9, 0.7, 0.1, 1.0)
+                    GameTooltip:SetOwner(dragBtn, "ANCHOR_RIGHT")
+                    GameTooltip:AddLine("Drag to reorder", 1, 1, 1)
+                    GameTooltip:Show()
+                end
+            end
+        end)
+        dragBtn:SetScript("OnLeave", function()
+            if not classDragSource then dragTex:SetVertexColor(0.3, 0.4, 0.6, 0) end
+            GameTooltip:Hide()
+        end)
+        dragBtn:SetScript("OnMouseDown", function(_, mouseButton)
+            if mouseButton == "LeftButton" and row.dbIndex then
+                local d = LichborneTrackerDB.rows[row.dbIndex]
+                if d and d.name and d.name ~= "" then
+                    classDragSource = row
+                    classMouseHeld = true
+                    dragTex:SetVertexColor(0.9, 0.7, 0.1, 1.0)
+                    row.hov:SetTexture(0.9, 0.7, 0.1, 0.12)
+                end
+            end
+        end)
+        dragBtn:SetScript("OnMouseUp", function() classMouseHeld = false end)
+        row.dragBtn = dragBtn
 
         -- Spec icon (click to set spec manually)
         local specBtn = CreateFrame("Button", "LichborneRow"..i.."SpecBtn", row)
@@ -651,6 +548,7 @@ function PBM.BuildRows(parent, yStart)
             glow:SetBackdropColor(0,0,0,0)
             glow:SetBackdropBorderColor(0,0,0,0)
             glow:EnableMouse(false)
+            gb.glow = glow
             gb:SetScript("OnEnter", function()
                 row.hov:SetTexture(0.78, 0.61, 0.23, 0.12)
                 glow:SetBackdropBorderColor(0.3, 0.7, 1.0, 1.0)
@@ -751,6 +649,15 @@ function PBM.BuildRows(parent, yStart)
         line:SetTexture(0.12, 0.20, 0.35, 0.4)
 
         PBM.State.rowFrames[i] = row
+    end
+
+    -- Backup release detector for drag-reorder: the handle is a Button so it
+    -- captures the press and fires OnMouseUp, but also clear the flag if the
+    -- press is released anywhere over the main window.
+    if LichborneTrackerFrame then
+        LichborneTrackerFrame:HookScript("OnMouseUp", function()
+            if classDragSource then classMouseHeld = false end
+        end)
     end
 end
 
@@ -879,6 +786,10 @@ function PBM.RefreshRows()
                 end
                 gb:SetScript("OnEnter", function()
                     row.hov:SetTexture(0.78, 0.61, 0.23, 0.12)
+                    if gb.glow then
+                        gb.glow:SetBackdropBorderColor(0.3, 0.7, 1.0, 1.0)
+                        gb.glow:SetBackdropColor(0.05, 0.15, 0.35, 0.4)
+                    end
                     local rowData = LichborneTrackerDB.rows[di]
                     local link = rowData and rowData.ilvlLink and rowData.ilvlLink[g]
                     if link and link ~= "" then
@@ -896,6 +807,10 @@ function PBM.RefreshRows()
                 end)
                 gb:SetScript("OnLeave", function()
                     if GetMouseFocus() ~= row then row.hov:SetTexture(0, 0, 0, 0) end
+                    if gb.glow then
+                        gb.glow:SetBackdropBorderColor(0, 0, 0, 0)
+                        gb.glow:SetBackdropColor(0, 0, 0, 0)
+                    end
                     GameTooltip:Hide()
                 end)
             end
@@ -1033,6 +948,10 @@ function PBM.RefreshRows()
                 local gb = row.gearBoxes[g]
                 gb:SetScript("OnEnter", nil)
                 gb:SetScript("OnLeave", nil)
+                if gb.glow then
+                    gb.glow:SetBackdropBorderColor(0, 0, 0, 0)
+                    gb.glow:SetBackdropColor(0, 0, 0, 0)
+                end
                 gb:SetText("")
                 gb:SetTextColor(1, 1, 1)
             end

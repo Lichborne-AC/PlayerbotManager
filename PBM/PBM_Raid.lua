@@ -3,6 +3,13 @@ PBM.State = PBM.State or {}
 
 PBM.State.raidRowFrames    = PBM.State.raidRowFrames    or {}
 PBM.State.raidFrameBuilt   = PBM.State.raidFrameBuilt   or false
+
+-- ── Drag-to-reorder state (mirrors LichborneTracker) ──────────────
+-- raidMouseHeld is toggled by the drag handle's OnMouseDown/OnMouseUp;
+-- IsMouseButtonDown is unreliable on 3.3.5a so we track the press ourselves.
+local raidDragPoll   = CreateFrame("Frame")   -- persistent OnUpdate poller
+local raidMouseHeld  = false
+local raidDragSource = nil                     -- roster index being dragged
 PBM.State.LichborneRaidCountLabels  = PBM.State.LichborneRaidCountLabels  or nil
 PBM.State.LichborneRosterIlvlLabel  = PBM.State.LichborneRosterIlvlLabel  or nil
 PBM.State.LichborneRosterGsLabel    = PBM.State.LichborneRosterGsLabel    or nil
@@ -1114,11 +1121,13 @@ function PBM.BuildRaidFrame(parent, fl)
         -- Hover highlight texture
         rf:EnableMouse(true)
         local raidHov = rf:CreateTexture(nil,"OVERLAY"); raidHov:SetAllPoints(rf); raidHov:SetTexture(0,0,0,0); rf.raidHov = raidHov
+        -- Drop-target highlight (shown while dragging another row over this one)
+        local raidDropHi = rf:CreateTexture(nil,"OVERLAY"); raidDropHi:SetAllPoints(rf); raidDropHi:SetTexture(0,0,0,0); rf.raidDropHi = raidDropHi
         rf:SetScript("OnEnter", function()
-            raidHov:SetTexture(0.78, 0.61, 0.23, 0.12)
+            if not raidDragSource then raidHov:SetTexture(0.78, 0.61, 0.23, 0.12) end
         end)
         rf:SetScript("OnLeave", function()
-            raidHov:SetTexture(0, 0, 0, 0)
+            if not raidDragSource then raidHov:SetTexture(0, 0, 0, 0) end
         end)
 
         -- Row number
@@ -1131,6 +1140,44 @@ function PBM.BuildRaidFrame(parent, fl)
         rowNum:SetTextColor(0.55, 0.55, 0.55, 1)
         rowNum:SetText(tostring(i))
         rf.rowNum = rowNum
+
+        -- Drag handle (over the row-number column) — drag to reorder the roster
+        local dragBtn = CreateFrame("Button",nil,rf)
+        dragBtn:SetPoint("LEFT",rf,"LEFT",RD,0); dragBtn:SetSize(18,ROW_H)
+        dragBtn:SetFrameLevel(rf:GetFrameLevel()+5)
+        local dragTex = dragBtn:CreateTexture(nil,"ARTWORK"); dragTex:SetAllPoints(dragBtn)
+        dragTex:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+        dragTex:SetVertexColor(0.2,0.3,0.5,0)  -- invisible until hovered/dragged
+        dragBtn:SetScript("OnEnter",function()
+            if not raidDragSource then
+                local roster, _ = PBM.GetCurrentRoster()
+                local d = roster[i]
+                if d and d.name and d.name ~= "" then
+                    dragTex:SetVertexColor(0.9,0.7,0.1,1.0)
+                    GameTooltip:SetOwner(dragBtn,"ANCHOR_RIGHT")
+                    GameTooltip:AddLine("Drag to reorder",1,1,1)
+                    GameTooltip:Show()
+                end
+            end
+        end)
+        dragBtn:SetScript("OnLeave",function()
+            if not raidDragSource then dragTex:SetVertexColor(0.2,0.3,0.5,0) end
+            GameTooltip:Hide()
+        end)
+        dragBtn:SetScript("OnMouseDown",function(_, mouseButton)
+            if mouseButton == "LeftButton" then
+                local roster, _ = PBM.GetCurrentRoster()
+                local d = roster[i]
+                if d and d.name and d.name ~= "" then
+                    raidDragSource = i
+                    raidMouseHeld = true
+                    dragTex:SetVertexColor(0.9,0.7,0.1,1.0)
+                    raidHov:SetTexture(0.9,0.7,0.1,0.12)
+                end
+            end
+        end)
+        dragBtn:SetScript("OnMouseUp",function() raidMouseHeld = false end)
+        rf.raidDragBtn = dragBtn; rf.raidDragTex = dragTex
 
         -- Class icon (plain Frame, same as All tab)
         local clsBtn = CreateFrame("Frame",nil,rf)
@@ -1291,6 +1338,78 @@ function PBM.BuildRaidFrame(parent, fl)
         PBM.State.raidRowFrames[i]=rf
     end
 
+    -- ── Raid drag-to-reorder ──────────────────────────────────
+    -- Backup release detector: the drag handle is a Button so it captures the
+    -- press and reliably fires OnMouseUp, but also clear the flag if the press
+    -- is released anywhere over the main window.
+    if LichborneTrackerFrame then
+        LichborneTrackerFrame:HookScript("OnMouseUp", function()
+            if raidDragSource then raidMouseHeld = false end
+        end)
+    end
+
+    raidDragPoll:SetScript("OnUpdate", function()
+        if not raidDragSource then return end
+        if not raidMouseHeld then
+            -- Mouse released — find the row under the cursor and move there
+            local cx, cy = GetCursorPosition()
+            local sc = UIParent:GetEffectiveScale()
+            cx, cy = cx/sc, cy/sc
+            local targetIdx = nil
+            for j, rf2 in ipairs(PBM.State.raidRowFrames) do
+                if rf2:IsShown() and j ~= raidDragSource then
+                    local roster2, _ = PBM.GetCurrentRoster()
+                    local d2 = roster2[j]
+                    if d2 and d2.name and d2.name ~= "" then
+                        local l,r,b,t = rf2:GetLeft(),rf2:GetRight(),rf2:GetBottom(),rf2:GetTop()
+                        if l and cx>=l and cx<=r and cy>=b and cy<=t then
+                            targetIdx = j; break
+                        end
+                    end
+                end
+            end
+            if targetIdx then
+                local roster3, _ = PBM.GetCurrentRoster()
+                local a, b2 = raidDragSource, targetIdx
+                if a ~= b2 and roster3[a] then
+                    local item = roster3[a]                 -- keep full table (preserves filterRoles etc.)
+                    if a < b2 then
+                        for k = a, b2 - 1 do roster3[k] = roster3[k+1] end
+                    else
+                        for k = a, b2 + 1, -1 do roster3[k] = roster3[k-1] end
+                    end
+                    roster3[b2] = item
+                    PBM.State.raidSortKey = nil             -- clear sort so the manual order sticks
+                    PBM.UpdateRaidSortHeaders()
+                    PBM.RefreshRaidRows()
+                    if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
+                end
+            end
+            -- Reset all drag visuals
+            for _, rf2 in ipairs(PBM.State.raidRowFrames) do
+                if rf2.raidHov then rf2.raidHov:SetTexture(0,0,0,0) end
+                if rf2.raidDropHi then rf2.raidDropHi:SetTexture(0,0,0,0) end
+                if rf2.raidDragTex then rf2.raidDragTex:SetVertexColor(0.2,0.3,0.5,0) end
+            end
+            raidDragSource = nil
+            return
+        end
+        -- Still dragging — highlight whichever row the cursor is over
+        local cx, cy = GetCursorPosition()
+        local sc = UIParent:GetEffectiveScale()
+        cx, cy = cx/sc, cy/sc
+        for j, rf2 in ipairs(PBM.State.raidRowFrames) do
+            if rf2:IsShown() and j ~= raidDragSource and rf2.raidDropHi then
+                local l,r,b,t = rf2:GetLeft(),rf2:GetRight(),rf2:GetBottom(),rf2:GetTop()
+                if l and cx>=l and cx<=r and cy>=b and cy<=t then
+                    rf2.raidDropHi:SetTexture(0.9,0.7,0.1,0.20)
+                else
+                    rf2.raidDropHi:SetTexture(0,0,0,0)
+                end
+            end
+        end
+    end)
+
     -- Second column header
     local hdrRow2 = CreateFrame("Frame",nil,LichborneRaidFrame)
     hdrRow2:SetPoint("TOPLEFT",LichborneRaidFrame,"TOPLEFT",COL2_X,-26)
@@ -1409,7 +1528,6 @@ function PBM.BuildRaidFrame(parent, fl)
         local waitTime = 0
         local phase = "logout_wait"
         local reinviteSubPhase = "remove"
-        local slot6Name = nil
 
         local inviteFrame = CreateFrame("Frame")
         PBM.State.activeInviteFrame = inviteFrame
@@ -1454,32 +1572,6 @@ function PBM.BuildRaidFrame(parent, fl)
                 SendChatMessage(".playerbots bot add "..pname, "SAY")
                 LichborneOutput("|cffC69B3APBM:|r Inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                 inviteIndex = inviteIndex + 1
-                -- 6th member triggers WoW party→raid auto-conversion; pause to handle it cleanly
-                if inviteIndex == 6 and names[5] then
-                    slot6Name = names[5]
-                    phase = "raid_pause"
-                    waitTime = 0
-                    LichborneOutput("|cffC69B3APBM:|r Pausing for auto-conversion...",1,0.85,0)
-                end
-
-            elseif phase == "raid_pause" then
-                if waitTime < 1.0 then return end
-                if slot6Name then
-                    SendChatMessage(".playerbots bot remove "..slot6Name, "SAY")
-                    LichborneOutput("|cffC69B3APBM:|r Logging out "..GetClassHex(slot6Name)..slot6Name.."|r for clean raid invite...",1,0.85,0)
-                end
-                waitTime = 0
-                phase = "slot6_readd"
-
-            elseif phase == "slot6_readd" then
-                if waitTime < 1.0 then return end
-                if slot6Name then
-                    SendChatMessage(".playerbots bot add "..slot6Name, "SAY")
-                    LichborneOutput("|cffC69B3APBM:|r Re-adding "..GetClassHex(slot6Name)..slot6Name.."|r to raid...",1,0.85,0)
-                    slot6Name = nil
-                end
-                waitTime = 0
-                phase = "rest"
 
             elseif phase == "verify_wait" then
                 if waitTime < 3.0 then return end

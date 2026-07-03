@@ -512,6 +512,104 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     lsFooter:SetTextColor(0.75, 0.75, 0.75)
     lsFooter:SetText("** This tab requires |cffd4af37mod-levelsync|r on your server. Latest release at |cff66ccffgithub.com/Lichborne-AC/mod-levelsync|r")
 
+    -- ── Export LevelSync data into the PBM tracker ─────────────
+    -- Copies each synced character's name, class, level and IP tier into the
+    -- main PBM roster (LichborneTrackerDB.rows / .ipData) so they appear in the
+    -- class/Overview tabs. Mirrors the AddGroupMembers add pattern.
+    local function lsExportToPBM()
+        local d = lsData
+        if not d.members or #d.members == 0 then
+            LichborneOutput("|cffC69B3APBM:|r No LevelSync data to export. Click |cffd4af37Refresh|r first.", 1, 0.6, 0.2)
+            return
+        end
+        if not LichborneTrackerDB.rows   then LichborneTrackerDB.rows   = {} end
+        if not LichborneTrackerDB.ipData then LichborneTrackerDB.ipData = {} end
+
+        local added, updated, skipped = 0, 0, 0
+        for _, m in ipairs(d.members) do
+            local cls = m.class
+            if cls and PBM.CLASS_COLORS[cls] then
+                -- Find an existing tracker row for this character (any class)
+                local foundDi = nil
+                for i, row in ipairs(LichborneTrackerDB.rows) do
+                    if row.name and row.name ~= "" and row.name:lower() == m.name:lower() then
+                        foundDi = i; break
+                    end
+                end
+                if foundDi then
+                    local row = LichborneTrackerDB.rows[foundDi]
+                    row.cls   = cls
+                    row.level = m.level or row.level or 0
+                    updated = updated + 1
+                else
+                    PBM.EnsureClass(cls)
+                    local slot = nil
+                    for _, di in ipairs(PBM.GetAllClassRows(cls)) do
+                        local row = LichborneTrackerDB.rows[di]
+                        if not row.name or row.name == "" then slot = di; break end
+                    end
+                    if not slot then
+                        table.insert(LichborneTrackerDB.rows, PBM.DefaultRow(cls))
+                        slot = #LichborneTrackerDB.rows
+                    end
+                    LichborneTrackerDB.rows[slot].name  = m.name
+                    LichborneTrackerDB.rows[slot].cls   = cls
+                    LichborneTrackerDB.rows[slot].level = m.level or 0
+                    added = added + 1
+                end
+                -- Tier level → IP data (shown in the # column when "Show IP Tiers" is on)
+                LichborneTrackerDB.ipData[m.name:lower()] = m.tierNum or 0
+            else
+                skipped = skipped + 1
+            end
+        end
+
+        if PBM.RefreshRows then PBM.RefreshRows() end
+        if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
+        if PBM.State.raidRowFrames    and #PBM.State.raidRowFrames    > 0 then PBM.RefreshRaidRows()    end
+
+        local msg = "Exported LevelSync: |cff44ff44"..added.." added|r, |cffd4af37"..updated.." updated|r"
+        if skipped > 0 then msg = msg..", |cffff6666"..skipped.." skipped (unknown class)|r" end
+        LichborneOutput("|cffC69B3APBM:|r "..msg, 1, 0.85, 0)
+    end
+
+    if not StaticPopupDialogs["PBM_EXPORT_LEVELSYNC"] then
+        StaticPopupDialogs["PBM_EXPORT_LEVELSYNC"] = {
+            text         = "Are you sure you want to export LevelSync data?\n\nThis copies each synced character's |cffd4af37name, class, level, and IP tier|r into the PBM tracker.",
+            button1      = "Yes",
+            button2      = "No",
+            OnAccept     = function() lsExportToPBM() end,
+            timeout      = 0,
+            whileDead    = true,
+            hideOnEscape = true,
+        }
+    end
+
+    -- ── Export button (red w/ gold text, bottom-right) ─────────
+    local lsExportBtn = CreateFrame("Button", nil, lsPanel)
+    lsExportBtn:SetSize(90, 24)
+    lsExportBtn:SetPoint("BOTTOMRIGHT", lsPanel, "BOTTOMRIGHT", -LS_MARGIN, 12)
+    lsExportBtn:SetFrameLevel(lspfl + 2)
+    lsExportBtn:SetBackdrop(LT_BD_CELL)
+    lsExportBtn:SetBackdropColor(0.30, 0.05, 0.05, 1)
+    lsExportBtn:SetBackdropBorderColor(LT_GOLD_R, LT_GOLD_G, LT_GOLD_B, 1.0)
+    lsExportBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    local lsExportLbl = lsExportBtn:CreateFontString(nil, "OVERLAY")
+    lsExportLbl:SetFont(LT_FONT, 11, "OUTLINE"); lsExportLbl:SetAllPoints(lsExportBtn)
+    lsExportLbl:SetJustifyH("CENTER"); lsExportLbl:SetText("|cffd4af37Export|r")
+    lsExportBtn:SetScript("OnEnter", function(self)
+        self:SetBackdropColor(0.45, 0.08, 0.08, 1)
+        GameTooltip:SetOwner(self, "ANCHOR_TOP")
+        GameTooltip:AddLine("Export LevelSync Data", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("Copies name, class, level, and IP tier of every", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine("synced character into the PBM tracker.", 0.8, 0.8, 0.8)
+        GameTooltip:Show()
+    end)
+    lsExportBtn:SetScript("OnLeave", function(self)
+        self:SetBackdropColor(0.30, 0.05, 0.05, 1); GameTooltip:Hide()
+    end)
+    lsExportBtn:SetScript("OnClick", function() StaticPopup_Show("PBM_EXPORT_LEVELSYNC") end)
+
     -- ── Grid rebuild (called by state machine after CommitStatus) ──
     lsRebuildGrid = function()
         local d = lsData

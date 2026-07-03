@@ -534,6 +534,49 @@ function PBM.OpenMageMenu(row)
         treeSideBuffBtn.icon:SetDesaturated(true)
         LichborneMageMenu.treeSideBuffBtn = treeSideBuffBtn
 
+        -- ── Left-side CC header+button (below Buff) ──────────────────
+        local CC_HDR_W = EXT_ICON_SIZE + 8
+        local ccSideHdrBox = CreateFrame("Frame", nil, LichborneMageMenu)
+        ccSideHdrBox:SetSize(CC_HDR_W, 18)
+        ccSideHdrBox:SetPoint("TOPLEFT", treeSideBuffBtn, "BOTTOMLEFT", -4, -8)
+        ccSideHdrBox:SetBackdrop({
+            bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true, tileSize = 16, edgeSize = 8,
+            insets = {left=2, right=2, top=2, bottom=2},
+        })
+        ccSideHdrBox:SetBackdropColor(0.08, 0.10, 0.28, 0.95)
+        ccSideHdrBox:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
+        local ccSideHdrLabel = ccSideHdrBox:CreateFontString(nil, "OVERLAY")
+        ccSideHdrLabel:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+        ccSideHdrLabel:SetTextColor(0.78, 0.61, 0.23, 1)
+        ccSideHdrLabel:SetAllPoints(); ccSideHdrLabel:SetJustifyH("CENTER")
+        ccSideHdrLabel:SetText("CC")
+
+        local treeCCBtn = CreateFrame("Button", nil, LichborneMageMenu)
+        treeCCBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
+        treeCCBtn:SetPoint("TOPLEFT", ccSideHdrBox, "BOTTOMLEFT",
+            math.floor((CC_HDR_W - EXT_ICON_SIZE) / 2), -1)
+        local treeCCTex = treeCCBtn:CreateTexture(nil, "ARTWORK")
+        treeCCTex:SetAllPoints()
+        treeCCTex:SetTexture("Interface\\Icons\\Spell_Nature_Polymorph")
+        treeCCBtn.icon = treeCCTex
+        treeCCBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+        treeCCBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichborneMageMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00CC|r |cff999999- |r|cffff8000cc|r |cffffcc00CO|r")
+            GameTooltip:AddLine("|cffffcc00Crowd control|r", 1, 1, 1)
+            GameTooltip:AddLine("Sheeps (|cff5599EEPolymorph|r) extra targets in combat.", 1, 1, 1)
+            GameTooltip:AddLine("Re-applies when the effect breaks.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeCCBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        treeCCBtn.state = false
+        treeCCBtn.icon:SetDesaturated(true)
+        LichborneMageMenu.treeCCBtn = treeCCBtn
+
         -- ── Wire Mage class-specific toggle logic ─────────────────────
         do
             local function IconOn(btn)
@@ -548,7 +591,7 @@ function PBM.OpenMageMenu(row)
             -- Start all toggleable icons desaturated (OFF)
             IconOff(treeFirestarterBtn)
             IconOff(treeMageArmorBtn); IconOff(treeMoltenArmorBtn)
-            IconOff(treeSideBuffBtn)
+            IconOff(treeSideBuffBtn); IconOff(treeCCBtn)
             IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
 
             -- Expose reset so OpenMageMenu can clear all icons before each query
@@ -560,7 +603,7 @@ function PBM.OpenMageMenu(row)
                 IconOff(treeFrostBtn); IconOff(treeFrostFireBtn)
                 IconOff(treeAoeBtn); IconOff(treeFirestarterBtn)
                 IconOff(treeMageArmorBtn); IconOff(treeMoltenArmorBtn)
-                IconOff(treeSideBuffBtn)
+                IconOff(treeSideBuffBtn); IconOff(treeCCBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
             end
 
@@ -673,6 +716,19 @@ function PBM.OpenMageMenu(row)
                 end
             end)
 
+            -- LEFT-SIDE: CC — co +cc / co -cc, independent
+            treeCCBtn:SetScript("OnClick", function()
+                local bot = LichborneMageMenu.botName or ""
+                LichborneMageMenu._specUserSet = true
+                if treeCCBtn.state then
+                    PBM.SendToBot("co -cc,?", bot)
+                    IconOff(treeCCBtn)
+                else
+                    PBM.SendToBot("co +cc,?", bot)
+                    IconOn(treeCCBtn)
+                end
+            end)
+
             -- TREE: Tank Assist
             treeTankAssistBtn:SetScript("OnClick", function()
                 local bot = LichborneMageMenu.botName or ""
@@ -763,6 +819,7 @@ function PBM.OpenMageMenu(row)
                         if activeSet["frostfire"]     then IconOn(treeFrostFireBtn)     else IconOff(treeFrostFireBtn)     end
                         if activeSet["aoe"]           then IconOn(treeAoeBtn)           else IconOff(treeAoeBtn)           end
                         if activeSet["firestarter"]   then IconOn(treeFirestarterBtn)   else IconOff(treeFirestarterBtn)   end
+                        if activeSet["cc"]            then IconOn(treeCCBtn)            else IconOff(treeCCBtn)            end
                     elseif stratType == "nc" then
                         if activeSet["bmana"] then IconOn(treeMageArmorBtn)   else IconOff(treeMageArmorBtn)   end
                         if activeSet["bdps"]  then IconOn(treeMoltenArmorBtn) else IconOff(treeMoltenArmorBtn) end

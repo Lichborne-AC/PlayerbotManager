@@ -17,6 +17,13 @@ PBM.State.gvGsSwatches     = PBM.State.gvGsSwatches     or {}  -- [cls] = fontst
 PBM.State.gvGroupIlvlLabel = PBM.State.gvGroupIlvlLabel or nil
 PBM.State.gvGroupGsLabel   = PBM.State.gvGroupGsLabel   or nil
 
+-- ── Drag-to-reorder state (mirrors the Raid tab) ─────────────────
+-- Manual order is persisted per-name in LichborneTrackerDB.gvManualOrder so it
+-- survives refreshes and relogs; new group members append to the end.
+local gvDragPoll   = CreateFrame("Frame")
+local gvMouseHeld  = false
+local gvDragSource = nil   -- visible row index (1..GV_VISIBLE) being dragged
+
 -- ── GV-specific column layout (mirrors class tab constants) ─────
 local GV_RH        = 22   -- row height; 20 rows then the two avg bars (flush, no gap)
 local GV_VISIBLE   = 20
@@ -101,9 +108,33 @@ local function BuildGVMemberList()
             end
             return a.name < b.name  -- stable tie-break
         end)
+    else
+        -- No column sort active: honour the saved manual (drag) order.
+        local order = LichborneTrackerDB.gvManualOrder
+        if order and #order > 0 then
+            local rank = {}
+            for ri, nm in ipairs(order) do if not rank[nm] then rank[nm] = ri end end
+            table.sort(out, function(a, b)
+                local ra = rank[a.name:lower()]
+                local rb = rank[b.name:lower()]
+                if ra and rb then return ra < rb end
+                if ra then return true end      -- ordered names come before new/unknown
+                if rb then return false end
+                return a.name < b.name           -- both unknown → alphabetical
+            end)
+        end
     end
 
     PBM.State.gvMembers = out
+end
+
+-- Persist the current displayed order so it survives refreshes/relogs
+local function SaveGVManualOrder()
+    local order = {}
+    for _, m in ipairs(PBM.State.gvMembers or {}) do
+        if m.name then order[#order+1] = m.name:lower() end
+    end
+    LichborneTrackerDB.gvManualOrder = order
 end
 
 -- ── Populate the 20 visible rows from the current offset ─────────
@@ -410,9 +441,11 @@ function PBM.BuildGroupView(parent, fl)
 
         local hov = rf:CreateTexture(nil, "OVERLAY"); hov:SetAllPoints(rf); hov:SetTexture(0,0,0,0)
         rf.hov = hov
+        local gvDropHi = rf:CreateTexture(nil, "OVERLAY"); gvDropHi:SetAllPoints(rf); gvDropHi:SetTexture(0,0,0,0)
+        rf.gvDropHi = gvDropHi
         rf:EnableMouse(true)
-        rf:SetScript("OnEnter", function() hov:SetTexture(0.78, 0.61, 0.23, 0.12) end)
-        rf:SetScript("OnLeave", function() hov:SetTexture(0, 0, 0, 0) end)
+        rf:SetScript("OnEnter", function() if not gvDragSource then hov:SetTexture(0.78, 0.61, 0.23, 0.12) end end)
+        rf:SetScript("OnLeave", function() if not gvDragSource then hov:SetTexture(0, 0, 0, 0) end end)
         rf:EnableMouseWheel(true)
         rf:SetScript("OnMouseWheel", function(_, delta) GVScroll(delta) end)
 
@@ -421,6 +454,38 @@ function PBM.BuildGroupView(parent, fl)
         nl:SetPoint("LEFT", rf, "LEFT", GV_NUM_OFF, 0); nl:SetWidth(GV_NUM_W); nl:SetJustifyH("CENTER")
         nl:SetTextColor(0.4, 0.5, 0.6)
         rf.numLbl = nl
+
+        -- Drag handle (over the # column) — drag to reorder the group list
+        local rowI = i
+        local dragBtn = CreateFrame("Button", nil, rf)
+        dragBtn:SetPoint("LEFT", rf, "LEFT", GV_NUM_OFF, 0); dragBtn:SetSize(GV_NUM_W, RH)
+        dragBtn:SetFrameLevel(rf:GetFrameLevel()+5)
+        local dragTex = dragBtn:CreateTexture(nil, "ARTWORK"); dragTex:SetAllPoints(dragBtn)
+        dragTex:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+        dragTex:SetVertexColor(0.2,0.3,0.5,0)
+        dragBtn:SetScript("OnEnter", function()
+            if not gvDragSource and rf.charName then
+                dragTex:SetVertexColor(0.9,0.7,0.1,1.0)
+                GameTooltip:SetOwner(dragBtn,"ANCHOR_RIGHT")
+                GameTooltip:AddLine("Drag to reorder",1,1,1)
+                GameTooltip:Show()
+            end
+        end)
+        dragBtn:SetScript("OnLeave", function()
+            if not gvDragSource then dragTex:SetVertexColor(0.2,0.3,0.5,0) end
+            GameTooltip:Hide()
+        end)
+        dragBtn:SetScript("OnMouseDown", function(_, mouseButton)
+            if mouseButton == "LeftButton" and rf.charName then
+                gvDragSource = rowI
+                gvMouseHeld = true
+                dragTex:SetVertexColor(0.9,0.7,0.1,1.0)
+                hov:SetTexture(0.9,0.7,0.1,0.12)
+            end
+        end)
+        dragBtn:SetScript("OnMouseUp", function() gvMouseHeld = false end)
+        dragBtn:EnableMouseWheel(true); dragBtn:SetScript("OnMouseWheel", function(_, d) GVScroll(d) end)
+        rf.gvDragTex = dragTex
 
         -- Spec icon
         local sF = CreateFrame("Frame", nil, rf)
@@ -581,6 +646,71 @@ function PBM.BuildGroupView(parent, fl)
 
         PBM.State.groupViewRowFrames[i] = rf
     end
+
+    -- ── Group drag-to-reorder ─────────────────────────────────────
+    if LichborneTrackerFrame then
+        LichborneTrackerFrame:HookScript("OnMouseUp", function()
+            if gvDragSource then gvMouseHeld = false end
+        end)
+    end
+
+    gvDragPoll:SetScript("OnUpdate", function()
+        if not gvDragSource then return end
+        if not gvMouseHeld then
+            -- Released — find the visible row under the cursor
+            local cx, cy = GetCursorPosition()
+            local scl = UIParent:GetEffectiveScale()
+            cx, cy = cx/scl, cy/scl
+            local targetVis = nil
+            for j, rf2 in ipairs(PBM.State.groupViewRowFrames) do
+                if rf2:IsShown() and j ~= gvDragSource and rf2.charName then
+                    local l,r,b,t = rf2:GetLeft(),rf2:GetRight(),rf2:GetBottom(),rf2:GetTop()
+                    if l and cx>=l and cx<=r and cy>=b and cy<=t then
+                        targetVis = j; break
+                    end
+                end
+            end
+            if targetVis then
+                local off  = PBM.State.gvScrollOffset or 0
+                local mem  = PBM.State.gvMembers
+                local a, b2 = off + gvDragSource, off + targetVis
+                if mem and mem[a] and mem[b2] and a ~= b2 then
+                    local item = mem[a]
+                    if a < b2 then
+                        for k = a, b2 - 1 do mem[k] = mem[k+1] end
+                    else
+                        for k = a, b2 + 1, -1 do mem[k] = mem[k-1] end
+                    end
+                    mem[b2] = item
+                    PBM.State.gvSortKey = nil          -- drop column sort so manual order shows
+                    if PBM.State.UpdateGVSortHeaders then PBM.State.UpdateGVSortHeaders() end
+                    SaveGVManualOrder()
+                    PBM.RefreshGroupViewRows()
+                end
+            end
+            for _, rf2 in ipairs(PBM.State.groupViewRowFrames) do
+                if rf2.hov then rf2.hov:SetTexture(0,0,0,0) end
+                if rf2.gvDropHi then rf2.gvDropHi:SetTexture(0,0,0,0) end
+                if rf2.gvDragTex then rf2.gvDragTex:SetVertexColor(0.2,0.3,0.5,0) end
+            end
+            gvDragSource = nil
+            return
+        end
+        -- Dragging — highlight the row under the cursor
+        local cx, cy = GetCursorPosition()
+        local scl = UIParent:GetEffectiveScale()
+        cx, cy = cx/scl, cy/scl
+        for j, rf2 in ipairs(PBM.State.groupViewRowFrames) do
+            if rf2:IsShown() and j ~= gvDragSource and rf2.gvDropHi then
+                local l,r,b,t = rf2:GetLeft(),rf2:GetRight(),rf2:GetBottom(),rf2:GetTop()
+                if l and rf2.charName and cx>=l and cx<=r and cy>=b and cy<=t then
+                    rf2.gvDropHi:SetTexture(0.9,0.7,0.1,0.20)
+                else
+                    rf2.gvDropHi:SetTexture(0,0,0,0)
+                end
+            end
+        end
+    end)
 
     -- ── Avg iLvL / Avg GS bars (mirror the class tabs) ───────────
     local rosterBlockW = 130

@@ -343,6 +343,35 @@ function PBM.OpenDruidMenu(row)
         treeSideBuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
         LichborneDruidMenu.treeSideBuffBtn = treeSideBuffBtn
 
+        -- ── Left-side CC header + button (below Buff) ─────────────────
+        local ccSideHdrBox = CreateFrame("Frame", nil, LichborneDruidMenu)
+        ccSideHdrBox:SetSize(EXT_ICON_SIZE + 8, 18)
+        ccSideHdrBox:SetPoint("TOPLEFT", treeSideBuffBtn, "BOTTOMLEFT", -4, -8)
+        ccSideHdrBox:SetBackdrop(SPEC_BOX_BD)
+        ccSideHdrBox:SetBackdropColor(0.08, 0.10, 0.28, 0.95)
+        ccSideHdrBox:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
+        local ccSideHdrFs = ccSideHdrBox:CreateFontString(nil, "OVERLAY")
+        ccSideHdrFs:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+        ccSideHdrFs:SetTextColor(0.78, 0.61, 0.23, 1)
+        ccSideHdrFs:SetAllPoints()
+        ccSideHdrFs:SetJustifyH("CENTER")
+        ccSideHdrFs:SetText("CC")
+
+        local treeCCBtn = MakeTreeBtn(LichborneDruidMenu, ccSideHdrBox, "BOTTOMLEFT", 4, -1,
+            "Interface\\Icons\\Spell_Nature_EarthBind")
+        treeCCBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichborneDruidMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00CC|r |cff999999- |r|cffff8000cc|r |cffffcc00CO|r")
+            GameTooltip:AddLine("|cffffcc00Crowd control|r", 1, 1, 1)
+            GameTooltip:AddLine("Cyclones, Hibernates, or Roots extra targets in combat.", 1, 1, 1)
+            GameTooltip:AddLine("Re-applies when the effect breaks.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeCCBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneDruidMenu.treeCCBtn = treeCCBtn
+
         -- ── Wire toggle logic ─────────────────────────────────────────
         do
             local function IconOn(btn)
@@ -360,7 +389,7 @@ function PBM.OpenDruidMenu(row)
             IconOff(treeHealerDpsBtn);  IconOff(treeOffhealBtn)
             IconOff(treeAoeBtn);        IconOff(treeChargeBtn)
             IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
-            IconOff(treeSideBuffBtn)
+            IconOff(treeSideBuffBtn);   IconOff(treeCCBtn)
 
             -- resetAllIcons extends the shared base (Food/Loot/Gather)
             local _baseReset = LichborneDruidMenu.resetSharedIcons
@@ -372,7 +401,7 @@ function PBM.OpenDruidMenu(row)
                 IconOff(treeHealerDpsBtn);  IconOff(treeOffhealBtn)
                 IconOff(treeAoeBtn);        IconOff(treeChargeBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
-                IconOff(treeSideBuffBtn)
+                IconOff(treeSideBuffBtn);   IconOff(treeCCBtn)
             end
 
             -- ── Row 1: Spec buttons (mutually exclusive) ──────────────
@@ -533,6 +562,16 @@ function PBM.OpenDruidMenu(row)
                 end
             end)
 
+            treeCCBtn:SetScript("OnClick", function()
+                local bot = LichborneDruidMenu.botName or ""
+                LichborneDruidMenu._specUserSet = true
+                if treeCCBtn.state then
+                    PBM.SendToBot("co -cc,?", bot); IconOff(treeCCBtn)
+                else
+                    PBM.SendToBot("co +cc,?", bot); IconOn(treeCCBtn)
+                end
+            end)
+
             -- onStrategyUpdate extends shared base (CO buttons + NC buff)
             local _baseSU = LichborneDruidMenu.onStrategyUpdate
             LichborneDruidMenu.onStrategyUpdate = function(stratType, activeSet)
@@ -552,6 +591,7 @@ function PBM.OpenDruidMenu(row)
                         if activeSet["tank assist"]  then IconOn(treeTankAssistBtn) else IconOff(treeTankAssistBtn) end
                         if activeSet["dps assist"]   then IconOn(treeDpsAssistBtn)  else IconOff(treeDpsAssistBtn)  end
                         if activeSet["dps aoe"]      then IconOn(treeDpsAoeBtn)     else IconOff(treeDpsAoeBtn)     end
+                        if activeSet["cc"]           then IconOn(treeCCBtn)         else IconOff(treeCCBtn)         end
                     elseif stratType == "nc" then
                         if activeSet["buff"] then IconOn(treeSideBuffBtn) else IconOff(treeSideBuffBtn) end
                     end

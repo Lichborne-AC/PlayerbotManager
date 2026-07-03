@@ -103,19 +103,22 @@ function PBM.BuildIPProgressionPanel(ipPanel, ctx)
     IPInfoLine(INFO_COL2, INFO_TOP - INFO_STEP * 6,
         "|cffFF8C00Rndbots follow the group leader's tier.|r", nil, 8)
 
-    -- Column 3: Commands
-    IPInfoTitle(INFO_COL3, INFO_TOP, "Commands", INFO_W, false)
-    IPInfoLine(INFO_COL3, INFO_TOP - INFO_STEP,
+    -- Column 3: Commands (7 rows → nudge the block up to keep it centered in the band)
+    local CMD_TOP = INFO_TOP + 7
+    IPInfoTitle(INFO_COL3, CMD_TOP, "Commands", INFO_W, false)
+    IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP,
         "Check Tier:  |cffd4af37.ip get <target>/<name>|r", INFO_W)
-    IPInfoLine(INFO_COL3, INFO_TOP - INFO_STEP * 2,
+    IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 2,
         "Check PvP:  |cffd4af37.ip pvp <target>/<name>|r", INFO_W)
-    IPInfoLine(INFO_COL3, INFO_TOP - INFO_STEP * 3,
+    IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 3,
         "Sync Bots:   |cffd4af37.ip setbot (Tier)|r", INFO_W)
-    IPInfoLine(INFO_COL3, INFO_TOP - INFO_STEP * 4,
+    IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 4,
         "Sync Bots:   |cffd4af37.ip setrep (Reputation)|r", INFO_W)
-    IPInfoLine(INFO_COL3, INFO_TOP - INFO_STEP * 5,
+    IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 5,
+        "Attune:      |cffd4af37.ip attune onyxia/blacktemple|r", INFO_W)
+    IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 6,
         "|cffff4444GM (Required):|r  |cffd4af37.ip set (Change tier)|r", INFO_W)
-    IPInfoLine(INFO_COL3, INFO_TOP - INFO_STEP * 6,
+    IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 7,
         "|cffff4444GM (Required):|r  |cffd4af37.ip tele (Teleport)|r", INFO_W)
 
     -- Column 4: Expansion Level Caps (no header, vertically centered)

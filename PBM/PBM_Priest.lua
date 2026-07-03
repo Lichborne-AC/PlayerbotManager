@@ -469,6 +469,49 @@ function PBM.OpenPriestMenu(row)
         treeSideResBtn.icon:SetDesaturated(true)
         LichbornePriestMenu.treeSideResBtn = treeSideResBtn
 
+        -- ── Left-side CC header+button (below Buff) ───────────────────
+        local CC_HDR_W = EXT_ICON_SIZE + 8
+        local ccSideHdrBox = CreateFrame("Frame", nil, LichbornePriestMenu)
+        ccSideHdrBox:SetSize(CC_HDR_W, 18)
+        ccSideHdrBox:SetPoint("TOP", LichbornePriestMenu.treePvpBtn, "BOTTOM", 0, -61)
+        ccSideHdrBox:SetBackdrop({
+            bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true, tileSize = 16, edgeSize = 8,
+            insets = {left=2, right=2, top=2, bottom=2},
+        })
+        ccSideHdrBox:SetBackdropColor(0.08, 0.10, 0.28, 0.95)
+        ccSideHdrBox:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
+        local ccSideHdrLabel = ccSideHdrBox:CreateFontString(nil, "OVERLAY")
+        ccSideHdrLabel:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+        ccSideHdrLabel:SetTextColor(0.78, 0.61, 0.23, 1)
+        ccSideHdrLabel:SetAllPoints(); ccSideHdrLabel:SetJustifyH("CENTER")
+        ccSideHdrLabel:SetText("CC")
+
+        local treeCCBtn = CreateFrame("Button", nil, LichbornePriestMenu)
+        treeCCBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
+        treeCCBtn:SetPoint("TOPLEFT", ccSideHdrBox, "BOTTOMLEFT",
+            math.floor((CC_HDR_W - EXT_ICON_SIZE) / 2), -1)
+        local treeCCTex = treeCCBtn:CreateTexture(nil, "ARTWORK")
+        treeCCTex:SetAllPoints()
+        treeCCTex:SetTexture("Interface\\Icons\\Spell_Nature_Slow")
+        treeCCBtn.icon = treeCCTex
+        treeCCBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+        treeCCBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichbornePriestMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00CC|r |cff999999- |r|cffff8000cc|r |cffffcc00CO|r")
+            GameTooltip:AddLine("|cffffcc00Crowd control|r", 1, 1, 1)
+            GameTooltip:AddLine("Shackles (|cffFFFFFFShackle Undead|r) undead targets in combat.", 1, 1, 1)
+            GameTooltip:AddLine("Re-applies when the effect breaks.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeCCBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        treeCCBtn.state = false
+        treeCCBtn.icon:SetDesaturated(true)
+        LichbornePriestMenu.treeCCBtn = treeCCBtn
+
         -- ── Wire Priest class-specific toggle logic ──────────────────
         do
             local function IconOn(btn)
@@ -488,7 +531,7 @@ function PBM.OpenPriestMenu(row)
             IconOff(treeHealBtn); IconOff(treeHolyHealBtn); IconOff(treeHealerDpsBtn); IconOff(treeHolyDpsBtn); IconOff(treeShadowDpsBtn)
             IconOff(treeDpsAoeBtn); IconOff(treeShadowAoeBtn)
             IconOff(treeDpsDebuffBtn); IconOff(treeShadowDebuffBtn)
-            IconOff(treeSideBuffBtn); IconOff(treeSideResBtn)
+            IconOff(treeSideBuffBtn); IconOff(treeSideResBtn); IconOff(treeCCBtn)
             IconOff(treeTankAssistBtn)
 
             -- Expose reset so OpenPriestMenu can clear all icons before each query
@@ -500,7 +543,7 @@ function PBM.OpenPriestMenu(row)
                 IconOff(treeShadowDpsBtn); IconOff(treeHealerDpsBtn)
                 IconOff(treeDpsAoeBtn); IconOff(treeShadowAoeBtn)
                 IconOff(treeDpsDebuffBtn); IconOff(treeShadowDebuffBtn)
-                IconOff(treeSideBuffBtn); IconOff(treeSideResBtn); IconOff(treeTankAssistBtn)
+                IconOff(treeSideBuffBtn); IconOff(treeSideResBtn); IconOff(treeCCBtn); IconOff(treeTankAssistBtn)
             end
 
             -- TREE: Heal (Discipline column)
@@ -638,6 +681,19 @@ function PBM.OpenPriestMenu(row)
                 end
             end)
 
+            -- LEFT-SIDE: CC — co +cc / co -cc, independent
+            treeCCBtn:SetScript("OnClick", function()
+                local bot = LichbornePriestMenu.botName or ""
+                LichbornePriestMenu._specUserSet = true
+                if treeCCBtn.state then
+                    PBM.SendToBot("co -cc,?", bot)
+                    IconOff(treeCCBtn)
+                else
+                    PBM.SendToBot("co +cc,?", bot)
+                    IconOn(treeCCBtn)
+                end
+            end)
+
             -- TREE: Tank Assist
             treeTankAssistBtn:SetScript("OnClick", function()
                 local bot = LichbornePriestMenu.botName or ""
@@ -683,6 +739,7 @@ function PBM.OpenPriestMenu(row)
                         if activeSet["shadow"]      then IconOn(treeShadowDpsBtn)   else IconOff(treeShadowDpsBtn)   end
                         if activeSet["healer dps"]  then IconOn(treeHealerDpsBtn)   else IconOff(treeHealerDpsBtn)   end
                         if activeSet["tank assist"] then IconOn(treeTankAssistBtn)  else IconOff(treeTankAssistBtn)  end
+                        if activeSet["cc"]          then IconOn(treeCCBtn)          else IconOff(treeCCBtn)          end
                         if activeSet["shadow aoe"]  then IconOn(treeDpsAoeBtn)      else IconOff(treeDpsAoeBtn)      end
                         if activeSet["shadow aoe"]  then IconOn(treeShadowAoeBtn)   else IconOff(treeShadowAoeBtn)   end
                         if activeSet["shadow debuff"] then IconOn(treeDpsDebuffBtn); IconOn(treeShadowDebuffBtn)

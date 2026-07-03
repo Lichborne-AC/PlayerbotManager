@@ -2547,112 +2547,121 @@ local function OnFirstShow()
         t:SetVertexColor(0.78, 0.61, 0.23, 0.4)
     end
 
-    ChgLine("|cffFF8C00Recent Changes|r", -14, 14, "LEFT")
-    ChgDiv(-34)
+    -- Auto-advancing cursor so new releases can be prepended at the top
+    -- without re-numbering every entry below. Held in one table to keep the
+    -- enclosing function's local count down.
+    local CT = { y = -14, rel = false }
+    function CT.title(t)
+        ChgLine(t, CT.y, 14, "LEFT"); CT.y = CT.y - 20
+        ChgDiv(CT.y); CT.y = CT.y - 16
+    end
+    function CT.release(t)
+        if CT.rel then CT.y = CT.y - 8; ChgDiv(CT.y); CT.y = CT.y - 18 end
+        CT.rel = true
+        ChgLine(t, CT.y, 13, "CENTER"); CT.y = CT.y - 15
+        ChgDiv(CT.y); CT.y = CT.y - 16
+    end
+    function CT.section(t)
+        CT.y = CT.y - 7
+        ChgLine(t, CT.y, 10); CT.y = CT.y - 13
+        ChgDiv(CT.y); CT.y = CT.y - 13
+    end
+    function CT.line(t) ChgLine(t, CT.y); CT.y = CT.y - 13 end
 
-    ChgLine("|cffd4af37Release v1.3|r  |cffFF8C00June 5, 2026|r", -48, 13, "CENTER")
-    ChgDiv(-63)
+    CT.title("|cffFF8C00Recent Changes|r")
 
-    -- Hunter
-    ChgLine("|cffABD473Hunter|r", -76, 10)
-    ChgDiv(-89)
-    ChgLine("|cff888888-|r  Removed |cffABD473dps|r button from character sheet (CO)", -102)
-    ChgLine("|cff888888-|r  Removed |cffABD473dps debuff|r button from character sheet (CO)", -115)
-    ChgLine("|cff888888-|r  Removed |cffABD473bviper|r aspect from character sheet (CO + NC)", -128)
+    -- ── Release v1.4 ───────────────────────────────────────────────
+    CT.release("|cffd4af37Release v1.4|r  |cffFF8C00July 3, 2026|r")
+    CT.section("|cffC69B3AReorder Rows|r")
+    CT.line("|cff888888-|r  |cffffcc00Drag to reorder|r — grab the |cff888888#|r handle at the left of a")
+    CT.line("    row and drag. Works in |cffABD473Class|r, |cffFF8C00Raid|r, and |cffffcc00Group|r tabs")
+    CT.line("|cff888888-|r  Manual order is saved and clears the active column sort")
+    CT.section("|cffC69B3ALevelSync|r")
+    CT.line("|cff888888-|r  New |cffd4af37Export|r button (bottom-right) — copies synced")
+    CT.line("    characters |cff888888(name, class, level, IP tier)|r into the tracker")
+    CT.section("|cffC69B3AIndividual Progression|r")
+    CT.line("|cff888888-|r  New |cffd4af37.ip attune onyxia/blacktemple|r command added")
+    CT.line("    to the Commands list")
+    CT.section("|cffC69B3AClass Tabs|r")
+    CT.line("|cff888888-|r  Gear cells now |cffffcc00highlight on hover|r, matching the")
+    CT.line("    |cffffcc00Group|r tab")
+    CT.section("|cffC69B3ACC|r")
+    CT.line("|cff888888-|r  Added |cffC69B3ACC|r button to character sheet — toggles the |cffff8000cc|r")
+    CT.line("    strategy for |cff40C7EBMage|r, |cffFFFFFFPriest|r, |cff8787EDWarlock|r, and |cffFF7D0ADruid|r")
+    CT.line("|cff888888-|r  |cff40C7EBMage|r: |cffffcc00Polymorph|r")
+    CT.line("|cff888888-|r  |cffFFFFFFPriest|r: |cffffcc00Shackle Undead|r")
+    CT.line("|cff888888-|r  |cff8787EDWarlock|r: |cffffcc00Fear|r / |cffffcc00Banish|r")
+    CT.line("|cff888888-|r  |cffFF7D0ADruid|r: |cffffcc00Cyclone|r / |cffffcc00Hibernate|r / |cffffcc00Entangling Roots|r")
+    CT.section("|cffFF8C00Invite Raid|r")
+    CT.line("|cff888888-|r  Removed the 6th-member |cffffcc00pause/re-add|r workaround —")
+    CT.line("    party->raid conversion is now handled server-side by")
+    CT.line("    mod-playerbots |cff66ccffPR #2502|r")
 
-    -- Paladin
-    ChgLine("|cffF58CBAPaladin|r", -148, 10)
-    ChgDiv(-161)
-    ChgLine("|cff888888-|r  |cffF58CBABlessings renamed|r — mod-playerbots |cff66ccffPR #2432|r", -174)
-    ChgLine("|cff888888-|r  |cffd4af37bstats|r  ->  |cffF58CBAbkings   |cffF58CBA(Blessing of Kings)|r", -187)
-    ChgLine("|cff888888-|r  |cffd4af37bhealth|r  ->  |cffF58CBAbsanc   |cffF58CBA(Blessing of Sanctuary)|r", -200)
-    ChgLine("|cff888888-|r  |cffd4af37bmana|r  ->  |cffF58CBAbwisdom   |cffF58CBA(Blessing of Wisdom)|r", -213)
-    ChgLine("|cff888888-|r  |cffd4af37bdps|r  ->  |cffF58CBAbmight   |cffF58CBA(Blessing of Might)|r", -226)
+    -- ── Release v1.3 ───────────────────────────────────────────────
+    CT.release("|cffd4af37Release v1.3|r  |cffFF8C00June 5, 2026|r")
+    CT.section("|cffABD473Hunter|r")
+    CT.line("|cff888888-|r  Removed |cffABD473dps|r button from character sheet (CO)")
+    CT.line("|cff888888-|r  Removed |cffABD473dps debuff|r button from character sheet (CO)")
+    CT.line("|cff888888-|r  Removed |cffABD473bviper|r aspect from character sheet (CO + NC)")
+    CT.section("|cffF58CBAPaladin|r")
+    CT.line("|cff888888-|r  |cffF58CBABlessings renamed|r — mod-playerbots |cff66ccffPR #2432|r")
+    CT.line("|cff888888-|r  |cffd4af37bstats|r  ->  |cffF58CBAbkings   |cffF58CBA(Blessing of Kings)|r")
+    CT.line("|cff888888-|r  |cffd4af37bhealth|r  ->  |cffF58CBAbsanc   |cffF58CBA(Blessing of Sanctuary)|r")
+    CT.line("|cff888888-|r  |cffd4af37bmana|r  ->  |cffF58CBAbwisdom   |cffF58CBA(Blessing of Wisdom)|r")
+    CT.line("|cff888888-|r  |cffd4af37bdps|r  ->  |cffF58CBAbmight   |cffF58CBA(Blessing of Might)|r")
+    CT.section("|cffFFF569Rogue|r")
+    CT.line("|cff888888-|r  Added |cffFFF569Melee|r button — DPS column: DPS / Melee / Boost")
+    CT.line("|cff888888-|r  Combat section split into |cffFFF569DPS|r and |cffFFF569Stealth|r columns")
+    CT.section("|cffC69B3APlayerbots Tab|r")
+    CT.line("|cff888888-|r  Reset Instances now uses |cff66ccff.playerbots bot refresh=raid *|r")
+    CT.line("|cff888888-|r  Removed GM Reset Instances button")
+    CT.section("|cffC69B3ABug Fixes|r")
+    CT.line("|cff888888-|r  Fixed: |cffFF7D0ADruid|r offheal strategy showing up red in notes")
+    CT.section("|cffC69B3AUI|r")
+    CT.line("|cff888888-|r  New |cffffcc00Group|r tab added — shows current group members")
+    CT.line("|cff888888-|r  Character sheet: bag colors now correspond to how full the inventory is")
+    CT.section("|cffC69B3AFilters|r")
+    CT.line("|cff888888-|r  New filter: removes generated notes in the |cffFF8C00Raid|r tab — allows for manual entry")
+    CT.line("|cff888888-|r  New filter: removes generated roles in the |cffFF8C00Raid|r/|cffABD473Overview|r tab —")
+    CT.line("    allows for manual entry")
+    CT.line("|cff888888-|r  New filter: Show/Hide new |cffffcc00Group|r tab")
+    CT.line("|cff888888-|r  New filter: Show/Hide |cff66ccffStrategy|r responses in output box")
+    CT.line("|cff888888-|r  New filter: Show/Hide |cff66ccff+Add Target/Group Strategies|r buttons")
+    CT.line("|cff888888-|r  New filter: Show/Hide Who response (when opening character menus)")
+    CT.line("|cff888888-|r  New filter: |cffffcc00Hide Group Members|r — hides chars in your party")
+    CT.line("|cff888888-|r  New toggles: name-click char sheet — |cffffcc00Group|r + Class tabs")
+    CT.section("|cffC69B3AButtons|r")
+    CT.line("|cff888888-|r  Added |cffff8c00\"Does not work for rndbots.\"|r note in Invite Group & Raid buttons")
+    CT.section("|cffC69B3ATemplates|r")
+    CT.line("|cff888888-|r  |cffC41F3BDK:|r |cffC69B3ADbl Aura Blood PvE|r (43-26-2) added — spec \"double aura blood pve\"")
 
-    -- Rogue
-    ChgLine("|cffFFF569Rogue|r", -246, 10)
-    ChgDiv(-259)
-    ChgLine("|cff888888-|r  Added |cffFFF569Melee|r button — DPS column: DPS / Melee / Boost", -272)
-    ChgLine("|cff888888-|r  Combat section split into |cffFFF569DPS|r and |cffFFF569Stealth|r columns", -285)
+    -- ── Release v1.2 ───────────────────────────────────────────────
+    CT.release("|cffd4af37Release v1.2|r  |cffFF8C00May 30, 2026|r")
+    CT.section("|cffC69B3ABug Fixes|r")
+    CT.line("|cff888888-|r  Fixed: Invite Raid no longer kicks and reinvites members in partial groups")
+    CT.line("|cff888888-|r  Stop Scan now stops |cffffcc00+Add IP Tiers|r mid-run")
+    CT.line("|cff888888-|r  Clear All no longer resets Raid tier/raid selection")
+    CT.section("|cffC69B3AUI|r")
+    CT.line("|cff888888-|r  Show/Hide menu added: toggle tab and button visibility per bot row")
+    CT.line("|cff888888-|r  Needs column restored — shares the Prof. column |cff888888(use either)|r")
+    CT.line("|cff888888-|r  Raid tab: note color brightened for readability")
+    CT.line("|cff888888-|r  Tracker section header renamed: |cffffcc00Admin:|r  ->  |cffffcc00Menu:|r")
+    CT.line("|cff888888-|r  Character sheet: name on its own line in class color")
+    CT.line("|cff888888-|r  PvP tooltip: moved above button, wording cleaned up")
+    CT.line("|cff888888-|r  Several AoE icons updated to Blizzard |cff888888(spell_frost_icestorm)|r")
+    CT.line("|cff888888-|r  Reset Instances: tooltips updated")
+    CT.section("|cffC69B3AClass Menus|r")
+    CT.line("|cff888888-|r  Removed ability rotation lines from all 10 class spec tooltips")
+    CT.line("    |cff999999Due to time restraints and constantly evolving Playerbot strategies.|r")
+    CT.line("|cff888888-|r  |cff8787EDWarlock:|r removed DPS toggle button, Combat row shrunk to 3 icons")
+    CT.line("|cff888888-|r  |cff8787EDWarlock|r & |cff0070DEShaman:|r increased vertical row spacing |cff888888(15 px gap)|r")
+    CT.line("|cff888888-|r  |cff0070DEShaman:|r Caster AoE + Melee AoE merged into single |cffffcc00AoE|r button")
+    CT.line("|cff888888-|r  |cff0070DEShaman|r Totem section removed — use |cffffcc00Multibot|r for totem functions")
+    CT.line("|cff888888-|r  |cffFF7D0ADruid:|r added |cffffcc00Tranquility|r, |cffffcc00Blanketing|r, and |cffffcc00Feral Charge|r strategies")
+    CT.section("|cffC69B3AButtons|r")
+    CT.line("|cff888888-|r  Buttons disabled while |cffffcc00+Add IP Tiers|r is running")
 
-    -- Playerbots Tab
-    ChgLine("|cffC69B3APlayerbots Tab|r", -305, 10)
-    ChgDiv(-318)
-    ChgLine("|cff888888-|r  Reset Instances now uses |cff66ccff.playerbots bot refresh=raid *|r", -331)
-    ChgLine("|cff888888-|r  Removed GM Reset Instances button", -344)
-
-    -- Bug Fixes (merged from v1.3)
-    ChgLine("|cffC69B3ABug Fixes|r", -364, 10)
-    ChgDiv(-377)
-    ChgLine("|cff888888-|r  Fixed: |cffFF7D0ADruid|r offheal strategy showing up red in notes", -390)
-
-    -- UI
-    ChgLine("|cffC69B3AUI|r", -410, 10)
-    ChgDiv(-423)
-    ChgLine("|cff888888-|r  New |cffffcc00Group|r tab added — shows current group members", -436)
-    ChgLine("|cff888888-|r  Character sheet: bag colors now correspond to how full the inventory is", -449)
-
-    -- Filters
-    ChgLine("|cffC69B3AFilters|r", -469, 10)
-    ChgDiv(-482)
-    ChgLine("|cff888888-|r  New filter: removes generated notes in the |cffFF8C00Raid|r tab — allows for manual entry", -495)
-    ChgLine("|cff888888-|r  New filter: removes generated roles in the |cffFF8C00Raid|r/|cffABD473Overview|r tab —", -508)
-    ChgLine("    allows for manual entry", -521)
-    ChgLine("|cff888888-|r  New filter: Show/Hide new |cffffcc00Group|r tab", -534)
-    ChgLine("|cff888888-|r  New filter: Show/Hide |cff66ccffStrategy|r responses in output box", -547)
-    ChgLine("|cff888888-|r  New filter: Show/Hide |cff66ccff+Add Target/Group Strategies|r buttons", -560)
-    ChgLine("|cff888888-|r  New filter: Show/Hide Who response (when opening character menus)", -573)
-    ChgLine("|cff888888-|r  New filter: |cffffcc00Hide Group Members|r — hides chars in your party", -586)
-    ChgLine("|cff888888-|r  New toggles: name-click char sheet — |cffffcc00Group|r + Class tabs", -599)
-
-    -- Buttons
-    ChgLine("|cffC69B3AButtons|r", -619, 10)
-    ChgDiv(-632)
-    ChgLine("|cff888888-|r  Added |cffff8c00\"Does not work for rndbots.\"|r note in Invite Group & Raid buttons", -645)
-
-    -- Templates
-    ChgLine("|cffC69B3ATemplates|r", -665, 10)
-    ChgDiv(-678)
-    ChgLine("|cff888888-|r  |cffC41F3BDK:|r |cffC69B3ADbl Aura Blood PvE|r (43-26-2) added — spec \"double aura blood pve\"", -691)
-
-    ChgDiv(-711)
-    ChgLine("|cffd4af37Release v1.2|r  |cffFF8C00May 30, 2026|r", -731, 13, "CENTER")
-    ChgDiv(-746)
-
-    -- Bug Fixes
-    ChgLine("|cffC69B3ABug Fixes|r", -759, 10)
-    ChgDiv(-772)
-    ChgLine("|cff888888-|r  Fixed: Invite Raid no longer kicks and reinvites members in partial groups", -785)
-    ChgLine("|cff888888-|r  Stop Scan now stops |cffffcc00+Add IP Tiers|r mid-run", -798)
-    ChgLine("|cff888888-|r  Clear All no longer resets Raid tier/raid selection", -811)
-
-    -- UI
-    ChgLine("|cffC69B3AUI|r", -831, 10)
-    ChgDiv(-844)
-    ChgLine("|cff888888-|r  Show/Hide menu added: toggle tab and button visibility per bot row", -857)
-    ChgLine("|cff888888-|r  Needs column restored — shares the Prof. column |cff888888(use either)|r", -870)
-    ChgLine("|cff888888-|r  Raid tab: note color brightened for readability", -883)
-    ChgLine("|cff888888-|r  Tracker section header renamed: |cffffcc00Admin:|r  ->  |cffffcc00Menu:|r", -896)
-    ChgLine("|cff888888-|r  Character sheet: name on its own line in class color", -909)
-    ChgLine("|cff888888-|r  PvP tooltip: moved above button, wording cleaned up", -922)
-    ChgLine("|cff888888-|r  Several AoE icons updated to Blizzard |cff888888(spell_frost_icestorm)|r", -935)
-    ChgLine("|cff888888-|r  Reset Instances: tooltips updated", -948)
-
-    -- Class Menus
-    ChgLine("|cffC69B3AClass Menus|r", -968, 10)
-    ChgDiv(-981)
-    ChgLine("|cff888888-|r  Removed ability rotation lines from all 10 class spec tooltips", -994)
-    ChgLine("    |cff999999Due to time restraints and constantly evolving Playerbot strategies.|r", -1007)
-    ChgLine("|cff888888-|r  |cff8787EDWarlock:|r removed DPS toggle button, Combat row shrunk to 3 icons", -1020)
-    ChgLine("|cff888888-|r  |cff8787EDWarlock|r & |cff0070DEShaman:|r increased vertical row spacing |cff888888(15 px gap)|r", -1033)
-    ChgLine("|cff888888-|r  |cff0070DEShaman:|r Caster AoE + Melee AoE merged into single |cffffcc00AoE|r button", -1046)
-    ChgLine("|cff888888-|r  |cff0070DEShaman|r Totem section removed — use |cffffcc00Multibot|r for totem functions", -1059)
-    ChgLine("|cff888888-|r  |cffFF7D0ADruid:|r added |cffffcc00Tranquility|r, |cffffcc00Blanketing|r, and |cffffcc00Feral Charge|r strategies", -1072)
-
-    -- Buttons
-    ChgLine("|cffC69B3AButtons|r", -1092, 10)
-    ChgDiv(-1105)
-    ChgLine("|cff888888-|r  Buttons disabled while |cffffcc00+Add IP Tiers|r is running", -1118)
+    chgChild:SetHeight(-CT.y + 30)
 
     -- ── Credits tab content ───────────────────────────────────────────
     local optsCreditsBox = CreateFrame("Frame", nil, optionsPanel)
@@ -3669,7 +3678,7 @@ local function BuildFrameBG()
     title:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -12)
     title:SetPoint("TOPRIGHT", f, "TOPRIGHT", -280, -12)
     title:SetJustifyH("LEFT")
-    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.3|r")
+    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.4|r")
     local closeBtn = CreateFrame("Button", "LichborneCloseBtn", f, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 2, 2)
     closeBtn:SetScript("OnClick", function() f:Hide() end)
