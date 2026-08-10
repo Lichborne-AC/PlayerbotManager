@@ -921,9 +921,7 @@ function PBM.RefreshRows()
                 end)
             end
 
-            -- Delete. Empty-name rows can still contain stale spec/gear data in
-            -- SavedVariables, so remove those directly by DB index instead of
-            -- making them impossible to clear.
+            -- Delete
             row.delBtn:SetScript("OnClick", function()
                 local srcData = LichborneTrackerDB.rows[di]
                 if not srcData then return end

@@ -21,8 +21,6 @@ local function OnFirstShow()
     if PBM.State.setupDone then return end
     PBM.State.setupDone = true
     local f = LichborneTrackerFrame
-    -- Allow normal desktop-style click-to-front behavior when this window
-    -- overlaps other DIALOG-strata addon windows.
     f:SetToplevel(true)
     local fl = f:GetFrameLevel()
 
@@ -1128,8 +1126,7 @@ local function OnFirstShow()
         155, {{"Log in All Bots",0.78,0.61,0.23},{"Logs in bots, then syncs the server roster.",0.8,0.8,0.8}})
     loginBtn:SetScript("OnClick", function()
         if LichborneAddStatus then LichborneAddStatus:SetText("|cffffff88Logging in bots and requesting roster...|r") end
-        -- SAY reaches the command handler even when the player is not grouped;
-        -- PARTY was rejected client-side outside a party.
+        -- Use SAY to reach handler outside groups
         SendChatMessage(".playerbots bot add *", "SAY")
         PBM.ScheduleBotRosterRequest(0.75)
     end)

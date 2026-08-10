@@ -1,22 +1,11 @@
-PBM = PBM or {}
-PBM.State = PBM.State or {}
-
-local CLASS_NAMES = {
-    ["DeathKnight"] = "Death Knight",
-    ["Death Knight"] = "Death Knight",
-    ["Druid"] = "Druid",
-    ["Hunter"] = "Hunter",
-    ["Mage"] = "Mage",
-    ["Paladin"] = "Paladin",
-    ["Priest"] = "Priest",
-    ["Rogue"] = "Rogue",
-    ["Shaman"] = "Shaman",
-    ["Warlock"] = "Warlock",
-    ["Warrior"] = "Warrior",
-}
-
 local function Trim(value)
     return (value:gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+local function NormalizeClass(name)
+    name = Trim(name)
+    if name == "DeathKnight" then name = "Death Knight" end
+    return PBM.CLASS_COLORS[name] and name or nil
 end
 
 local function FindTrackedBot(name)
@@ -63,7 +52,7 @@ function PBM.ImportBotRosterMessage(message)
     for rawEntry in payload:gmatch("([^,]+)") do
         local entry = Trim(rawEntry)
         local _, name, rawClass = entry:match("^([+-])(%S+)%s+(.+)$")
-        local cls = rawClass and CLASS_NAMES[Trim(rawClass)]
+        local cls = rawClass and NormalizeClass(rawClass)
         if name and cls then
             total = total + 1
             if AddTrackedBot(name, cls) then added = added + 1 end
@@ -79,16 +68,21 @@ function PBM.ImportBotRosterMessage(message)
 end
 
 function PBM.RequestBotRoster()
-    PBM.State.rosterSyncPending = true
     SendChatMessage(".playerbots bot list", "SAY")
 end
 
 local rosterTimerFrame
+local rosterScheduleGeneration = 0
 
 function PBM.ScheduleBotRosterRequest(delay)
-    local callback = function() PBM.RequestBotRoster() end
+    rosterScheduleGeneration = rosterScheduleGeneration + 1
+    local generation = rosterScheduleGeneration
+    local function requestRoster()
+        if generation == rosterScheduleGeneration then PBM.RequestBotRoster() end
+    end
+
     if C_Timer and C_Timer.After then
-        C_Timer.After(delay, callback)
+        C_Timer.After(delay, requestRoster)
         return
     end
 
@@ -98,7 +92,7 @@ function PBM.ScheduleBotRosterRequest(delay)
         elapsed = elapsed + delta
         if elapsed >= delay then
             self:SetScript("OnUpdate", nil)
-            callback()
+            requestRoster()
         end
     end)
 end
@@ -110,7 +104,6 @@ if rosterEventFrame then
         local matched, added, total = PBM.ImportBotRosterMessage(message)
         if not matched then return end
 
-        PBM.State.rosterSyncPending = false
         local status = "|cff44ff44Roster synced: " .. total .. " found, " .. added .. " added.|r"
         if LichborneAddStatus then LichborneAddStatus:SetText(status) end
         if LichborneOutput then
