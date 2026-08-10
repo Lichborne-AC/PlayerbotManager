@@ -21,6 +21,9 @@ local function OnFirstShow()
     if PBM.State.setupDone then return end
     PBM.State.setupDone = true
     local f = LichborneTrackerFrame
+    -- Allow normal desktop-style click-to-front behavior when this window
+    -- overlaps other DIALOG-strata addon windows.
+    f:SetToplevel(true)
     local fl = f:GetFrameLevel()
 
     -- Tabs (centered in frame)
@@ -1122,13 +1125,19 @@ local function OnFirstShow()
 
     local loginBtn = MakeSimpleBtn("LichborneLoginBtn", "|cffd4af37Log in All Bots|r",
         0.1, 0.6, 0.2, 335, 110,
-        155, {{"Log in All Bots",0.78,0.61,0.23},{".playerbots bot add *",0.8,0.8,0.8}})
-    loginBtn:SetScript("OnClick", function() SendChatMessage(".playerbots bot add *", "PARTY") end)
+        155, {{"Log in All Bots",0.78,0.61,0.23},{"Logs in bots, then syncs the server roster.",0.8,0.8,0.8}})
+    loginBtn:SetScript("OnClick", function()
+        if LichborneAddStatus then LichborneAddStatus:SetText("|cffffff88Logging in bots and requesting roster...|r") end
+        -- SAY reaches the command handler even when the player is not grouped;
+        -- PARTY was rejected client-side outside a party.
+        SendChatMessage(".playerbots bot add *", "SAY")
+        PBM.ScheduleBotRosterRequest(0.75)
+    end)
 
     local logoutBtn = MakeSimpleBtn("LichborneLogoutBtn", "|cffd4af37Log Out All Bots|r",
         0.90, 0.20, 0.20, 335, 76,
         155, {{"Log Out All Bots",0.78,0.61,0.23},{".playerbots bot remove *",0.8,0.8,0.8}})
-    logoutBtn:SetScript("OnClick", function() SendChatMessage(".playerbots bot remove *", "PARTY") end)
+    logoutBtn:SetScript("OnClick", function() SendChatMessage(".playerbots bot remove *", "SAY") end)
 
     -- ── Remove Orphaned Bots button ────────────────────────────
     -- Sends .playerbots bot remove <name> for every character in the Overview tab roster

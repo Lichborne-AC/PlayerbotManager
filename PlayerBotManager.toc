@@ -18,6 +18,7 @@ LichborneTracker.xml
 PBM\PBM_Constants.lua
 PBM\IPTiersColor.lua
 PBM\PBM_Database.lua
+PBM\PBM_RosterSync.lua
 PBM\PBM_GearScore.lua
 PBM\PBM_Needs.lua
 PBM\PBM_Sort.lua
