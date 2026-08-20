@@ -22,47 +22,47 @@ PBM._waitFor = {}  -- [botName] = state string
 -- ── Info strings (localization defaults) ─────────────────────
 PBM.info = PBM.info or {}
 PBM.info.talent = PBM.info.talent or {
-    ["Points"] = "Talent Points: ",
-    ["Title"]  = "Talents: NAME",
-    Apply      = "Apply",
-    Copy       = "Copy Target",
+    ["Points"] = PBM_L["Talent Points: "],
+    ["Title"]  = PBM_L["Talents: NAME"],
+    Apply      = PBM_L["Apply"],
+    Copy       = PBM_L["Copy Target"],
     -- Class spec names (class..specNum)
-    DeathKnight1 = "Blood",     DeathKnight2 = "Frost",     DeathKnight3 = "Unholy",
-    Druid1       = "Balance",   Druid2       = "Feral",     Druid3       = "Restoration",
-    Hunter1      = "Beast",     Hunter2      = "Marks",     Hunter3      = "Survival",
-    Mage1        = "Arcane",    Mage2        = "Fire",      Mage3        = "Frost",
-    Paladin1     = "Holy",      Paladin2     = "Protection", Paladin3    = "Retribution",
-    Priest1      = "Discipline", Priest2     = "Holy",      Priest3      = "Shadow",
-    Rogue1       = "Assassination", Rogue2   = "Combat",    Rogue3       = "Subtlety",
-    Shaman1      = "Elemental", Shaman2      = "Enhancement", Shaman3   = "Restoration",
-    Warlock1     = "Affliction", Warlock2    = "Demonology", Warlock3    = "Destruction",
-    Warrior1     = "Arms",      Warrior2     = "Fury",      Warrior3     = "Protection",
+    DeathKnight1 = PBM_L["Blood"],        DeathKnight2 = PBM_L["Frost"],        DeathKnight3 = PBM_L["Unholy"],
+    Druid1       = PBM_L["Balance"],      Druid2       = PBM_L["Feral"],        Druid3       = PBM_L["Restoration"],
+    Hunter1      = PBM_L["Beast"],        Hunter2      = PBM_L["Marks"],        Hunter3      = PBM_L["Survival"],
+    Mage1        = PBM_L["Arcane"],       Mage2        = PBM_L["Fire"],         Mage3        = PBM_L["Frost"],
+    Paladin1     = PBM_L["Holy"],         Paladin2     = PBM_L["Protection"],   Paladin3     = PBM_L["Retribution"],
+    Priest1      = PBM_L["Discipline"],   Priest2      = PBM_L["Holy"],         Priest3      = PBM_L["Shadow"],
+    Rogue1       = PBM_L["Assassination"], Rogue2      = PBM_L["Combat"],       Rogue3       = PBM_L["Subtlety"],
+    Shaman1      = PBM_L["Elemental"],    Shaman2      = PBM_L["Enhancement"],  Shaman3      = PBM_L["Restoration"],
+    Warlock1     = PBM_L["Affliction"],   Warlock2     = PBM_L["Demonology"],   Warlock3     = PBM_L["Destruction"],
+    Warrior1     = PBM_L["Arms"],         Warrior2     = PBM_L["Fury"],         Warrior3     = PBM_L["Protection"],
 }
-PBM.info.inventory       = "Inventory: NAME"
-PBM.info.spellbook       = "Spellbook: NAME"
-PBM.info.target          = "No target selected"
-PBM.info.action          = "No action selected"
-PBM.info.itemsellalert   = "Cannot sell Hearthstone!"
-PBM.info.keydestroyalert = "Cannot destroy a key!"
-PBM.info.itemdestroyalert = "Are you sure you want to destroy %s?"
-PBM.info.glyphsglyphsfor = "Glyphs for"
+PBM.info.inventory       = PBM_L["Inventory: NAME"]
+PBM.info.spellbook       = PBM_L["Spellbook: NAME"]
+PBM.info.target          = PBM_L["No target selected"]
+PBM.info.action          = PBM_L["No action selected"]
+PBM.info.itemsellalert   = PBM_L["Cannot sell Hearthstone!"]
+PBM.info.keydestroyalert = PBM_L["Cannot destroy a key!"]
+PBM.info.itemdestroyalert = PBM_L["Are you sure you want to destroy %s?"]
+PBM.info.glyphsglyphsfor = PBM_L["Glyphs for"]
 
 PBM.tips = PBM.tips or {}
 PBM.tips.move = PBM.tips.move or {
-    talent    = "Move Talent Window",
-    inventory = "Move Inventory Window",
-    spellbook = "Move Spellbook Window",
-    stats     = "Move Stats Window",
+    talent    = PBM_L["Move Talent Window"],
+    inventory = PBM_L["Move Inventory Window"],
+    spellbook = PBM_L["Move Spellbook Window"],
+    stats     = PBM_L["Move Stats Window"],
 }
 PBM.tips.inventory = PBM.tips.inventory or {
-    sell       = "Sell selected item",
-    sellgrey   = "Sell all grey items",
-    sellvendor = "Sell all vendor items",
-    equip      = "Equip item",
-    use        = "Use item",
-    trade      = "Trade item to you",
-    drop       = "Destroy item",
-    open       = "Open all containers",
+    sell       = PBM_L["Sell selected item"],
+    sellgrey   = PBM_L["Sell all grey items"],
+    sellvendor = PBM_L["Sell all vendor items"],
+    equip      = PBM_L["Equip item"],
+    use        = PBM_L["Use item"],
+    trade      = PBM_L["Trade item to you"],
+    drop       = PBM_L["Destroy item"],
+    open       = PBM_L["Open all containers"],
 }
 
 -- ════════════════════════════════════════════════════════════
@@ -71,7 +71,7 @@ PBM.tips.inventory = PBM.tips.inventory or {
 
 PBM.inventory = PBM.newFrame(PBM._windowParent, -700, -144, 32, 442, 884)
 PBM.inventory.addTexture("Interface\\AddOns\\PlayerBotManager\\Textures\\Inventory.blp")
-PBM.inventory.addText("Title", "Inventory", "CENTER", -58, 429, 12)
+PBM.inventory.addText("Title", PBM_L["Inventory"], "CENTER", -58, 429, 12)
 PBM.inventory.action = "s"
 PBM.inventory:SetMovable(true)
 PBM.inventory:Hide()
@@ -245,7 +245,7 @@ tFrame.addTexture("Interface/Spellbook/UI-SpellbookPanel-BotRight")
 tFrame:SetFrameLevel(4)
 
 local tOverlay = PBM.spellbook.addFrame("Overlay", -47, 81, 28, 258, 292)
-tOverlay.addText("Title", "Spellbook", "CENTER", 14, 200, 13)
+tOverlay.addText("Title", PBM_L["Spellbook"], "CENTER", 14, 200, 13)
 tOverlay.addText("Pages", "0/0", "CENTER", 14, 173, 13)
 tOverlay:SetFrameLevel(5)
 
@@ -290,8 +290,8 @@ tOverlay.wowButton("X", 16, 336, 15, 18, 11)
 	PBM.spellbook:Hide()
 end
 
-tOverlay.addText("R01", "|cff402000Rank|r", "TOPLEFT", 44, -16, 11)
-tOverlay.addText("T01", "|cffffcc00Title|r", "TOPLEFT", 30, -2, 12)
+tOverlay.addText("R01", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 44, -16, 11)
+tOverlay.addText("T01", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 30, -2, 12)
 local tButton = tOverlay.addButton("S01", -230, 264, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -300,8 +300,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R02", "|cff402000Rank|r", "TOPLEFT", 172, -16, 11)
-tOverlay.addText("T02", "|cffffcc00Title|r", "TOPLEFT", 159, -2, 12)
+tOverlay.addText("R02", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 172, -16, 11)
+tOverlay.addText("T02", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 159, -2, 12)
 local tButton = tOverlay.addButton("S02", -101, 264, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -310,8 +310,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R03", "|cff402000Rank|r", "TOPLEFT", 44, -52, 11)
-tOverlay.addText("T03", "|cffffcc00Title|r", "TOPLEFT", 30, -38, 12)
+tOverlay.addText("R03", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 44, -52, 11)
+tOverlay.addText("T03", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 30, -38, 12)
 local tButton = tOverlay.addButton("S03", -230, 228, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -320,8 +320,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R04", "|cff402000Rank|r", "TOPLEFT", 172, -52, 11)
-tOverlay.addText("T04", "|cffffcc00Title|r", "TOPLEFT", 159, -38, 12)
+tOverlay.addText("R04", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 172, -52, 11)
+tOverlay.addText("T04", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 159, -38, 12)
 local tButton = tOverlay.addButton("S04", -101, 228, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -330,8 +330,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R05", "|cff402000Rank|r", "TOPLEFT", 44, -88, 11)
-tOverlay.addText("T05", "|cffffcc00Title|r", "TOPLEFT", 30, -74, 12)
+tOverlay.addText("R05", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 44, -88, 11)
+tOverlay.addText("T05", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 30, -74, 12)
 local tButton = tOverlay.addButton("S05", -230, 192, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -340,8 +340,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R06", "|cff402000Rank|r", "TOPLEFT", 172, -88, 11)
-tOverlay.addText("T06", "|cffffcc00Title|r", "TOPLEFT", 159, -74, 12)
+tOverlay.addText("R06", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 172, -88, 11)
+tOverlay.addText("T06", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 159, -74, 12)
 local tButton = tOverlay.addButton("S06", -101, 192, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -350,8 +350,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R07", "|cff402000Rank|r", "TOPLEFT", 44, -124, 11)
-tOverlay.addText("T07", "|cffffcc00Title|r", "TOPLEFT", 30, -110, 12)
+tOverlay.addText("R07", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 44, -124, 11)
+tOverlay.addText("T07", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 30, -110, 12)
 local tButton = tOverlay.addButton("S07", -230, 156, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -360,8 +360,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R08", "|cff402000Rank|r", "TOPLEFT", 172, -124, 11)
-tOverlay.addText("T08", "|cffffcc00Title|r", "TOPLEFT", 159, -110, 12)
+tOverlay.addText("R08", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 172, -124, 11)
+tOverlay.addText("T08", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 159, -110, 12)
 local tButton = tOverlay.addButton("S08", -101, 156, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -370,8 +370,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R09", "|cff402000Rank|r", "TOPLEFT", 44, -160, 11)
-tOverlay.addText("T09", "|cffffcc00Title|r", "TOPLEFT", 30, -146, 12)
+tOverlay.addText("R09", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 44, -160, 11)
+tOverlay.addText("T09", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 30, -146, 12)
 local tButton = tOverlay.addButton("S09", -230, 120, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -380,8 +380,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R10", "|cff402000Rank|r", "TOPLEFT", 172, -160, 11)
-tOverlay.addText("T10", "|cffffcc00Title|r", "TOPLEFT", 159, -146, 12)
+tOverlay.addText("R10", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 172, -160, 11)
+tOverlay.addText("T10", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 159, -146, 12)
 local tButton = tOverlay.addButton("S10", -101, 120, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -390,8 +390,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R11", "|cff402000Rank|r", "TOPLEFT", 44, -196, 11)
-tOverlay.addText("T11", "|cffffcc00Title|r", "TOPLEFT", 30, -182, 12)
+tOverlay.addText("R11", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 44, -196, 11)
+tOverlay.addText("T11", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 30, -182, 12)
 local tButton = tOverlay.addButton("S11", -230, 84, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -400,8 +400,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R12", "|cff402000Rank|r", "TOPLEFT", 172, -196, 11)
-tOverlay.addText("T12", "|cffffcc00Title|r", "TOPLEFT", 159, -182, 12)
+tOverlay.addText("R12", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 172, -196, 11)
+tOverlay.addText("T12", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 159, -182, 12)
 local tButton = tOverlay.addButton("S12", -101, 84, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -410,8 +410,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R13", "|cff402000Rank|r", "TOPLEFT", 44, -232, 11)
-tOverlay.addText("T13", "|cffffcc00Title|r", "TOPLEFT", 30, -218, 12)
+tOverlay.addText("R13", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 44, -232, 11)
+tOverlay.addText("T13", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 30, -218, 12)
 local tButton = tOverlay.addButton("S13", -230, 48, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -420,8 +420,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R14", "|cff402000Rank|r", "TOPLEFT", 172, -232, 11)
-tOverlay.addText("T14", "|cffffcc00Title|r", "TOPLEFT", 159, -218, 12)
+tOverlay.addText("R14", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 172, -232, 11)
+tOverlay.addText("T14", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 159, -218, 12)
 local tButton = tOverlay.addButton("S14", -101, 48, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -430,8 +430,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R15", "|cff402000Rank|r", "TOPLEFT", 44, -268, 11)
-tOverlay.addText("T15", "|cffffcc00Title|r", "TOPLEFT", 30, -254, 12)
+tOverlay.addText("R15", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 44, -268, 11)
+tOverlay.addText("T15", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 30, -254, 12)
 local tButton = tOverlay.addButton("S15", -230, 12, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -440,8 +440,8 @@ tButton.doLeft = function(pButton)
 	SendChatMessage("cast " .. pButton.spell, "WHISPER", nil, PBM.spellbook.name)
 end
 
-tOverlay.addText("R16", "|cff402000Rank|r", "TOPLEFT", 172, -268, 11)
-tOverlay.addText("T16", "|cffffcc00Title|r", "TOPLEFT", 159, -254, 12)
+tOverlay.addText("R16", "|cff402000" .. PBM_L["Rank"] .. "|r", "TOPLEFT", 172, -268, 11)
+tOverlay.addText("T16", "|cffffcc00" .. PBM_L["Title"] .. "|r", "TOPLEFT", 159, -254, 12)
 local tButton = tOverlay.addButton("S16", -101, 12, "inv_misc_questionmark", "Text")
 tButton.doRight = function(pButton)
 	PBM.SpellToMacro(PBM.spellbook.name, pButton.spell, pButton.texture)
@@ -508,10 +508,10 @@ copyBtn.doLeft = function(pButton)
 	if(tName == nil or tName == "Unknown Entity") then return SendChatMessage(PBM.info.target, "SAY") end
 
 	local tLocClass, tClass = UnitClass("target")
-	if(PBM.talent.class ~= PBM.toClass(tClass)) then return SendChatMessage("The Classes do not match.", "SAY") end
+	if(PBM.talent.class ~= PBM.toClass(tClass)) then return SendChatMessage(PBM_L["The Classes do not match."], "SAY") end
 
 	local tUnit = PBM.toUnit(PBM.talent.name)
-	if(UnitLevel(tUnit) ~= UnitLevel("target")) then return SendChatMessage("The Levels do not match.", "SAY") end
+	if(UnitLevel(tUnit) ~= UnitLevel("target")) then return SendChatMessage(PBM_L["The Levels do not match."], "SAY") end
 
 	local tValues = ""
 
@@ -535,21 +535,21 @@ end
 
 local tTab = PBM.talent.addFrame("Tab1", -830, 518, 28, 170, 408)
 tTab.addTexture("Interface\\AddOns\\PlayerBotManager\\Textures\\White.blp")
-tTab.addText("Title", "Title", "CENTER", 0, 214, 13)
+tTab.addText("Title", PBM_L["Title"], "CENTER", 0, 214, 13)
 tTab.arrows = {}
 tTab.value = 0
 tTab.id = 1
 
 local tTab = PBM.talent.addFrame("Tab2", -656, 518, 28, 170, 408)
 tTab.addTexture("Interface\\AddOns\\PlayerBotManager\\Textures\\White.blp")
-tTab.addText("Title", "Title", "CENTER", 0, 214, 13)
+tTab.addText("Title", PBM_L["Title"], "CENTER", 0, 214, 13)
 tTab.arrows = {}
 tTab.value = 0
 tTab.id = 2
 
 local tTab = PBM.talent.addFrame("Tab3", -482, 518, 28, 170, 408)
 tTab.addTexture("Interface\\AddOns\\PlayerBotManager\\Textures\\White.blp")
-tTab.addText("Title", "Title", "CENTER", 0, 214, 13)
+tTab.addText("Title", PBM_L["Title"], "CENTER", 0, 214, 13)
 tTab.arrows = {}
 tTab.value = 0
 tTab.id = 3
@@ -586,7 +586,7 @@ function PBM.FillDefaultGlyphs()
     -- { [1]={id=…,type=…}, …, [6]={…} }
     local rec = PBM.receivedGlyphs and PBM.receivedGlyphs[botName]
     if not rec then
-        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[PBM]|r Waiting for glyphs…")
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[PBM]|r " .. PBM_L["Waiting for glyphs…"])
         return
     end
 
@@ -687,7 +687,7 @@ tTab:Hide()
 local parentTab4 = PBM.talent.frames["Tab4"]   -- alias
 
 -- Bouton “Apply Glyphs” – créé **une seule fois** :
-gApply = parentTab4.wowButton("Apply Glyphs", 0, 0, 100, 20, 12)
+gApply = parentTab4.wowButton(PBM_L["Apply Glyphs"], 0, 0, 100, 20, 12)
 gApply:ClearAllPoints()
 gApply:SetPoint("TOPRIGHT", parentTab4, "TOPRIGHT", -20, -20)
 gApply:SetFrameLevel(parentTab4:GetFrameLevel() + 10)
@@ -774,7 +774,7 @@ tGlyph.addFrame("Overlay", -12, 12, 96) .setLevel(9).doHide()
 -- TAB TALENTS --
 local tTab = PBM.talent.addFrame("Tab5", -900, 461, 28, 96, 24)
 tTab.addTexture("Interface\\AddOns\\PlayerBotManager\\Textures\\Talent_Tab.blp")
-tTab.wowButton("Talents", -2, 6, 92, 17, 11)
+tTab.wowButton(PBM_L["Talents"], -2, 6, 92, 17, 11)
 .doLeft = function(pButton)
 	if gApply then gApply:Hide() end
     -- Update UI
@@ -790,7 +790,7 @@ end
 -- TAB GLYPHS --
 local tTab = PBM.talent.addFrame("Tab6", -800, 461, 28, 96, 24)
 tTab.addTexture("Interface\\AddOns\\PlayerBotManager\\Textures\\Talent_Tab.blp")
-tTab.wowButton("Glyphs", -2, 6, 92, 17, 11)
+tTab.wowButton(PBM_L["Glyphs"], -2, 6, 92, 17, 11)
 
 .doLeft = function(pButton)
 	if gApply then gApply:Hide() end
@@ -945,14 +945,14 @@ PBM.talent.setTalents = function()
     -- 1) Check datas
     local tClass = PBM.data.talent.talents[ PBM.talent.class ]
     if not tClass then
-        print("|cffff0000[PBM] No build found for class "
+        print("|cffff0000[PBM] " .. PBM_L["No build found for class "]
               .. tostring(PBM.talent.class) .. "!|r")
         return
     end
 
     local tArrow = PBM.data.talent.arrows[ PBM.talent.class ]
     if not tArrow then
-        print("|cffff0000[PBM] No arrow schem found for class "
+        print("|cffff0000[PBM] " .. PBM_L["No arrow schem found for class "]
               .. tostring(PBM.talent.class) .. "!|r")
         return
     end
@@ -1180,31 +1180,31 @@ function PBM.OpenTalentWindow(botName)
 
 	local unit = PBM.NameToUnit(botName)
 	if not unit then
-		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. botName .. " is not in your group.")
+		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. botName .. PBM_L[" is not in your group."])
 		return
 	end
 
 	-- Level check
 	local level = UnitLevel(unit)
 	if level and level < 10 then
-		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. botName .. " must be level 10+ for talents.")
+		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. botName .. PBM_L[" must be level 10+ for talents."])
 		return
 	end
 
 	-- Range check
 	if not CheckInteractDistance(unit, 1) then
-		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. botName .. " is too far away to inspect.")
+		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. botName .. PBM_L[" is too far away to inspect."])
 		return
 	end
 
 	-- InspectUnit conflict prevention with PBM
 	if PBM and PBM.State then
 		if PBM.State.LichborneInspectTarget then
-			DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r Cannot inspect — PBM gear/spec scan in progress.")
+			DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. PBM_L["Cannot inspect — PBM gear/spec scan in progress."])
 			return
 		end
 		if PBM.State.LichborneGroupScanActive then
-			DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r Cannot inspect — PBM group scan in progress.")
+			DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. PBM_L["Cannot inspect — PBM group scan in progress."])
 			return
 		end
 	end
@@ -1237,7 +1237,7 @@ function PBM.OpenInventoryWindow(botName)
 
 	-- If already waiting for this bot, don't double-send
 	if PBM._waitFor[botName] then
-		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r Already waiting for " .. botName .. " data.")
+		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. PBM_L["Already waiting for "] .. botName .. PBM_L[" data."])
 		return
 	end
 
@@ -1253,7 +1253,7 @@ function PBM.OpenSpellbookWindow(botName)
 
 	-- If already waiting for this bot, don't double-send
 	if PBM._waitFor[botName] then
-		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r Already waiting for " .. botName .. " data.")
+		DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. PBM_L["Already waiting for "] .. botName .. PBM_L[" data."])
 		return
 	end
 

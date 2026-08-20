@@ -232,7 +232,7 @@ function PBM.RefreshGroupViewRows()
                             if roster[ri] and roster[ri].name and roster[ri].name:lower() == srcData.name:lower() then
                                 roster[ri] = {name="", cls="", spec="", gs=0, realGs=0, role="", notes=""}
                                 rf.addRaidBtn:SetText("|cff44ff44+|r")
-                                if LichborneAddStatus then LichborneAddStatus:SetText(hex..srcData.name.."|r removed from raid slot "..ri..".") end
+                                if LichborneAddStatus then LichborneAddStatus:SetText(hex..srcData.name.."|r" .. PBM_L[" removed from raid slot "] .. ri..".") end
                                 if LichborneRaidFrame then PBM.RefreshRaidRows() end
                                 return
                             end
@@ -243,14 +243,14 @@ function PBM.RefreshGroupViewRows()
                     for ri = 1, PBM.MAX_RAID_SLOTS do
                         if not roster2[ri] or roster2[ri].name == "" then
                             roster2[ri] = {name=srcData.name, cls=srcData.cls or "", spec=srcData.spec or "", gs=srcData.gs or 0, realGs=srcData.realGs or 0, role="", notes=""}
-                            LichborneOutput("|cffC69B3APBM:|r Added "..hex..srcData.name.."|r to Raid slot "..ri..".", 1, 0.85, 0)
-                            if LichborneAddStatus then LichborneAddStatus:SetText(hex..srcData.name.."|r added to raid slot "..ri..".") end
+                            LichborneOutput("|cffC69B3APBM:|r Added "..hex..srcData.name.."|r" .. PBM_L[" added to raid slot "] .. ri..".", 1, 0.85, 0)
+                            if LichborneAddStatus then LichborneAddStatus:SetText(hex..srcData.name.."|r" .. PBM_L[" added to raid slot "] .. ri..".") end
                             rf.addRaidBtn:SetText("|cffb25b00+|r")
                             if LichborneRaidFrame then PBM.RefreshRaidRows() end
                             return
                         end
                     end
-                    if LichborneAddStatus then LichborneAddStatus:SetText("|cffff6666Raid roster is full.|r") end
+                    if LichborneAddStatus then LichborneAddStatus:SetText("|cffff6666" .. PBM_L["Raid roster is full."] .. "|r") end
                 end)
                 rf.addRaidBtn:RegisterForClicks("LeftButtonUp", "RightButtonUp")
             else
@@ -286,11 +286,11 @@ function PBM.RefreshGroupViewRows()
             if btn == "RightButton" then
                 UninviteUnit(d.name)
                 SendChatMessage(".playerbots bot remove "..d.name, "SAY")
-                LichborneOutput("|cffC69B3APBM:|r Removed "..hex..d.name.."|r from bots.", 1, 0.85, 0)
+                LichborneOutput("|cffC69B3APBM:|r" .. PBM_L[" Removed "] ..hex..d.name.."|r" .. PBM_L[" from bots."], 1, 0.85, 0)
                 return
             end
             SendChatMessage(".playerbots bot add "..d.name, "SAY")
-            if LichborneAddStatus then LichborneAddStatus:SetText("Invited "..hex..d.name.."|r to group.") end
+            if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["Invited "] ..hex..d.name.."|r" .. PBM_L[" to group."]) end
         end)
 
         -- x Delete click — removes character from tracker (mirrors class tabs)
@@ -368,7 +368,7 @@ function PBM.BuildGroupView(parent, fl)
         PBM.State.gvSortHdrs[key] = { lbl = lbl, fs = fs }
         btn:SetScript("OnEnter", function()
             GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("Click to sort", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Click to sort"], 1, 1, 1)
             GameTooltip:Show()
         end)
         btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -387,11 +387,11 @@ function PBM.BuildGroupView(parent, fl)
     end
 
     H("#",       GV_NUM_OFF,  GV_NUM_W)
-    SH("Spec",   GV_SPEC_OFF, GV_NAME_OFF - GV_SPEC_OFF,      "cls",  false)
-    SH("Name",   GV_NAME_OFF, GV_NAME_W,                      "name", false)
-    SH("iLvL",   GV_ILVL_OFF, GV_ILVL_W,                     "ilvl", true)
-    SH("GS",     GV_GS_OFF,   GV_GS_W,   "gs",   true)
-    H("Prof",    GV_PROF_OFF, GV_PROF_W)
+    SH(PBM_L["Spec"],   GV_SPEC_OFF, GV_NAME_OFF - GV_SPEC_OFF,      "cls",  false)
+    SH(PBM_L["Name"],   GV_NAME_OFF, GV_NAME_W,                      "name", false)
+    SH(PBM_L["iLvL"],   GV_ILVL_OFF, GV_ILVL_W,                     "ilvl", true)
+    SH(PBM_L["GS"],     GV_GS_OFF,   GV_GS_W,   "gs",   true)
+    H(PBM_L["Prof"],    GV_PROF_OFF, GV_PROF_W)
     for g = 1, PBM.GEAR_SLOTS do
         SH(PBM.SLOT_ABBR[g] or tostring(g), GV_GEAR_OFF + (g-1)*GV_GEAR_STEP, GV_GEAR_BSIZ, "gear_"..g, true)
     end
@@ -407,11 +407,11 @@ function PBM.BuildGroupView(parent, fl)
     refreshBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     local refreshLbl = refreshBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     refreshLbl:SetAllPoints(refreshBtn); refreshLbl:SetJustifyH("CENTER"); refreshLbl:SetJustifyV("MIDDLE")
-    refreshLbl:SetText("|cffd4af37Refresh|r")
+    refreshLbl:SetText("|cffd4af37" .. PBM_L["Refresh"] .. "|r")
     refreshBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(refreshBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Refresh Group", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Rebuild the member list from your current group.", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine(PBM_L["Refresh Group"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Rebuild the member list from your current group."], 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     refreshBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -467,7 +467,7 @@ function PBM.BuildGroupView(parent, fl)
             if not gvDragSource and rf.charName then
                 dragTex:SetVertexColor(0.9,0.7,0.1,1.0)
                 GameTooltip:SetOwner(dragBtn,"ANCHOR_RIGHT")
-                GameTooltip:AddLine("Drag to reorder",1,1,1)
+                GameTooltip:AddLine(PBM_L["Drag to reorder"],1,1,1)
                 GameTooltip:Show()
             end
         end)
@@ -598,10 +598,10 @@ function PBM.BuildGroupView(parent, fl)
         arb:RegisterForClicks("LeftButtonUp","RightButtonUp")
         arb:SetScript("OnEnter", function()
             GameTooltip:SetOwner(arb, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cff44ff44+ Add to Raid|r",1,1,1)
-            GameTooltip:AddLine("Adds character to the Raid tab.", 0.7, 0.7, 0.7)
-            GameTooltip:AddLine("|cff44ff44Left-click to add to raid.|r",1,1,1)
-            GameTooltip:AddLine("|cffff2020Right-click to remove.|r",1,1,1)
+            GameTooltip:AddLine("|cff44ff44" .. PBM_L["+ Add to Raid"] .. "|r",1,1,1)
+            GameTooltip:AddLine(PBM_L["Adds character to the Raid tab."], 0.7, 0.7, 0.7)
+            GameTooltip:AddLine("|cff44ff44" .. PBM_L["Left-click to add to raid."] .. "|r",1,1,1)
+            GameTooltip:AddLine("|cffff2020" .. PBM_L["Right-click to remove."] .. "|r",1,1,1)
             GameTooltip:Show()
         end)
         arb:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -616,9 +616,9 @@ function PBM.BuildGroupView(parent, fl)
         agb:RegisterForClicks("LeftButtonUp","RightButtonUp")
         agb:SetScript("OnEnter", function()
             GameTooltip:SetOwner(agb, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cff44eeff> Invite to Group|r",1,1,1)
-            GameTooltip:AddLine("|cff44ff44Left-click to invite.|r",1,1,1)
-            GameTooltip:AddLine("|cffff2020Right-click to remove.|r",1,1,1)
+            GameTooltip:AddLine("|cff44eeff" .. PBM_L["> Invite to Group"] .. "|r",1,1,1)
+            GameTooltip:AddLine("|cff44ff44" .. PBM_L["Left-click to invite."] .. "|r",1,1,1)
+            GameTooltip:AddLine("|cffff2020" .. PBM_L["Right-click to remove."] .. "|r",1,1,1)
             GameTooltip:Show()
         end)
         agb:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -632,8 +632,8 @@ function PBM.BuildGroupView(parent, fl)
         db:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
         db:SetScript("OnEnter", function()
             GameTooltip:SetOwner(db, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("Remove Character", 1, 0.3, 0.3)
-            GameTooltip:AddLine("Removes from tracker.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Remove Character"], 1, 0.3, 0.3)
+            GameTooltip:AddLine(PBM_L["Removes from tracker."], 0.8, 0.8, 0.8)
             GameTooltip:Show()
         end)
         db:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -746,8 +746,8 @@ function PBM.BuildGroupView(parent, fl)
             sw:SetScript("OnEnter", function()
                 GameTooltip:SetOwner(sw, "ANCHOR_TOP")
                 GameTooltip:AddLine(PBM.TAB_LABELS[capCls], c.r, c.g, c.b)
-                GameTooltip:AddLine("Current-group average "..(mode == "gs" and "gear score" or "item level").." for this class.", 1,1,1)
-                GameTooltip:AddLine("Click to switch to this tab.", 0.5,0.5,0.5)
+                GameTooltip:AddLine(PBM_L["Current-group average "] .. (mode == "gs" and PBM_L["gear score"] or PBM_L["item level"]) .. PBM_L[" for this class."], 1,1,1)
+                GameTooltip:AddLine(PBM_L["Click to switch to this tab."], 0.5,0.5,0.5)
                 GameTooltip:Show()
             end)
             sw:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -771,7 +771,7 @@ function PBM.BuildGroupView(parent, fl)
         block:SetScript("OnEnter", function()
             GameTooltip:SetOwner(block, "ANCHOR_TOP")
             GameTooltip:AddLine(blockLabelText, 0.78, 0.61, 0.23)
-            GameTooltip:AddLine("Average "..(mode == "gs" and "gear score" or "item level").." across your current group.", 1,1,1)
+            GameTooltip:AddLine(PBM_L["Average "] .. (mode == "gs" and PBM_L["gear score"] or PBM_L["item level"]) .. PBM_L[" across your current group."], 1,1,1)
             GameTooltip:Show()
         end)
         block:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -779,8 +779,8 @@ function PBM.BuildGroupView(parent, fl)
     end
 
     -- 20 rows end at yStart - 20*RH = -20 - 440 = -460; bars sit flush below with 2px gap between them.
-    PBM.State.gvGroupIlvlLabel = BuildAvgBar(-460, "Avg iLvL:", "ilvl", PBM.State.gvAvgSwatches, "Group iLvL")
-    PBM.State.gvGroupGsLabel   = BuildAvgBar(-486, "Avg GS:",   "gs",   PBM.State.gvGsSwatches,  "Group GS")
+    PBM.State.gvGroupIlvlLabel = BuildAvgBar(-460, PBM_L["Avg iLvL:"], "ilvl", PBM.State.gvAvgSwatches, PBM_L["Group iLvL"])
+    PBM.State.gvGroupGsLabel   = BuildAvgBar(-486, PBM_L["Avg GS:"],   "gs",   PBM.State.gvGsSwatches,  PBM_L["Group GS"])
 end
 
 -- ── Current-group averages (computed from the built member list) ─
@@ -825,11 +825,11 @@ function PBM.UpdateGroupSummary()
     end
     if PBM.State.gvGroupIlvlLabel then
         local v = GroupAvg("gs")
-        PBM.State.gvGroupIlvlLabel:SetText("|cffC69B3AGroup iLvL:|r "..(v > 0 and "|cffff8000"..v.."|r" or "|cff555555--|r"))
+        PBM.State.gvGroupIlvlLabel:SetText("|cffC69B3A" .. PBM_L["Group iLvL:"] .. "|r "..(v > 0 and "|cffff8000"..v.."|r" or "|cff555555--|r"))
     end
     if PBM.State.gvGroupGsLabel then
         local v = GroupAvg("realGs")
-        PBM.State.gvGroupGsLabel:SetText("|cffC69B3AGroup GS:|r "..(v > 0 and "|cffff8000"..v.."|r" or "|cff555555--|r"))
+        PBM.State.gvGroupGsLabel:SetText("|cffC69B3A" .. PBM_L["Group GS:"] .. "|r "..(v > 0 and "|cffff8000"..v.."|r" or "|cff555555--|r"))
     end
 end
 

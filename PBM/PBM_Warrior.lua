@@ -132,34 +132,34 @@ function PBM.OpenWarriorMenu(row)
         local CENTER_X  = col1X + math.floor(SPEC_W / 2)
         local singleOff = math.floor((COL_W - EXT_ICON_SIZE) / 2)
 
-        MakeWideBox(col1X, specBoxY, COL_W, "Arms",       "Interface\\Icons\\Ability_Warrior_Sunder")
-        MakeWideBox(col2X, specBoxY, COL_W, "Fury",       "Interface\\Icons\\Ability_Warrior_InnerRage")
-        MakeWideBox(col3X, specBoxY, COL_W, "Protection", "Interface\\Icons\\Ability_Warrior_DefensiveStance")
+        MakeWideBox(col1X, specBoxY, COL_W, PBM_L["Arms"],       "Interface\\Icons\\Ability_Warrior_Sunder")
+        MakeWideBox(col2X, specBoxY, COL_W, PBM_L["Fury"],       "Interface\\Icons\\Ability_Warrior_InnerRage")
+        MakeWideBox(col3X, specBoxY, COL_W, PBM_L["Protection"], "Interface\\Icons\\Ability_Warrior_DefensiveStance")
 
         local treeArmsBtn = MakeTreeBtn(col1X + singleOff, specIconY,
             "Interface\\Icons\\Ability_Warrior_Sunder",
             function()
-                GameTooltip:SetText("|cffffcc00Arms|r |cff999999- |r|cffC79C6Earms|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Arms DPS|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Fury, Protection.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Arms"] .. "|r |cff999999- |r|cffC79C6Earms|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Arms DPS"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Mutually exclusive with Fury, Protection."] .. "|r", 1, 1, 1)
             end)
         LichborneWarriorMenu.treeArmsBtn = treeArmsBtn
 
         local treeFuryBtn = MakeTreeBtn(col2X + singleOff, specIconY,
             "Interface\\Icons\\Ability_Warrior_InnerRage",
             function()
-                GameTooltip:SetText("|cffffcc00Fury|r |cff999999- |r|cffC79C6Efury|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Fury DPS|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Arms, Protection.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Fury"] .. "|r |cff999999- |r|cffC79C6Efury|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Fury DPS"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Mutually exclusive with Arms, Protection."] .. "|r", 1, 1, 1)
             end)
         LichborneWarriorMenu.treeFuryBtn = treeFuryBtn
 
         local treeTankBtn = MakeTreeBtn(col3X + singleOff, specIconY,
             "Interface\\Icons\\Ability_Warrior_DefensiveStance",
             function()
-                GameTooltip:SetText("|cffffcc00Protection|r |cff999999- |r|cffC79C6Etank|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Protection tank|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Arms, Fury.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Protection"] .. "|r |cff999999- |r|cffC79C6Etank|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Protection tank"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Mutually exclusive with Arms, Fury."] .. "|r", 1, 1, 1)
             end)
         LichborneWarriorMenu.treeTankBtn = treeTankBtn
 
@@ -167,13 +167,13 @@ function PBM.OpenWarriorMenu(row)
         local aoeBoxY  = specBoxY - BOX_H - ROW_GAP
         local aoeIconY = aoeBoxY  - BOX_H - 3
         local aoeBoxW  = 60
-        MakeWideBox(CENTER_X - math.floor(aoeBoxW / 2), aoeBoxY, aoeBoxW, "AoE")
+        MakeWideBox(CENTER_X - math.floor(aoeBoxW / 2), aoeBoxY, aoeBoxW, PBM_L["AoE"])
 
         local treeDpsAoeBtn = MakeTreeBtn(CENTER_X - 13, aoeIconY,
             "Interface\\Icons\\Spell_Frost_IceStorm",
             function()
-                GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cffC79C6Eaoe|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["DPS AoE"] .. "|r |cff999999- |r|cffC79C6Eaoe|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Cross-role AoE mode"] .. "|r", 1, 1, 1)
             end)
         LichborneWarriorMenu.treeDpsAoeBtn = treeDpsAoeBtn
 
@@ -181,23 +181,23 @@ function PBM.OpenWarriorMenu(row)
         local assistBoxY  = aoeBoxY  - BOX_H - ROW_GAP
         local assistIconY = assistBoxY - BOX_H - 3
         local assistBoxW  = 84
-        MakeWideBox(CENTER_X - math.floor(assistBoxW / 2), assistBoxY, assistBoxW, "Assist")
+        MakeWideBox(CENTER_X - math.floor(assistBoxW / 2), assistBoxY, assistBoxW, PBM_L["Assist"])
 
         local treeTankAssistBtn = MakeTreeBtn(CENTER_X - 28, assistIconY,
             "Interface\\Icons\\inv_shield_02",
             function()
-                GameTooltip:SetText("|cffffcc00Tank Assist|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r")
-                GameTooltip:AddLine("|cffffcc00Tank target focus|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot attacks the tank's current target.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Tank Assist"] .. "|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Tank target focus"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot attacks the tank's current target."], 1, 1, 1)
             end)
         LichborneWarriorMenu.treeTankAssistBtn = treeTankAssistBtn
 
         local treeDpsAssistBtn = MakeTreeBtn(CENTER_X + 2, assistIconY,
             "Interface\\Icons\\Ability_Warrior_Challange",
             function()
-                GameTooltip:SetText("|cffffcc00DPS Assist|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r")
-                GameTooltip:AddLine("|cffffcc00DPS target focus|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot attacks the group DPS focus target.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["DPS Assist"] .. "|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["DPS target focus"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot attacks the group DPS focus target."], 1, 1, 1)
             end)
         LichborneWarriorMenu.treeDpsAssistBtn = treeDpsAssistBtn
 

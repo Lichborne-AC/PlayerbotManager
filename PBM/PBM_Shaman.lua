@@ -18,12 +18,12 @@ end
 
 -- Talent spec templates for the Set Talents menu
 local SHAMAN_TALENT_SPECS = {
-    { label="Elemental |cffffcc00PvE|r",    spec="ele pve",   wowSpec="Elemental",           icon="Interface\\Icons\\Spell_Nature_Lightning"       },
-    { label="Enhancement |cffffcc00PvE|r",  spec="enh pve",   wowSpec="Enhancement",         icon="Interface\\Icons\\Spell_Nature_LightningShield" },
-    { label="Restoration |cffffcc00PvE|r",  spec="resto pve", wowSpec="Restoration Shaman",  icon="Interface\\Icons\\Spell_Nature_MagicImmunity"   },
-    { label="Elemental |cffff4444PvP|r",    spec="ele pvp",   wowSpec="Elemental",           icon="Interface\\Icons\\Spell_Nature_Lightning"       },
-    { label="Enhancement |cffff4444PvP|r",  spec="enh pvp",   wowSpec="Enhancement",         icon="Interface\\Icons\\Spell_Nature_LightningShield" },
-    { label="Restoration |cffff4444PvP|r",  spec="resto pvp", wowSpec="Restoration Shaman",  icon="Interface\\Icons\\Spell_Nature_MagicImmunity"   },
+    { label=PBM_L["Elemental |cffffcc00PvE|r"],   spec="ele pve",   wowSpec="Elemental",           icon="Interface\\Icons\\Spell_Nature_Lightning"       },
+    { label=PBM_L["Enhancement |cffffcc00PvE|r"], spec="enh pve",   wowSpec="Enhancement",         icon="Interface\\Icons\\Spell_Nature_LightningShield" },
+    { label=PBM_L["Restoration |cffffcc00PvE|r"], spec="resto pve", wowSpec="Restoration Shaman",  icon="Interface\\Icons\\Spell_Nature_MagicImmunity"   },
+    { label=PBM_L["Elemental |cffff4444PvP|r"],   spec="ele pvp",   wowSpec="Elemental",           icon="Interface\\Icons\\Spell_Nature_Lightning"       },
+    { label=PBM_L["Enhancement |cffff4444PvP|r"], spec="enh pvp",   wowSpec="Enhancement",         icon="Interface\\Icons\\Spell_Nature_LightningShield" },
+    { label=PBM_L["Restoration |cffff4444PvP|r"], spec="resto pvp", wowSpec="Restoration Shaman",  icon="Interface\\Icons\\Spell_Nature_MagicImmunity"   },
 }
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -156,37 +156,37 @@ function PBM.OpenShamanMenu(row)
         local assIconY   = assBoxY - 18 - 4                  -- row 3 icons
 
         -- ── Row 1: Spec columns ─────────────────────────────────────
-        MakeSpecBox(col1X, specBoxY, SPEC_COL_W, "Elemental",
+        MakeSpecBox(col1X, specBoxY, SPEC_COL_W, PBM_L["Elemental"],
             "Interface\\Icons\\Spell_Nature_Lightning")
-        MakeSpecBox(col2X, specBoxY, SPEC_COL_W, "Enhancement",
+        MakeSpecBox(col2X, specBoxY, SPEC_COL_W, PBM_L["Enhancement"],
             "Interface\\Icons\\Spell_Nature_LightningShield")
-        MakeSpecBox(col3X, specBoxY, SPEC_COL_W, "Restoration",
+        MakeSpecBox(col3X, specBoxY, SPEC_COL_W, PBM_L["Restoration"],
             "Interface\\Icons\\Spell_Nature_MagicImmunity")
 
         local treeEleBtn = MakeTreeBtn(col1X + ICON_OFF, specIconY,
             "Interface\\Icons\\Spell_Nature_Lightning",
             function()
-                GameTooltip:SetText("|cffffcc00Elemental|r |cff999999- |r|cff0070DEelemental|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Elemental caster DPS|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Enhancement, Restoration.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Elemental"] .. "|r |cff999999- |r|cff0070DEelemental|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Elemental caster DPS"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Mutually exclusive with Enhancement, Restoration."] .. "|r", 1, 1, 1)
             end)
         LichborneShamanMenu.treeEleBtn = treeEleBtn
 
         local treeEnhBtn = MakeTreeBtn(col2X + ICON_OFF, specIconY,
             "Interface\\Icons\\Spell_Nature_LightningShield",
             function()
-                GameTooltip:SetText("|cffffcc00Enhancement|r |cff999999- |r|cff0070DEenhancement|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Enhancement melee DPS|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Elemental, Restoration.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Enhancement"] .. "|r |cff999999- |r|cff0070DEenhancement|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Enhancement melee DPS"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Mutually exclusive with Elemental, Restoration."] .. "|r", 1, 1, 1)
             end)
         LichborneShamanMenu.treeEnhBtn = treeEnhBtn
 
         local treeRestoBtn = MakeTreeBtn(col3X + ICON_OFF, specIconY,
             "Interface\\Icons\\Spell_Nature_MagicImmunity",
             function()
-                GameTooltip:SetText("|cffffcc00Restoration|r |cff999999- |r|cff0070DErestoration|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Restoration healing specialization|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Elemental, Enhancement.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Restoration"] .. "|r |cff999999- |r|cff0070DErestoration|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Restoration healing specialization"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Mutually exclusive with Elemental, Enhancement."] .. "|r", 1, 1, 1)
             end)
         LichborneShamanMenu.treeRestoBtn = treeRestoBtn
 
@@ -195,14 +195,14 @@ function PBM.OpenShamanMenu(row)
         local aoeHdrX  = TREE_X + math.floor((TREE_TOTAL_W - pairW) / 2)      -- TREE_X + 44
         local hdpsHdrX = aoeHdrX + SPEC_COL_W + SPEC_COL_GAP                  -- aoeHdrX + 88
 
-        MakeWideBox(aoeHdrX,  subBoxY, SPEC_COL_W, "AoE")
-        MakeWideBox(hdpsHdrX, subBoxY, SPEC_COL_W, "Healer DPS")
+        MakeWideBox(aoeHdrX,  subBoxY, SPEC_COL_W, PBM_L["AoE"])
+        MakeWideBox(hdpsHdrX, subBoxY, SPEC_COL_W, PBM_L["Healer DPS"])
 
         local treeAoeBtn = MakeTreeBtn(aoeHdrX + math.floor((SPEC_COL_W - EXT_ICON_SIZE) / 2), subIconY,
             "Interface\\Icons\\Spell_Frost_IceStorm",
             function()
-                GameTooltip:SetText("|cffffcc00AoE|r |cff999999- |r|cff0070DEaoe|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00AoE rotation|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["AoE"] .. "|r |cff999999- |r|cff0070DEaoe|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["AoE rotation"] .. "|r", 1, 1, 1)
             end)
         LichborneShamanMenu.treeAoeBtn = treeAoeBtn
 
@@ -210,8 +210,8 @@ function PBM.OpenShamanMenu(row)
         local treeHealerDpsBtn = MakeTreeBtn(hdpsHdrX + math.floor((SPEC_COL_W - EXT_ICON_SIZE) / 2), subIconY,
             "Interface\\Icons\\INV_Alchemy_Elixir_02",
             function()
-                GameTooltip:SetText("|cffffcc00Healer DPS|r |cff999999- |r|cffffcc00healer dps|r |cffff8000CO|r")
-                GameTooltip:AddLine("|cffffcc00Healer that fills with DPS|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Healer DPS"] .. "|r |cff999999- |r|cffffcc00healer dps|r |cffff8000CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Healer that fills with DPS"] .. "|r", 1, 1, 1)
             end)
         LichborneShamanMenu.treeHealerDpsBtn = treeHealerDpsBtn
 
@@ -219,7 +219,7 @@ function PBM.OpenShamanMenu(row)
         local ASS_TOTAL_W = 3 * EXT_ICON_SIZE                                  -- 78px, no gaps
         local assHdrX     = TREE_X + math.floor((TREE_TOTAL_W - ASS_TOTAL_W) / 2)
 
-        MakeWideBox(assHdrX, assBoxY, ASS_TOTAL_W, "Assist")
+        MakeWideBox(assHdrX, assBoxY, ASS_TOTAL_W, PBM_L["Assist"])
 
         local function assX(idx)
             return assHdrX + idx * EXT_ICON_SIZE
@@ -228,27 +228,27 @@ function PBM.OpenShamanMenu(row)
         local treeTankAssistBtn = MakeTreeBtn(assX(0), assIconY,
             "Interface\\Icons\\inv_shield_02",
             function()
-                GameTooltip:SetText("|cffffcc00Tank Assist|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r")
-                GameTooltip:AddLine("|cffffcc00Tank target focus|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot attacks whatever the main tank is targeting.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Tank Assist"] .. "|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Tank target focus"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot attacks whatever the main tank is targeting."], 1, 1, 1)
             end)
         LichborneShamanMenu.treeTankAssistBtn = treeTankAssistBtn
 
         local treeDpsAssistBtn = MakeTreeBtn(assX(1), assIconY,
             "Interface\\Icons\\Ability_Warrior_Challange",
             function()
-                GameTooltip:SetText("|cffffcc00DPS Assist|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r")
-                GameTooltip:AddLine("|cffffcc00Assists the main assist target|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot attacks the group DPS focus target.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["DPS Assist"] .. "|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Assists the main assist target"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot attacks the group DPS focus target."], 1, 1, 1)
             end)
         LichborneShamanMenu.treeDpsAssistBtn = treeDpsAssistBtn
 
         local treeDpsAoeBtn = MakeTreeBtn(assX(2), assIconY,
             "Interface\\Icons\\Spell_Shadow_RainOfFire",
             function()
-                GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cff0070DEaoe|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
-                GameTooltip:AddLine("Switches to AoE rotation on multiple targets.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["DPS AoE"] .. "|r |cff999999- |r|cff0070DEaoe|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Cross-role AoE mode"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Switches to AoE rotation on multiple targets."], 1, 1, 1)
             end)
         LichborneShamanMenu.treeDpsAoeBtn = treeDpsAoeBtn
 
@@ -269,7 +269,7 @@ function PBM.OpenShamanMenu(row)
         cureSideHdrLabel:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
         cureSideHdrLabel:SetTextColor(0.78, 0.61, 0.23, 1)
         cureSideHdrLabel:SetAllPoints(); cureSideHdrLabel:SetJustifyH("CENTER")
-        cureSideHdrLabel:SetText("Cure")
+        cureSideHdrLabel:SetText(PBM_L["Cure"])
 
         local treeCureBtn = CreateFrame("Button", nil, LichborneShamanMenu)
         treeCureBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
@@ -284,9 +284,9 @@ function PBM.OpenShamanMenu(row)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
             GameTooltip:SetFrameLevel(LichborneShamanMenu:GetFrameLevel() + 20)
             GameTooltip:ClearLines()
-            GameTooltip:SetText("|cffffcc00Cure|r |cff999999- |r|cffd4af37cure|r |cffff8000CO|r")
-            GameTooltip:AddLine("|cffffcc00Cure debuffs on group members|r", 1, 1, 1)
-            GameTooltip:AddLine("Cleanses poison, disease, and curses.", 1, 1, 1)
+            GameTooltip:SetText("|cffffcc00" .. PBM_L["Cure"] .. "|r |cff999999- |r|cffd4af37cure|r |cffff8000CO|r")
+            GameTooltip:AddLine("|cffffcc00" .. PBM_L["Cure debuffs on group members"] .. "|r", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Cleanses poison, disease, and curses."], 1, 1, 1)
             GameTooltip:Show()
         end)
         treeCureBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)

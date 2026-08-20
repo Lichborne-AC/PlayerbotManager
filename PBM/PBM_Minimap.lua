@@ -8,7 +8,7 @@ local dbicon = LibStub("LibDBIcon-1.0", true)
 
 local miniButton = LibStub("LibDataBroker-1.1"):NewDataObject("PlayerBotManager", {
     type = "launcher",
-    text = "Playerbot Manager",
+    text = PBM_L["Playerbot Manager"],
     icon = "Interface\\Icons\\INV_Misc_Book_11",
     OnClick = function(self, btn)
         if LichborneTrackerFrame and LichborneTrackerFrame:IsShown() then
@@ -19,9 +19,9 @@ local miniButton = LibStub("LibDataBroker-1.1"):NewDataObject("PlayerBotManager"
     end,
     OnTooltipShow = function(tooltip)
         if not tooltip or not tooltip.AddLine then return end
-        tooltip:AddLine("|cffC69B3APlayerbot Manager|r")
-        tooltip:AddLine("Left-Click to Toggle", 1, 1, 1)
-        tooltip:AddLine("Drag to Reposition", 0.7, 0.7, 0.7)
+        tooltip:AddLine("|cffC69B3A" .. PBM_L["Playerbot Manager"] .. "|r")
+        tooltip:AddLine(PBM_L["Left-Click to Toggle"], 1, 1, 1)
+        tooltip:AddLine(PBM_L["Drag to Reposition"], 0.7, 0.7, 0.7)
     end,
 })
 

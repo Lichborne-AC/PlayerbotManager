@@ -196,14 +196,14 @@ function PBM.UpdateInviteButtons()
         LichborneInviteRaidBtn:Show()
         LichborneInviteRaidBtn:SetBackdropColor(0.30, 0.15, 0.01, 1)
         if LichborneInviteRaidBtn.lbl then
-            LichborneInviteRaidBtn.lbl:SetText("|cffd4af37Invite Raid|r")
+            LichborneInviteRaidBtn.lbl:SetText("|cffd4af37" .. PBM_L["Invite Raid"] .. "|r")
         end
     end
     if _G["LichborneInviteGroupBtn"] then
         local grpBtn = _G["LichborneInviteGroupBtn"]
         grpBtn:Show()
         grpBtn:SetBackdropColor(0.035, 0.14, 0.245, 1)
-        if grpBtn.lbl then grpBtn.lbl:SetText("|cffd4af37Invite Group|r") end
+        if grpBtn.lbl then grpBtn.lbl:SetText("|cffd4af37" .. PBM_L["Invite Group"] .. "|r") end
     end
     -- Stop Invite overlay: covers both invite buttons when an invite is active
     if _G["LichborneStopInviteBtn"] then
@@ -456,7 +456,7 @@ function PBM.MakeSortDropdown(parent, fl, onSelect)
     btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local lbl = btn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     lbl:SetAllPoints(btn); lbl:SetJustifyH("CENTER"); lbl:SetJustifyV("MIDDLE")
-    lbl:SetText(PBM.SORT_GOLD.."Sort  v|r")
+    lbl:SetText(PBM.SORT_GOLD..PBM_L["Sort  v"].."|r")
 
     local menu = CreateFrame("Frame", nil, UIParent)
     menu:SetFrameStrata("TOOLTIP"); menu:SetSize(150, #PBM.SORT_OPTS*22+8)

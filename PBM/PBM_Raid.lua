@@ -16,10 +16,10 @@ PBM.State.LichborneRosterGsLabel    = PBM.State.LichborneRosterGsLabel    or nil
 
 -- ── Shared constants for the filter role picker ───────────────────────────
 local FROLE_SLOTS = {
-    { key="T", label="Tank",   icon="Interface\\Icons\\Ability_Warrior_DefensiveStance", color={r=0.20,g=0.60,b=1.00} },
-    { key="H", label="Healer", icon="Interface\\Icons\\Spell_ChargePositive",             color={r=0.20,g=1.00,b=0.40} },
-    { key="D", label="DPS",    icon="Interface\\Icons\\Ability_DualWield",                color={r=1.00,g=0.40,b=0.20} },
-    { key="A", label="AoE",    icon="Interface\\Icons\\Spell_Shadow_RainOfFire",          color={r=0.58,g=0.51,b=0.79} },
+    { key="T", label=PBM_L["Tank"],   icon="Interface\\Icons\\Ability_Warrior_DefensiveStance", color={r=0.20,g=0.60,b=1.00} },
+    { key="H", label=PBM_L["Healer"], icon="Interface\\Icons\\Spell_ChargePositive",             color={r=0.20,g=1.00,b=0.40} },
+    { key="D", label=PBM_L["DPS"],    icon="Interface\\Icons\\Ability_DualWield",                color={r=1.00,g=0.40,b=0.20} },
+    { key="A", label=PBM_L["AoE"],    icon="Interface\\Icons\\Spell_Shadow_RainOfFire",          color={r=0.58,g=0.51,b=0.79} },
 }
 local FROLE_ICON  = { T=FROLE_SLOTS[1].icon, H=FROLE_SLOTS[2].icon, D=FROLE_SLOTS[3].icon, A=FROLE_SLOTS[4].icon }
 local FROLE_COLOR = { T=FROLE_SLOTS[1].color, H=FROLE_SLOTS[2].color, D=FROLE_SLOTS[3].color, A=FROLE_SLOTS[4].color }
@@ -57,7 +57,7 @@ local function BuildRaidFilterRolePicker()
     pf:Hide()
     local ttl = pf:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     ttl:SetPoint("TOPLEFT",pf,"TOPLEFT",6,-5)
-    ttl:SetText("|cffC69B3ARole|r  |cff888888(max 2)|r")
+    ttl:SetText("|cffC69B3A"..PBM_L["Role"].."|r  |cff888888"..PBM_L["(max 2)"].."|r")
     pf.btns = {}
     for si, slot in ipairs(FROLE_SLOTS) do
         local col = si - 1
@@ -244,7 +244,7 @@ function PBM.RefreshRaidRows()
                 end
                 rf.roleBtn:SetScript("OnEnter", function()
                     GameTooltip:SetOwner(rf.roleBtn, "ANCHOR_RIGHT")
-                    GameTooltip:AddLine("Role", 1, 1, 1)
+                    GameTooltip:AddLine(PBM_L["Role"], 1, 1, 1)
                     local r2, _ = PBM.GetCurrentRoster()
                     local d2 = r2[idx]
                     local fr2 = d2 and d2.filterRoles or {}
@@ -254,7 +254,7 @@ function PBM.RefreshRaidRows()
                             GameTooltip:AddLine("|T"..slot.icon..":14:14|t  "..slot.label,sc.r,sc.g,sc.b)
                         end
                     end
-                    GameTooltip:AddLine("|cff888888Click to set role  ·  Right-click removes|r", 0.6,0.6,0.6)
+                    GameTooltip:AddLine("|cff888888"..PBM_L["Click to set role  ·  Right-click removes"].."|r", 0.6,0.6,0.6)
                     GameTooltip:Show()
                 end)
                 rf.roleBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -313,9 +313,9 @@ function PBM.RefreshRaidRows()
                     GameTooltip:SetOwner(rf.roleBtn, "ANCHOR_RIGHT")
                     local botNE3 = LichborneTrackerDB.botNotes and d2 and d2.name and d2.name ~= ""
                                    and LichborneTrackerDB.botNotes[d2.name:lower()]
-                    GameTooltip:AddLine("Role", 1, 1, 1)
+                    GameTooltip:AddLine(PBM_L["Role"], 1, 1, 1)
                     if botNE3 and botNE3.roles and #botNE3.roles > 0 then
-                        local roleLabels = { T="Tank", H="Healer", D="DPS", A="AoE" }
+                        local roleLabels = { T=PBM_L["Tank"], H=PBM_L["Healer"], D=PBM_L["DPS"], A=PBM_L["AoE"] }
                         local isTankTip = false
                         for _, r in ipairs(botNE3.roles) do if r == "T" then isTankTip = true; break end end
                         local roleOrder = isTankTip and { T=1, A=2, D=3, H=4 } or { T=1, H=2, D=3, A=4 }
@@ -426,7 +426,7 @@ function PBM.RefreshRaidRows()
                     if c then GameTooltip:AddLine(cls, c.r, c.g, c.b)
                     else GameTooltip:AddLine(cls, 0.8, 0.8, 0.9) end
                 end
-                if spec == "" and cls == "" then GameTooltip:AddLine("Empty", 0.4, 0.4, 0.4) end
+                if spec == "" and cls == "" then GameTooltip:AddLine(PBM_L["Empty"], 0.4, 0.4, 0.4) end
                 GameTooltip:Show()
             end)
             rf.specBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -436,7 +436,7 @@ function PBM.RefreshRaidRows()
         if rf.delBtn then
             local idx = i
             rf.delBtn:SetScript("OnClick", function()
-local r5, _ = PBM.GetCurrentRoster(); r5[idx] = {name="", cls="", spec="", gs=0, realGs=0, role="", notes=""}
+                local r5, _ = PBM.GetCurrentRoster(); r5[idx] = {name="", cls="", spec="", gs=0, realGs=0, role="", notes=""}
                 PBM.RefreshRaidRows()
             end)
         end
@@ -534,14 +534,14 @@ function PBM.UpdateInviteButtons()
         LichborneInviteRaidBtn:Show()
         LichborneInviteRaidBtn:SetBackdropColor(0.30, 0.15, 0.01, 1)
         if LichborneInviteRaidBtn.lbl then
-            LichborneInviteRaidBtn.lbl:SetText("|cffd4af37Invite Raid|r")
+            LichborneInviteRaidBtn.lbl:SetText("|cffd4af37"..PBM_L["Invite Raid"].."|r")
         end
     end
     if _G["LichborneInviteGroupBtn"] then
         local grpBtn = _G["LichborneInviteGroupBtn"]
         grpBtn:Show()
         grpBtn:SetBackdropColor(0.035, 0.14, 0.245, 1)
-        if grpBtn.lbl then grpBtn.lbl:SetText("|cffd4af37Invite Group|r") end
+        if grpBtn.lbl then grpBtn.lbl:SetText("|cffd4af37"..PBM_L["Invite Group"].."|r") end
     end
     -- Stop Invite overlay: covers both invite buttons when an invite is active
     if _G["LichborneStopInviteBtn"] then
@@ -573,29 +573,29 @@ function PBM.BuildRaidFrame(parent, fl)
     -- Tier bar across top with dropdown
     -- Raid definitions: tier -> list of {name, size}
     local RAID_DEFS = {
-        [0]  = {{"N/A (5-Man)",5}},
-        [1]  = {{"Molten Core",40},{"Onyxia's Lair",40}},
-        [2]  = {{"Blackwing Lair",40}},
-        [3]  = {{"Zul'Gurub",20}},
-        [4]  = {{"Ruins of Ahn'Qiraj",20}},
-        [5]  = {{"Ahn'Qiraj 40",40}},
-        [6]  = {{"Naxxramas (Classic)",40}},
-        [7]  = {{"Dark Portal Opening",40}},
-        [8]  = {{"Karazhan",10},{"Gruul's Lair",25},{"Magtheridon's Lair",25}},
-        [9]  = {{"Serpentshrine Cavern",25},{"Tempest Keep",25}},
-        [10] = {{"Mount Hyjal",25},{"Black Temple",25}},
-        [11] = {{"Zul'Aman",10}},
-        [12] = {{"Sunwell Plateau",25}},
-        [13] = {{"Naxxramas 10",10},{"Naxxramas 25",25},{"Eye of Eternity 10",10},{"Eye of Eternity 25",25},{"Obsidian Sanctum 10",10},{"Obsidian Sanctum 25",25}},
-        [14] = {{"Ulduar 10",10},{"Ulduar 25",25}},
-        [15] = {{"Trial of the Crusader 10",10},{"Trial of the Crusader 25",25},{"Trial of the Grand Crusader 10",10},{"Trial of the Grand Crusader 25",25}},
-        [16] = {{"Icecrown Citadel 10",10},{"Icecrown Citadel 25",25},{"Icecrown Citadel 10 Heroic",10},{"Icecrown Citadel 25 Heroic",25}},
-        [17] = {{"Ruby Sanctum 10",10},{"Ruby Sanctum 25",25}},
-        [18] = {{"N/A",40}},
+        [0]  = {{PBM_L["N/A (5-Man)"],5}},
+        [1]  = {{PBM_L["Molten Core"],40},{PBM_L["Onyxia's Lair"],40}},
+        [2]  = {{PBM_L["Blackwing Lair"],40}},
+        [3]  = {{PBM_L["Zul'Gurub"],20}},
+        [4]  = {{PBM_L["Ruins of Ahn'Qiraj"],20}},
+        [5]  = {{PBM_L["Ahn'Qiraj 40"],40}},
+        [6]  = {{PBM_L["Naxxramas (Classic)"],40}},
+        [7]  = {{PBM_L["Dark Portal Opening"],40}},
+        [8]  = {{PBM_L["Karazhan"],10},{PBM_L["Gruul's Lair"],25},{PBM_L["Magtheridon's Lair"],25}},
+        [9]  = {{PBM_L["Serpentshrine Cavern"],25},{PBM_L["Tempest Keep"],25}},
+        [10] = {{PBM_L["Mount Hyjal"],25},{PBM_L["Black Temple"],25}},
+        [11] = {{PBM_L["Zul'Aman"],10}},
+        [12] = {{PBM_L["Sunwell Plateau"],25}},
+        [13] = {{PBM_L["Naxxramas 10"],10},{PBM_L["Naxxramas 25"],25},{PBM_L["Eye of Eternity 10"],10},{PBM_L["Eye of Eternity 25"],25},{PBM_L["Obsidian Sanctum 10"],10},{PBM_L["Obsidian Sanctum 25"],25}},
+        [14] = {{PBM_L["Ulduar 10"],10},{PBM_L["Ulduar 25"],25}},
+        [15] = {{PBM_L["Trial of the Crusader 10"],10},{PBM_L["Trial of the Crusader 25"],25},{PBM_L["Trial of the Grand Crusader 10"],10},{PBM_L["Trial of the Grand Crusader 25"],25}},
+        [16] = {{PBM_L["Icecrown Citadel 10"],10},{PBM_L["Icecrown Citadel 25"],25},{PBM_L["Icecrown Citadel 10 Heroic"],10},{PBM_L["Icecrown Citadel 25 Heroic"],25}},
+        [17] = {{PBM_L["Ruby Sanctum 10"],10},{PBM_L["Ruby Sanctum 25"],25}},
+        [18] = {{PBM_L["N/A"],40}},
     }
 
     -- Init raid selection state
-    if not LichborneTrackerDB.raidName then LichborneTrackerDB.raidName = "N/A (5-Man)" end
+    if not LichborneTrackerDB.raidName then LichborneTrackerDB.raidName = PBM_L["N/A (5-Man)"] end
     if not LichborneTrackerDB.raidSize then LichborneTrackerDB.raidSize = 5 end
 
     local tierBar = CreateFrame("Frame", nil, LichborneRaidFrame)
@@ -630,7 +630,7 @@ function PBM.BuildRaidFrame(parent, fl)
     -- ── Tier label + dropdown ──────────────────────────────────
     local tierLbl = tierBar:CreateFontString(nil,"OVERLAY","GameFontNormal")
     tierLbl:SetPoint("LEFT",tierBar,"LEFT",6,0)
-    tierLbl:SetText("|cffC69B3ATier:|r")
+    tierLbl:SetText("|cffC69B3A" .. (PBM_L["Tier:"] or "Tier:") .. "|r")
 
     local tierDD = MakeDD("LichborneRaidTierDrop", 300)
     tierDD:SetPoint("LEFT",tierLbl,"RIGHT",6,0)
@@ -658,7 +658,7 @@ function PBM.BuildRaidFrame(parent, fl)
 
     -- Raid-tab-only label override: T0 = "5-Man" instead of shared table value
     local function RaidTierLabel(t)
-        if t == 0 then return "T0 — 5-Man" end
+        if t == 0 then return "T0 — " .. (PBM_L["5-Man"] or "5-Man") end
         return PBM.TIER_LABELS[t] or ("T"..t)
     end
 
@@ -677,7 +677,7 @@ function PBM.BuildRaidFrame(parent, fl)
     -- Raid label
     local raidLbl = tierBar:CreateFontString(nil,"OVERLAY","GameFontNormal")
     raidLbl:SetPoint("LEFT",tierDD,"RIGHT",14,0)
-    raidLbl:SetText("|cffC69B3ARaid:|r")
+    raidLbl:SetText("|cffC69B3A" .. (PBM_L["Raid:"] or "Raid:") .. "|r")
     raidDD:SetPoint("LEFT",raidLbl,"RIGHT",6,0)
 
     -- Tier dropdown menu
@@ -737,7 +737,7 @@ function PBM.BuildRaidFrame(parent, fl)
             local ck=PBM.TIER_COLORS[t] or PBM.TIER_COLORS[1]; local c=ck; mbbg:SetTexture(c.r*0.25,c.g*0.25,c.b*0.25,1)
             mb:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
             local mblbl=mb:CreateFontString(nil,"OVERLAY","GameFontNormalSmall"); mblbl:SetAllPoints(mb); mblbl:SetJustifyH("CENTER")
-            mblbl:SetText("|cffffffff"..rd[1].."|r  |cffaaaaaa("..rd[2].." players)|r")
+            mblbl:SetText("|cffffffff"..rd[1].."|r  |cffaaaaaa("..rd[2].." " .. (PBM_L["players"] or "players") .. ")|r")
             local capturedName = rd[1]
             local capturedSize = rd[2]
             mb:SetScript("OnClick",function()
@@ -768,7 +768,7 @@ function PBM.BuildRaidFrame(parent, fl)
     -- ── Group dropdown (A / B / C) ─────────────────────────
     local groupLbl = tierBar:CreateFontString(nil,"OVERLAY","GameFontNormal")
     groupLbl:SetPoint("LEFT",raidDD,"RIGHT",14,0)
-    groupLbl:SetText("|cffC69B3AGroup:|r")
+    groupLbl:SetText("|cffC69B3A" .. (PBM_L["Group:"] or "Group:") .. "|r")
 
     local groupDD = MakeDD("LichborneRaidGroupDrop", 70)
     groupDD:SetPoint("LEFT",groupLbl,"RIGHT",6,0)
@@ -822,12 +822,12 @@ function PBM.BuildRaidFrame(parent, fl)
     clearAllRaidsBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local clearAllRaidsLbl = clearAllRaidsBtn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     clearAllRaidsLbl:SetAllPoints(clearAllRaidsBtn); clearAllRaidsLbl:SetJustifyH("CENTER"); clearAllRaidsLbl:SetJustifyV("MIDDLE")
-    clearAllRaidsLbl:SetText("|cffd4af37Clear All|r")
+    clearAllRaidsLbl:SetText("|cffd4af37" .. (PBM_L["Clear All"] or "Clear All") .. "|r")
     clearAllRaidsBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(clearAllRaidsBtn, "ANCHOR_BOTTOM")
-        GameTooltip:AddLine("Clear All Raid Rosters", 1, 0.15, 0.15)
-        GameTooltip:AddLine("Wipes every raid group across all tiers.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("Character data is NOT affected.", 0.2, 1.0, 0.4)
+        GameTooltip:AddLine(PBM_L["Clear All Raid Rosters"] or "Clear All Raid Rosters", 1, 0.15, 0.15)
+        GameTooltip:AddLine(PBM_L["Wipes every raid group across all tiers."] or "Wipes every raid group across all tiers.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["Character data is NOT affected."] or "Character data is NOT affected.", 0.2, 1.0, 0.4)
         GameTooltip:Show()
     end)
     clearAllRaidsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -835,13 +835,13 @@ function PBM.BuildRaidFrame(parent, fl)
     -- Clear ALL raids confirm popup (standard WoW dialog)
     if not StaticPopupDialogs["PBM_CLEAR_ALL_RAIDS"] then
         StaticPopupDialogs["PBM_CLEAR_ALL_RAIDS"] = {
-            text = "Wipe All Raid Rosters?\n\nClears every tier, raid, and group roster.\n|cff33ff66Character data is NOT affected.|r\n|cffff4444This cannot be undone.|r",
-            button1 = "Yes, Wipe All",
-            button2 = "Cancel",
+            text = PBM_L["Wipe All Raid Rosters?\n\nClears every tier, raid, and group roster.\n|cff33ff66Character data is NOT affected.|r\n|cffff4444This cannot be undone.|r"] or "Wipe All Raid Rosters?\n\nClears every tier, raid, and group roster.\n|cff33ff66Character data is NOT affected.|r\n|cffff4444This cannot be undone.|r",
+            button1 = PBM_L["Yes, Wipe All"] or "Yes, Wipe All",
+            button2 = PBM_L["Cancel"] or "Cancel",
             OnAccept = function()
                 LichborneTrackerDB.raidRosters = {}
                 LichborneTrackerDB.botNotes    = {}
-                LichborneOutput("|cffC69B3APlayerbot Manager:|r |cffff9900All raid rosters cleared.|r", 1, 0.7, 0)
+                LichborneOutput("|cffC69B3A" .. (PBM_L["Playerbot Manager:"] or "Playerbot Manager:") .. "|r |cffff9900" .. (PBM_L["All raid rosters cleared."] or "All raid rosters cleared.") .. "|r", 1, 0.7, 0)
                 if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
                 if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
             end,
@@ -861,11 +861,11 @@ function PBM.BuildRaidFrame(parent, fl)
     copyBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local copyLbl = copyBtn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     copyLbl:SetAllPoints(copyBtn); copyLbl:SetJustifyH("CENTER"); copyLbl:SetJustifyV("MIDDLE")
-    copyLbl:SetText("|cffd4af37Copy|r")
+    copyLbl:SetText("|cffd4af37" .. (PBM_L["Copy"] or "Copy") .. "|r")
     copyBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(copyBtn,"ANCHOR_BOTTOM")
-        GameTooltip:AddLine("|cffd4af37Copy Roster|r",1,1,1)
-        GameTooltip:AddLine("Copies the current roster to clipboard.",0.8,0.8,0.8)
+        GameTooltip:AddLine("|cffd4af37" .. (PBM_L["Copy Roster"] or "Copy Roster") .. "|r",1,1,1)
+        GameTooltip:AddLine(PBM_L["Copies the current roster to clipboard."] or "Copies the current roster to clipboard.",0.8,0.8,0.8)
         GameTooltip:Show()
     end)
     copyBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -878,12 +878,12 @@ function PBM.BuildRaidFrame(parent, fl)
     pasteBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local pasteLbl = pasteBtn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     pasteLbl:SetAllPoints(pasteBtn); pasteLbl:SetJustifyH("CENTER"); pasteLbl:SetJustifyV("MIDDLE")
-    pasteLbl:SetText("|cffd4af37Paste|r")
+    pasteLbl:SetText("|cffd4af37" .. (PBM_L["Paste"] or "Paste") .. "|r")
     pasteBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(pasteBtn,"ANCHOR_BOTTOM")
-        GameTooltip:AddLine("|cffd4af37Paste Roster|r",1,1,1)
+        GameTooltip:AddLine("|cffd4af37" .. (PBM_L["Paste Roster"] or "Paste Roster") .. "|r",1,1,1)
         if clipboardLabel then
-            GameTooltip:AddLine("Clipboard: "..clipboardLabel,0.8,0.8,0.8)
+            GameTooltip:AddLine((PBM_L["Clipboard: "] or "Clipboard: ") .. clipboardLabel,0.8,0.8,0.8)
         end
         GameTooltip:Show()
     end)
@@ -912,7 +912,7 @@ function PBM.BuildRaidFrame(parent, fl)
     pasteYes:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local pasteYesLbl = pasteYes:CreateFontString(nil,"OVERLAY","GameFontNormal")
     pasteYesLbl:SetAllPoints(pasteYes); pasteYesLbl:SetJustifyH("CENTER")
-    pasteYesLbl:SetText("|cffd4af37Yes, Paste|r")
+    pasteYesLbl:SetText("|cffd4af37" .. (PBM_L["Yes, Paste"] or "Yes, Paste") .. "|r")
 
     local pasteNo = CreateFrame("Button",nil,pasteConfirm)
     pasteNo:SetSize(120,22); pasteNo:SetPoint("BOTTOMRIGHT",pasteConfirm,"BOTTOMRIGHT",-16,10)
@@ -921,7 +921,7 @@ function PBM.BuildRaidFrame(parent, fl)
     pasteNo:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local pasteNoLbl = pasteNo:CreateFontString(nil,"OVERLAY","GameFontNormal")
     pasteNoLbl:SetAllPoints(pasteNo); pasteNoLbl:SetJustifyH("CENTER")
-    pasteNoLbl:SetText("|cffd4af37Cancel|r")
+    pasteNoLbl:SetText("|cffd4af37" .. (PBM_L["Cancel"] or "Cancel") .. "|r")
     pasteNo:SetScript("OnClick", function() pasteConfirm:Hide() end)
 
     copyBtn:SetScript("OnClick", function()
@@ -946,7 +946,7 @@ function PBM.BuildRaidFrame(parent, fl)
         clipboardLabel = "T"..t.." "..name.." ("..grp..")"
         pasteBtn:Show()
         if LichborneAddStatus then
-            LichborneAddStatus:SetText("|cffd4af37Roster copied to clipboard: "..clipboardLabel.."|r")
+            LichborneAddStatus:SetText("|cffd4af37" .. (PBM_L["Roster copied to clipboard: "] or "Roster copied to clipboard: ") .. clipboardLabel .. "|r")
         end
     end)
 
@@ -977,7 +977,7 @@ function PBM.BuildRaidFrame(parent, fl)
         pasteBtn:Hide()
         PBM.RefreshRaidRows()
         if LichborneAddStatus then
-            LichborneAddStatus:SetText("|cffd4af37Roster copied!|r")
+            LichborneAddStatus:SetText("|cffd4af37" .. (PBM_L["Roster copied!"] or "Roster copied!") .. "|r")
         end
     end)
 
@@ -987,7 +987,7 @@ function PBM.BuildRaidFrame(parent, fl)
         local name = LichborneTrackerDB.raidName  or "?"
         local grp  = LichborneTrackerDB.raidGroup or "A"
         local destLabel = "T"..t.." "..name.." ("..grp..")"
-        pasteConfirmText:SetText("|cffd4af37Copy "..clipboardLabel.." roster to "..destLabel.."?|r")
+        pasteConfirmText:SetText(string.format("|cffd4af37" .. (PBM_L["Copy %s roster to %s?"] or "Copy %s roster to %s?") .. "|r", clipboardLabel, destLabel))
         pasteConfirm:SetPoint("CENTER",UIParent,"CENTER",0,0)
         pasteConfirm:Show()
     end)
@@ -1003,13 +1003,13 @@ function PBM.BuildRaidFrame(parent, fl)
     clearBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local clearLbl = clearBtn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     clearLbl:SetAllPoints(clearBtn); clearLbl:SetJustifyH("CENTER"); clearLbl:SetJustifyV("MIDDLE")
-    clearLbl:SetText("|cffd4af37Clear|r")
+    clearLbl:SetText("|cffd4af37" .. (PBM_L["Clear"] or "Clear") .. "|r")
     clearBtn:SetScript("OnEnter",function()
         local raidName = LichborneTrackerDB and LichborneTrackerDB.raidName or "N/A (5-Man)"
         GameTooltip:SetOwner(clearBtn,"ANCHOR_BOTTOM")
-        GameTooltip:AddLine("|cffff4444Clear this Raid|r |cffd4af37(All Groups)|r",1,1,1)
-        GameTooltip:AddLine("Removes all characters from "..raidName,0.8,0.8,0.8)
-        GameTooltip:AddLine("across |cffd4af37A, B, and C|r.",0.8,0.8,0.8)
+        GameTooltip:AddLine("|cffff4444" .. (PBM_L["Clear this Raid"] or "Clear this Raid") .. "|r |cffd4af37" .. (PBM_L["(All Groups)"] or "(All Groups)") .. "|r",1,1,1)
+        GameTooltip:AddLine((PBM_L["Removes all characters from "] or "Removes all characters from ") .. raidName,0.8,0.8,0.8)
+        GameTooltip:AddLine(PBM_L["across |cffd4af37A, B, and C|r."] or "across |cffd4af37A, B, and C|r.",0.8,0.8,0.8)
         GameTooltip:Show()
     end)
     clearBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -1021,9 +1021,9 @@ function PBM.BuildRaidFrame(parent, fl)
     -- Confirm popup for Clear (single raid, standard WoW dialog)
     if not StaticPopupDialogs["PBM_CLEAR_RAID"] then
         StaticPopupDialogs["PBM_CLEAR_RAID"] = {
-            text = "Clear |cffd4af37%s|r?\n\nClears Groups A, B, and C.\n|cffff4444Cannot be undone.|r",
-            button1 = "Yes, Clear",
-            button2 = "Cancel",
+            text = PBM_L["Clear |cffd4af37%s|r?\n\nClears Groups A, B, and C.\n|cffff4444Cannot be undone.|r"] or "Clear |cffd4af37%s|r?\n\nClears Groups A, B, and C.\n|cffff4444Cannot be undone.|r",
+            button1 = PBM_L["Yes, Clear"] or "Yes, Clear",
+            button2 = PBM_L["Cancel"] or "Cancel",
             OnAccept = function()
                 local raidName = LichborneTrackerDB and LichborneTrackerDB.raidName or "N/A (5-Man)"
                 if not LichborneTrackerDB.raidRosters then LichborneTrackerDB.raidRosters = {} end
@@ -1055,7 +1055,7 @@ function PBM.BuildRaidFrame(parent, fl)
     local function RH(lbl,x,w)
         local fs=hdrRow:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
         fs:SetPoint("LEFT",hdrRow,"LEFT",x,0); fs:SetWidth(w); fs:SetJustifyH("CENTER")
-        fs:SetText("|cffd4af37"..lbl.."|r")
+        fs:SetText("|cffd4af37" .. (PBM_L[lbl] or lbl) .. "|r")
     end
     local function RSH(lbl,x,w,key,isNumeric,tipExtra)
         local btn = CreateFrame("Button",nil,hdrRow)
@@ -1064,12 +1064,13 @@ function PBM.BuildRaidFrame(parent, fl)
         btn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
         local fs=btn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
         fs:SetAllPoints(btn); fs:SetJustifyH("CENTER"); fs:SetJustifyV("MIDDLE")
-        fs:SetText("|cffd4af37"..lbl.."|r")
-        PBM.State.raidSortHdrs[key] = {lbl=lbl, fs=fs}
+        local localizedLbl = PBM_L[lbl] or lbl
+        fs:SetText("|cffd4af37"..localizedLbl.."|r")
+        PBM.State.raidSortHdrs[key] = {lbl=localizedLbl, fs=fs}
         btn:SetScript("OnEnter",function()
             GameTooltip:SetOwner(btn,"ANCHOR_BOTTOM")
-            GameTooltip:AddLine("Click to sort",1,1,1)
-            if tipExtra then GameTooltip:AddLine(tipExtra,0.8,0.8,0.8) end
+            GameTooltip:AddLine(PBM_L["Click to sort"] or "Click to sort",1,1,1)
+            if tipExtra then GameTooltip:AddLine(PBM_L[tipExtra] or tipExtra,0.8,0.8,0.8) end
             GameTooltip:Show()
         end)
         btn:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -1155,7 +1156,7 @@ function PBM.BuildRaidFrame(parent, fl)
                 if d and d.name and d.name ~= "" then
                     dragTex:SetVertexColor(0.9,0.7,0.1,1.0)
                     GameTooltip:SetOwner(dragBtn,"ANCHOR_RIGHT")
-                    GameTooltip:AddLine("Drag to reorder",1,1,1)
+                    GameTooltip:AddLine(PBM_L["Drag to reorder"] or "Drag to reorder",1,1,1)
                     GameTooltip:Show()
                 end
             end
@@ -1283,9 +1284,9 @@ function PBM.BuildRaidFrame(parent, fl)
         db:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
         db:SetScript("OnEnter", function()
             GameTooltip:SetOwner(db, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("Remove from Raid", 1, 0.3, 0.3)
-            GameTooltip:AddLine("Clears this slot in the raid roster.", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("|cffFF8C00Character remains in the tracker.|r", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Remove from Raid"], 1, 0.3, 0.3)
+            GameTooltip:AddLine(PBM_L["Clears this slot in the raid roster."], 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["|cffFF8C00Character remains in the tracker.|r"], 1, 1, 1)
             GameTooltip:Show()
         end)
         db:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1299,9 +1300,9 @@ function PBM.BuildRaidFrame(parent, fl)
         invb:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
         invb:SetScript("OnEnter", function()
             GameTooltip:SetOwner(invb, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cff44eeff> Invite to Group|r", 1,1,1)
-            GameTooltip:AddLine("|cff44ff44Left-click to invite to group.|r", 1,1,1)
-            GameTooltip:AddLine("|cffff2020Right-click to remove.|r", 1,1,1)
+            GameTooltip:AddLine(PBM_L["|cff44eeff> Invite to Group|r"], 1,1,1)
+            GameTooltip:AddLine(PBM_L["|cff44ff44Left-click to invite to group.|r"], 1,1,1)
+            GameTooltip:AddLine(PBM_L["|cffff2020Right-click to remove.|r"], 1,1,1)
             GameTooltip:Show()
         end)
         invb:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1313,12 +1314,12 @@ function PBM.BuildRaidFrame(parent, fl)
                 if btn == "RightButton" then
                     UninviteUnit(d.name)
                     SendChatMessage(".playerbots bot remove "..d.name, "SAY")
-                    LichborneOutput("|cffC69B3APBM:|r Removed "..d.name.." from bots.", 1, 0.85, 0)
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r Removed "]..d.name..PBM_L[" from bots."], 1, 0.85, 0)
                     return
                 end
                 SendChatMessage(".playerbots bot add "..d.name, "SAY")
                 if LichborneAddStatus then
-                    LichborneAddStatus:SetText("|cffd4af37Invited "..d.name.." to group.|r")
+                    LichborneAddStatus:SetText(PBM_L["|cffd4af37Invited "]..d.name..PBM_L[" to group.|r"])
                 end
             end
         end)
@@ -1436,7 +1437,7 @@ function PBM.BuildRaidFrame(parent, fl)
     rcbBg:SetAllPoints(raidCountBar); rcbBg:SetTexture(0.05, 0.07, 0.13, 1)
     local rcTitle = raidCountBar:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     rcTitle:SetPoint("LEFT", raidCountBar, "LEFT", 4, 0)
-    rcTitle:SetText("|cffC69B3ACount:|r"); rcTitle:SetWidth(44)
+    rcTitle:SetText("|cffC69B3A"..PBM_L["Count:"].."|r"); rcTitle:SetWidth(44)
     PBM.State.LichborneRaidCountLabels = {}
     local rcW = (1086 - 50) / 10
     local rcIdx = 0
@@ -1477,16 +1478,16 @@ function PBM.BuildRaidFrame(parent, fl)
     inviteBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local inviteLbl = inviteBtn:CreateFontString(nil,"OVERLAY","GameFontNormal")
     inviteLbl:SetAllPoints(inviteBtn); inviteLbl:SetJustifyH("CENTER"); inviteLbl:SetJustifyV("MIDDLE")
-    inviteLbl:SetText("|cffd4af37Invite Raid|r")
+    inviteLbl:SetText("|cffd4af37"..PBM_L["Invite Raid"].."|r")
     inviteBtn.lbl = inviteLbl
     inviteBtn:SetScript("OnEnter",function()
         local roster, size = PBM.GetCurrentRoster()
         local count = 0
         for i=1,size do if roster[i] and roster[i].name and roster[i].name ~= "" then count=count+1 end end
         GameTooltip:SetOwner(inviteBtn,"ANCHOR_TOP")
-        GameTooltip:AddLine("Invite Raid",0.78,0.61,0.23)
-        GameTooltip:AddLine(count.." players in this roster",0.8,0.8,0.8)
-        GameTooltip:AddLine("Does not work for rndbots.",1,0.4,0)
+        GameTooltip:AddLine(PBM_L["Invite Raid"],0.78,0.61,0.23)
+        GameTooltip:AddLine(count..PBM_L[" players in this roster"],0.8,0.8,0.8)
+        GameTooltip:AddLine(PBM_L["Does not work for rndbots."],1,0.4,0)
         GameTooltip:Show()
     end)
     inviteBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -1506,7 +1507,7 @@ function PBM.BuildRaidFrame(parent, fl)
             end
         end
         if #names == 0 then
-            LichborneOutput("|cffC69B3APBM:|r No players in this roster.",1,0.5,0.5)
+            LichborneOutput(PBM_L["|cffC69B3APBM:|r No players in this roster."],1,0.5,0.5)
             return
         end
         local function GetClassHex(name)
@@ -1518,8 +1519,8 @@ function PBM.BuildRaidFrame(parent, fl)
 
         local totalCount = #names + 1  -- +1 for self
         PBM.SetInviteActive(true)
-        LichborneOutput("|cffC69B3APBM:|r Starting invite for "..totalCount.." players...",1,0.85,0)
-        if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Logging out all bots...") end
+        LichborneOutput(PBM_L["|cffC69B3APBM:|r Starting invite for "]..totalCount..PBM_L[" players..."],1,0.85,0)
+        if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cffff9900Logging out all bots..."]) end
 
         -- Always kick everyone and start fresh so we get a clean group/raid.
         SendChatMessage(".playerbots bot remove *", "SAY")
@@ -1540,21 +1541,21 @@ function PBM.BuildRaidFrame(parent, fl)
                 waitTime = 0
                 LeaveParty()
                 phase = "leave_wait"
-                LichborneOutput("|cffC69B3APBM:|r Bots removed, leaving party...",1,0.85,0)
-                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Leaving party, then inviting...") end
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r Bots removed, leaving party..."],1,0.85,0)
+                if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cffff9900Leaving party, then inviting..."]) end
 
             elseif phase == "leave_wait" then
                 if waitTime < 1.0 then return end
                 waitTime = 0
                 phase = "first"
-                LichborneOutput("|cffC69B3APBM:|r Bots cleared, starting invites...",1,0.85,0)
-                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Inviting "..totalCount.." players...") end
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r Bots cleared, starting invites..."],1,0.85,0)
+                if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cffff9900Inviting "]..totalCount..PBM_L[" players..."]) end
 
             elseif phase == "first" then
                 if waitTime < 0.5 then return end
                 local firstName = names[1]
                 SendChatMessage(".playerbots bot add "..firstName, "SAY")
-                LichborneOutput("|cffC69B3APBM:|r Inviting "..GetClassHex(firstName)..firstName.."|r...",1,0.85,0)
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r Inviting "]..GetClassHex(firstName)..firstName.."|r...",1,0.85,0)
                 inviteIndex = 2
                 waitTime = 0
                 phase = "rest"
@@ -1565,12 +1566,12 @@ function PBM.BuildRaidFrame(parent, fl)
                 if inviteIndex > #names then
                     phase = "verify_wait"
                     waitTime = 0
-                    LichborneOutput("|cffC69B3APBM:|r Initial invites sent, verifying...",1,0.85,0)
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r Initial invites sent, verifying..."],1,0.85,0)
                     return
                 end
                 local pname = names[inviteIndex]
                 SendChatMessage(".playerbots bot add "..pname, "SAY")
-                LichborneOutput("|cffC69B3APBM:|r Inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r Inviting "]..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                 inviteIndex = inviteIndex + 1
 
             elseif phase == "verify_wait" then
@@ -1598,15 +1599,15 @@ function PBM.BuildRaidFrame(parent, fl)
                     end
                 end
                 if #missing == 0 then
-                    LichborneOutput("|cffC69B3APBM:|r |cff44ff44All "..totalCount.." players confirmed in group!|r",1,0.85,0)
-                    if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44All "..totalCount.." players confirmed.|r") end
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r |cff44ff44All "]..totalCount..PBM_L[" players confirmed in group!|r"],1,0.85,0)
+                    if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cff44ff44All "]..totalCount..PBM_L[" players confirmed.|r"]) end
                     inviteFrame:SetScript("OnUpdate",nil)
                     PBM.State.activeInviteFrame = nil
                     PBM.SetInviteActive(false)
                     PBM.UpdateInviteButtons()
                     return
                 end
-                LichborneOutput("|cffC69B3APBM:|r |cffff9900"..#missing.." missed — re-inviting...|r",1,0.85,0)
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r |cffff9900"]..#missing..PBM_L[" missed — re-inviting...|r"],1,0.85,0)
                 names = missing
                 inviteIndex = 1
                 phase = "reinvite"
@@ -1615,8 +1616,8 @@ function PBM.BuildRaidFrame(parent, fl)
             elseif phase == "reinvite" then
                 if reinviteSubPhase == "remove" then
                     if inviteIndex > #names then
-                        LichborneOutput("|cffC69B3APBM:|r |cff44ff44Re-invite pass complete.|r",1,0.85,0)
-                        if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44Invite complete (re-invite pass done).|r") end
+                        LichborneOutput(PBM_L["|cffC69B3APBM:|r |cff44ff44Re-invite pass complete.|r"],1,0.85,0)
+                        if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cff44ff44Invite complete (re-invite pass done).|r"]) end
                         inviteFrame:SetScript("OnUpdate",nil)
                         PBM.State.activeInviteFrame = nil
                         PBM.SetInviteActive(false)
@@ -1625,7 +1626,7 @@ function PBM.BuildRaidFrame(parent, fl)
                     end
                     local pname = names[inviteIndex]
                     SendChatMessage(".playerbots bot remove "..pname, "SAY")
-                    LichborneOutput("|cffC69B3APBM:|r Removing "..GetClassHex(pname)..pname.."|r before re-invite...",1,0.85,0)
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r Removing "]..GetClassHex(pname)..pname..PBM_L["|r before re-invite..."],1,0.85,0)
                     waitTime = 0
                     reinviteSubPhase = "add"
 
@@ -1633,7 +1634,7 @@ function PBM.BuildRaidFrame(parent, fl)
                     if waitTime < 1.0 then return end
                     local pname = names[inviteIndex]
                     SendChatMessage(".playerbots bot add "..pname, "SAY")
-                    LichborneOutput("|cffC69B3APBM:|r Re-inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r Re-inviting "]..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                     inviteIndex = inviteIndex + 1
                     waitTime = 0
                     reinviteSubPhase = "remove"
@@ -1653,7 +1654,7 @@ function PBM.BuildRaidFrame(parent, fl)
     inviteGroupBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local inviteGroupLbl = inviteGroupBtn:CreateFontString(nil,"OVERLAY","GameFontNormal")
     inviteGroupLbl:SetAllPoints(inviteGroupBtn); inviteGroupLbl:SetJustifyH("CENTER"); inviteGroupLbl:SetJustifyV("MIDDLE")
-    inviteGroupLbl:SetText("|cffd4af37Invite Group|r")
+    inviteGroupLbl:SetText("|cffd4af37"..PBM_L["Invite Group"].."|r")
     inviteGroupBtn.lbl = inviteGroupLbl
     inviteGroupBtn:SetScript("OnEnter",function()
         -- Always count from T0 5-Man roster
@@ -1663,9 +1664,9 @@ function PBM.BuildRaidFrame(parent, fl)
         local count = 0
         for i=1,5 do if t0roster[i] and t0roster[i].name and t0roster[i].name ~= "" then count=count+1 end end
         GameTooltip:SetOwner(inviteGroupBtn,"ANCHOR_TOP")
-        GameTooltip:AddLine("Invite Group (5-Man)",0.78,0.61,0.23)
-        GameTooltip:AddLine(count.." players in T0 5-Man roster",0.8,0.8,0.8)
-        GameTooltip:AddLine("Does not work for rndbots.",1,0.4,0)
+        GameTooltip:AddLine(PBM_L["Invite Group (5-Man)"],0.78,0.61,0.23)
+        GameTooltip:AddLine(count..PBM_L[" players in T0 5-Man roster"],0.8,0.8,0.8)
+        GameTooltip:AddLine(PBM_L["Does not work for rndbots."],1,0.4,0)
         GameTooltip:Show()
     end)
     inviteGroupBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -1691,7 +1692,7 @@ function PBM.BuildRaidFrame(parent, fl)
             end
         end
         if #names == 0 then
-            LichborneOutput("|cffC69B3APBM:|r No players in T0 5-Man roster.",1,0.5,0.5)
+            LichborneOutput(PBM_L["|cffC69B3APBM:|r No players in T0 5-Man roster."],1,0.5,0.5)
             return
         end
         local function GetClassHex(name)
@@ -1701,8 +1702,8 @@ function PBM.BuildRaidFrame(parent, fl)
             return "|cffffff88"
         end
         PBM.SetInviteActive(true)
-        LichborneOutput("|cffC69B3APBM:|r Starting group invite for "..#names.." players...",1,0.85,0)
-        if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Logging out all bots...") end
+        LichborneOutput(PBM_L["|cffC69B3APBM:|r Starting group invite for "]..#names..PBM_L[" players..."],1,0.85,0)
+        if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cffff9900Logging out all bots..."]) end
         -- Remove all bots with wildcard first
         SendChatMessage(".playerbots bot remove *", "SAY")
         local invIdx = 1
@@ -1719,14 +1720,14 @@ function PBM.BuildRaidFrame(parent, fl)
                 waited = 0
                 LeaveParty()
                 grpPhase = "leave_wait"
-                LichborneOutput("|cffC69B3APBM:|r Bots removed, leaving party...",1,0.85,0)
-                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Leaving party, then inviting...") end
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r Bots removed, leaving party..."],1,0.85,0)
+                if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cffff9900Leaving party, then inviting..."]) end
             elseif grpPhase == "leave_wait" then
                 if waited < 1.0 then return end
                 waited = 0
                 grpPhase = "invite"
-                LichborneOutput("|cffC69B3APBM:|r Starting group invites...",1,0.85,0)
-                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Inviting "..#names.." players...") end
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r Starting group invites..."],1,0.85,0)
+                if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cffff9900Inviting "]..#names..PBM_L[" players..."]) end
             elseif grpPhase == "invite" then
                 if waited < 0.8 then return end
                 waited = 0
@@ -1734,12 +1735,12 @@ function PBM.BuildRaidFrame(parent, fl)
                     -- Verify pass
                     grpPhase = "verify_wait"
                     waited = 0
-                    LichborneOutput("|cffC69B3APBM:|r Initial invites sent, verifying...",1,0.85,0)
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r Initial invites sent, verifying..."],1,0.85,0)
                     return
                 end
                 local pname = names[invIdx]
                 SendChatMessage(".playerbots bot add "..pname, "SAY")
-                LichborneOutput("|cffC69B3APBM:|r Inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r Inviting "]..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                 invIdx = invIdx + 1
             elseif grpPhase == "verify_wait" then
                 if waited < 3.0 then return end
@@ -1766,15 +1767,15 @@ function PBM.BuildRaidFrame(parent, fl)
                     end
                 end
                 if #missing == 0 then
-                    LichborneOutput("|cffC69B3APBM:|r |cff44ff44All "..#names.." players confirmed in group!|r",1,0.85,0)
-                    if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44All "..#names.." players confirmed in group.|r") end
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r |cff44ff44All "]..#names..PBM_L[" players confirmed in group.|r"],1,0.85,0)
+                    if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cff44ff44All "]..#names..PBM_L[" players confirmed in group.|r"]) end
                     grpFrame:SetScript("OnUpdate",nil)
                     PBM.State.activeInviteFrame = nil
                     PBM.SetInviteActive(false)
                     PBM.UpdateInviteButtons()
                     return
                 end
-                LichborneOutput("|cffC69B3APBM:|r |cffff9900"..#missing.." missed — re-inviting...|r",1,0.85,0)
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r |cffff9900"]..#missing..PBM_L[" missed — re-inviting...|r"],1,0.85,0)
                 names = missing
                 invIdx = 1
                 grpPhase = "reinvite"
@@ -1782,8 +1783,8 @@ function PBM.BuildRaidFrame(parent, fl)
             elseif grpPhase == "reinvite" then
                 if grpReinviteSubPhase == "remove" then
                     if invIdx > #names then
-                        LichborneOutput("|cffC69B3APBM:|r |cff44ff44Re-invite pass complete.|r",1,0.85,0)
-                        if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44Invite complete (re-invite pass done).|r") end
+                        LichborneOutput(PBM_L["|cffC69B3APBM:|r |cff44ff44Re-invite pass complete.|r"],1,0.85,0)
+                        if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cff44ff44Invite complete (re-invite pass done).|r"]) end
                         grpFrame:SetScript("OnUpdate",nil)
                         PBM.State.activeInviteFrame = nil
                         PBM.SetInviteActive(false)
@@ -1792,14 +1793,14 @@ function PBM.BuildRaidFrame(parent, fl)
                     end
                     local pname = names[invIdx]
                     SendChatMessage(".playerbots bot remove "..pname, "SAY")
-                    LichborneOutput("|cffC69B3APBM:|r Removing "..GetClassHex(pname)..pname.."|r before re-invite...",1,0.85,0)
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r Removing "]..GetClassHex(pname)..pname..PBM_L["|r before re-invite..."],1,0.85,0)
                     waited = 0
                     grpReinviteSubPhase = "add"
                 elseif grpReinviteSubPhase == "add" then
                     if waited < 1.0 then return end
                     local pname = names[invIdx]
                     SendChatMessage(".playerbots bot add "..pname, "SAY")
-                    LichborneOutput("|cffC69B3APBM:|r Re-inviting "..GetClassHex(pname)..pname.."|r...",1,0.85,0)
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r Re-inviting "]..GetClassHex(pname)..pname.."|r...",1,0.85,0)
                     invIdx = invIdx + 1
                     waited = 0
                     grpReinviteSubPhase = "remove"
@@ -1820,11 +1821,11 @@ function PBM.BuildRaidFrame(parent, fl)
     stopInviteBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local stopInviteLbl = stopInviteBtn:CreateFontString(nil,"OVERLAY","GameFontNormal")
     stopInviteLbl:SetAllPoints(stopInviteBtn); stopInviteLbl:SetJustifyH("CENTER"); stopInviteLbl:SetJustifyV("MIDDLE")
-    stopInviteLbl:SetText("|cffd4af37Stop Invite|r")
+    stopInviteLbl:SetText("|cffd4af37"..PBM_L["Stop Invite"].."|r")
     stopInviteBtn:SetScript("OnEnter",function()
         GameTooltip:SetOwner(stopInviteBtn,"ANCHOR_TOP")
-        GameTooltip:AddLine("Stop Invite",1,1,1)
-        GameTooltip:AddLine("Cancels the running invite script.",0.8,0.8,0.8)
+        GameTooltip:AddLine(PBM_L["Stop Invite"],1,1,1)
+        GameTooltip:AddLine(PBM_L["Cancels the running invite script."],0.8,0.8,0.8)
         GameTooltip:Show()
     end)
     stopInviteBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -1834,8 +1835,8 @@ function PBM.BuildRaidFrame(parent, fl)
             PBM.State.activeInviteFrame = nil
             PBM.SetInviteActive(false)
             PBM.UpdateInviteButtons()
-            LichborneOutput("|cffC69B3APBM:|r |cffff4444Invite stopped.|r", 1, 0.85, 0)
-            if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444Invite stopped.") end
+            LichborneOutput(PBM_L["|cffC69B3APBM:|r |cffff4444Invite stopped.|r"], 1, 0.85, 0)
+            if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cffff4444Invite stopped."]) end
         end
     end)
     stopInviteBtn:Hide()

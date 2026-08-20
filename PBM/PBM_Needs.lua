@@ -16,10 +16,10 @@ PBM.State.profSelectSeq = 0
 
 -- Role slots for the prof picker (T/H/D/A — stored in LichborneTrackerDB.charRoles)
 local ROLE_PICKER_SLOTS = {
-    { key="T", label="Tank",   icon="Interface\\Icons\\Ability_Warrior_DefensiveStance", color={r=0.20,g=0.60,b=1.00} },
-    { key="H", label="Healer", icon="Interface\\Icons\\Spell_ChargePositive",             color={r=0.20,g=1.00,b=0.40} },
-    { key="D", label="DPS",    icon="Interface\\Icons\\Ability_DualWield",                color={r=1.00,g=0.40,b=0.20} },
-    { key="A", label="AoE",    icon="Interface\\Icons\\Spell_Shadow_RainOfFire",          color={r=0.58,g=0.51,b=0.79} },
+    { key="T", label=PBM_L["Tanque"],   icon="Interface\\Icons\\Ability_Warrior_DefensiveStance", color={r=0.20,g=0.60,b=1.00} },
+    { key="H", label=PBM_L["Sanador"], icon="Interface\\Icons\\Spell_ChargePositive",             color={r=0.20,g=1.00,b=0.40} },
+    { key="D", label=PBM_L["DPS"],    icon="Interface\\Icons\\Ability_DualWield",                color={r=1.00,g=0.40,b=0.20} },
+    { key="A", label=PBM_L["AoE"],    icon="Interface\\Icons\\Spell_Shadow_RainOfFire",          color={r=0.58,g=0.51,b=0.79} },
 }
 
 function PBM.GetNeeds(charName)
@@ -124,13 +124,13 @@ function PBM.BuildPickerIfNeeded()
         btn:SetScript("OnEnter",function()
             if pf.title then
                 local owned = PBM.State.needsPickerOwner and PBM.GetNeeds(PBM.State.needsPickerOwner)[slot.key]
-                local hint = owned and "|cffff6666  (right-click to remove)|r" or "|cff66ff66  click to mark|r"
+                local hint = owned and PBM_L["|cffff6666  (clic derecho para eliminar)|r"] or PBM_L["|cff66ff66  clic para marcar|r"]
                 pf.title:SetText("|cffC69B3A"..slot.label.."|r"..hint)
             end
         end)
         btn:SetScript("OnLeave",function()
             if pf.title and PBM.State.needsPickerOwner then
-                pf.title:SetText("|cffC69B3ANeeds: |r|cffffff00"..PBM.State.needsPickerOwner.."|r")
+                pf.title:SetText("|cffC69B3A" .. PBM_L["Necesidades: "] .. "|r|cffffff00"..PBM.State.needsPickerOwner.."|r")
             end
         end)
         btn:SetScript("OnClick",function(_, mouseButton)
@@ -178,7 +178,7 @@ function PBM.OpenNeedsPicker(anchorFrame, charName)
     if not charName or charName=="" then return end
     PBM.BuildPickerIfNeeded()
     PBM.State.needsPickerOwner=charName
-    PBM.State.needsPicker.title:SetText("|cffC69B3ANeeds: |r|cffffff00"..charName.."|r")
+    PBM.State.needsPicker.title:SetText("|cffC69B3A" .. PBM_L["Necesidades: "] .. "|r|cffffff00"..charName.."|r")
     local needs3=PBM.GetNeeds(charName)
     local count3=0; for _ in pairs(needs3) do count3=count3+1 end
     for _,sb in ipairs(PBM.State.needsPicker.slotBtns) do
@@ -232,14 +232,14 @@ function PBM.MakeNeedsCell(parent, xOff, rowH, getCharName, hovTex, overrideW)
         local cname=getCharName()
         if cname and cname~="" then
             GameTooltip:SetOwner(cf,"ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cffC69B3ANeeds:|r "..cname,1,1,1)
+            GameTooltip:AddLine("|cffC69B3A" .. PBM_L["Necesidades:"] .. "|r "..cname,1,1,1)
             local needs4=PBM.GetNeeds(cname)
             local any=false
             for _,slot in ipairs(PBM.NEEDS_SLOTS) do
                 if needs4[slot.key] then GameTooltip:AddLine("  "..slot.label,1,0.6,0.2); any=true end
             end
-            if not any then GameTooltip:AddLine("  Nothing marked",0.5,0.5,0.5) end
-            GameTooltip:AddLine("|cff888888Click to edit  (max 2)  Right-click clears all|r",0.6,0.6,0.6)
+            if not any then GameTooltip:AddLine("  " .. PBM_L["Nada marcado"],0.5,0.5,0.5) end
+            GameTooltip:AddLine(PBM_L["|cff888888Clic para editar  (máx 2)  Clic derecho borra todo|r"],0.6,0.6,0.6)
             GameTooltip:Show()
         end
     end)
@@ -403,13 +403,13 @@ function PBM.BuildProfPickerIfNeeded()
         btn:SetScript("OnEnter",function()
             if pf.title then
                 local owned = PBM.State.profPickerOwner and PBM.GetProfs(PBM.State.profPickerOwner)[slot.key]
-                local hint = owned and "|cffff6666  (right-click to remove)|r" or "|cff66ff66  click to mark|r"
+                local hint = owned and PBM_L["|cffff6666  (clic derecho para eliminar)|r"] or PBM_L["|cff66ff66  clic para marcar|r"]
                 pf.title:SetText("|cffC69B3A"..slot.label.."|r"..hint)
             end
         end)
         btn:SetScript("OnLeave",function()
             if pf.title and PBM.State.profPickerOwner then
-                pf.title:SetText("|cffC69B3AProfs: |r|cffffff00"..PBM.State.profPickerOwner.."|r")
+                pf.title:SetText("|cffC69B3A" .. PBM_L["Profs: "] .. "|r|cffffff00"..PBM.State.profPickerOwner.."|r")
             end
         end)
         btn:SetScript("OnClick",function(_, mouseButton)
@@ -477,7 +477,7 @@ function PBM.BuildProfPickerIfNeeded()
 
     local needsHdrLbl = pf:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     needsHdrLbl:SetPoint("TOPLEFT",pf,"TOPLEFT",6, sepY - 2)
-    needsHdrLbl:SetText("|cffC69B3ANeeds|r")
+    needsHdrLbl:SetText("|cffC69B3A" .. PBM_L["Necesidades"] .. "|r")
 
     -- ── Needs buttons ─────────────────────────────────────────────────────────
     local needsBaseY = -(PROF_H + PAD + NEEDS_HDR_H + PAD)
@@ -502,13 +502,13 @@ function PBM.BuildProfPickerIfNeeded()
         btn:SetScript("OnEnter",function()
             if pf.title then
                 local owned = PBM.State.profPickerOwner and PBM.GetNeeds(PBM.State.profPickerOwner)[slot.key]
-                local hint = owned and "|cffff6666  (right-click to remove)|r" or "|cff66ff66  click to mark|r"
+                local hint = owned and PBM_L["|cffff6666  (clic derecho para eliminar)|r"] or PBM_L["|cff66ff66  clic para marcar|r"]
                 pf.title:SetText("|cffC69B3A"..slot.label.."|r"..hint)
             end
         end)
         btn:SetScript("OnLeave",function()
             if pf.title and PBM.State.profPickerOwner then
-                pf.title:SetText("|cffC69B3AProfs: |r|cffffff00"..PBM.State.profPickerOwner.."|r")
+                pf.title:SetText("|cffC69B3A" .. PBM_L["Profs: "] .. "|r|cffffff00"..PBM.State.profPickerOwner.."|r")
             end
         end)
         btn:SetScript("OnClick",function(_, mouseButton)
@@ -572,7 +572,7 @@ function PBM.BuildProfPickerIfNeeded()
 
     local roleHdrLbl = pf:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     roleHdrLbl:SetPoint("TOPLEFT",pf,"TOPLEFT",6, needsBottomY - PAD)
-    roleHdrLbl:SetText("|cffC69B3ARole|r")
+    roleHdrLbl:SetText("|cffC69B3A" .. PBM_L["Rol"] .. "|r")
 
     -- Store role section frames so OpenProfPicker can hide them when hideRole=true
     pf.roleSectionFrames = { roleSep, roleHdrLbl }
@@ -602,13 +602,13 @@ function PBM.BuildProfPickerIfNeeded()
         btn:SetScript("OnEnter",function()
             if pf.title then
                 local owned = PBM.State.profPickerOwner and PBM.GetCharRoles(PBM.State.profPickerOwner)[slot.key]
-                local hint = owned and "|cffff6666  (click to remove)|r" or "|cff66ff66  click to add|r"
+                local hint = owned and PBM_L["|cffff6666  (clic para quitar)|r"] or PBM_L["|cff66ff66  clic para añadir|r"]
                 pf.title:SetText("|cffC69B3A"..slot.label.."|r"..hint)
             end
         end)
         btn:SetScript("OnLeave",function()
             if pf.title and PBM.State.profPickerOwner then
-                pf.title:SetText("|cffC69B3AProfs: |r|cffffff00"..PBM.State.profPickerOwner.."|r")
+                pf.title:SetText("|cffC69B3A" .. PBM_L["Profs: "] .. "|r|cffffff00"..PBM.State.profPickerOwner.."|r")
             end
         end)
         btn:SetScript("OnClick",function(_, mouseButton)
@@ -686,7 +686,7 @@ function PBM.OpenProfPicker(anchorFrame, charName, hideRole)
     if not charName or charName=="" then return end
     PBM.BuildProfPickerIfNeeded()
     PBM.State.profPickerOwner=charName
-    PBM.State.profPicker.title:SetText("|cffC69B3AProfs: |r|cffffff00"..charName.."|r")
+    PBM.State.profPicker.title:SetText("|cffC69B3A" .. PBM_L["Profs: "] .. "|r|cffffff00"..charName.."|r")
     -- Show or hide the Role section
     if PBM.State.profPicker.roleSectionFrames then
         for _, f in ipairs(PBM.State.profPicker.roleSectionFrames) do
@@ -781,11 +781,11 @@ function PBM.MakeProfCell(parent, xOff, rowH, getCharName, hovTex, overrideW)
         local cname=getCharName()
         if cname and cname~="" then
             GameTooltip:SetOwner(cf,"ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cffC69B3AProf / Role:|r "..cname,1,1,1)
+            GameTooltip:AddLine("|cffC69B3A" .. PBM_L["Prof / Rol:"] .. "|r "..cname,1,1,1)
             local any=false
             -- Roles
             local roles4=PBM.GetCharRoles(cname)
-            local roleLabels={T="Tank",H="Healer",D="DPS",A="AoE"}
+            local roleLabels={T=PBM_L["Tanque"],H=PBM_L["Sanador"],D=PBM_L["DPS"],A=PBM_L["AoE"]}
             local roleColors={T={0.20,0.60,1.00},H={0.20,1.00,0.40},D={1.00,0.40,0.20},A={0.58,0.51,0.79}}
             for _,slot in ipairs(ROLE_PICKER_SLOTS) do
                 if roles4[slot.key] then
@@ -798,8 +798,8 @@ function PBM.MakeProfCell(parent, xOff, rowH, getCharName, hovTex, overrideW)
             for _,slot in ipairs(PBM.PROF_SLOTS) do
                 if profs4[slot.key] then GameTooltip:AddLine("  "..slot.label,1,0.6,0.2); any=true end
             end
-            if not any then GameTooltip:AddLine("  Nothing marked",0.5,0.5,0.5) end
-            GameTooltip:AddLine("|cff888888Click to edit  ·  Right-click clears all|r",0.6,0.6,0.6)
+            if not any then GameTooltip:AddLine("  " .. PBM_L["Nada marcado"],0.5,0.5,0.5) end
+            GameTooltip:AddLine(PBM_L["|cff888888Clic para editar  ·  Clic derecho borra todo|r"],0.6,0.6,0.6)
             GameTooltip:Show()
         end
     end)

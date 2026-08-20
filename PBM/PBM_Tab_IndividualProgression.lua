@@ -1,5 +1,7 @@
 PBM = PBM or {}
 
+local PBM_L = PBM_L or PBM.L
+
 -- ── Individual Progression tab panel ─────────────────────────────
 -- Called from PBM_TopTabs.lua:BuildBottomTabs as:
 --   PBM.BuildIPProgressionPanel(panel, ctx)
@@ -74,52 +76,52 @@ function PBM.BuildIPProgressionPanel(ipPanel, ctx)
     end
 
     -- Column 1: What is Individual Progression?
-    IPInfoTitle(INFO_COL1, INFO_TOP, "What is Individual Progression?", nil, false)
+    IPInfoTitle(INFO_COL1, INFO_TOP, PBM_L["What is Individual Progression?"], nil, false)
     IPInfoLine(INFO_COL1, INFO_TOP - INFO_STEP,
-        "Each character advances through")
+        PBM_L["Each character advances through"])
     IPInfoLine(INFO_COL1, INFO_TOP - INFO_STEP * 2,
-        "WoW's raid tiers chronologically.")
+        PBM_L["WoW's raid tiers chronologically."])
     IPInfoLine(INFO_COL1, INFO_TOP - INFO_STEP * 3,
-        "Content is |cff69CCF0gated|r \226\128\148 clear each")
+        PBM_L["Content is |cff69CCF0gated|r \226\128\148 clear each"])
     IPInfoLine(INFO_COL1, INFO_TOP - INFO_STEP * 4,
-        "tier before the next one opens.")
+        PBM_L["tier before the next one opens."])
     IPInfoLine(INFO_COL1, INFO_TOP - INFO_STEP * 5,
-        "|cffFF8C00Each tier unlocks new raids,|r")
+        PBM_L["|cffFF8C00Each tier unlocks new raids,|r"])
     IPInfoLine(INFO_COL1, INFO_TOP - INFO_STEP * 6,
-        "|cffFF8C00and/or expansions.|r")
+        PBM_L["|cffFF8C00and/or expansions.|r"])
 
     -- Column 2: How to Advance Your Tier
-    IPInfoTitle(INFO_COL2, INFO_TOP, "How to Advance Your Tier", nil, false)
+    IPInfoTitle(INFO_COL2, INFO_TOP, PBM_L["How to Advance Your Tier"], nil, false)
     IPInfoLine(INFO_COL2, INFO_TOP - INFO_STEP,
-        "|cffd4af371.|r Defeat the |cff69CCF0final boss|r or the")
+        PBM_L["|cffd4af371.|r Defeat the |cff69CCF0final boss|r or the"])
     IPInfoLine(INFO_COL2, INFO_TOP - INFO_STEP * 2,
-        "   |cff69CCF0final quest|r listed in the table.")
+        PBM_L["   |cff69CCF0final quest|r listed in the table."])
     IPInfoLine(INFO_COL2, INFO_TOP - INFO_STEP * 3,
-        "|cffd4af372.|r Tier advances automatically on")
+        PBM_L["|cffd4af372.|r Tier advances automatically on"])
     IPInfoLine(INFO_COL2, INFO_TOP - INFO_STEP * 4,
-        "   final boss / quest completion.")
+        PBM_L["   final boss / quest completion."])
     IPInfoLine(INFO_COL2, INFO_TOP - INFO_STEP * 5,
-        "|cffFF8C00Altbots follow their own progression tier.|r", nil, 8)
+        PBM_L["|cffFF8C00Altbots follow their own progression tier.|r"], nil, 8)
     IPInfoLine(INFO_COL2, INFO_TOP - INFO_STEP * 6,
-        "|cffFF8C00Rndbots follow the group leader's tier.|r", nil, 8)
+        PBM_L["|cffFF8C00Rndbots follow the group leader's tier.|r"], nil, 8)
 
     -- Column 3: Commands (7 rows → nudge the block up to keep it centered in the band)
     local CMD_TOP = INFO_TOP + 7
-    IPInfoTitle(INFO_COL3, CMD_TOP, "Commands", INFO_W, false)
+    IPInfoTitle(INFO_COL3, CMD_TOP, PBM_L["Commands"], INFO_W, false)
     IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP,
-        "Check Tier:  |cffd4af37.ip get <target>/<name>|r", INFO_W)
+        PBM_L["Check Tier:  |cffd4af37.ip get <target>/<name>|r"], INFO_W)
     IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 2,
-        "Check PvP:  |cffd4af37.ip pvp <target>/<name>|r", INFO_W)
+        PBM_L["Check PvP:  |cffd4af37.ip pvp <target>/<name>|r"], INFO_W)
     IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 3,
-        "Sync Bots:   |cffd4af37.ip setbot (Tier)|r", INFO_W)
+        PBM_L["Sync Bots:   |cffd4af37.ip setbot (Tier)|r"], INFO_W)
     IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 4,
-        "Sync Bots:   |cffd4af37.ip setrep (Reputation)|r", INFO_W)
+        PBM_L["Sync Bots:   |cffd4af37.ip setrep (Reputation)|r"], INFO_W)
     IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 5,
-        "Attune:      |cffd4af37.ip attune onyxia/blacktemple|r", INFO_W)
+        PBM_L["Attune:      |cffd4af37.ip attune onyxia/blacktemple|r"], INFO_W)
     IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 6,
-        "|cffff4444GM (Required):|r  |cffd4af37.ip set (Change tier)|r", INFO_W)
+        PBM_L["|cffff4444GM (Required):|r  |cffd4af37.ip set (Change tier)|r"], INFO_W)
     IPInfoLine(INFO_COL3, CMD_TOP - INFO_STEP * 7,
-        "|cffff4444GM (Required):|r  |cffd4af37.ip tele (Teleport)|r", INFO_W)
+        PBM_L["|cffff4444GM (Required):|r  |cffd4af37.ip tele (Teleport)|r"], INFO_W)
 
     -- Column 4: Expansion Level Caps (no header, vertically centered)
     -- Each block: name line, indented Tier line, indented Level Cap line (11px steps)
@@ -151,24 +153,24 @@ function PBM.BuildIPProgressionPanel(ipPanel, ctx)
         tierFS:SetPoint("TOPLEFT", ipPanel, "TOPLEFT", EXP_SUB_X, y - EXP_LINE)
         tierFS:SetWidth(190); tierFS:SetJustifyH("LEFT")
         tierFS:SetTextColor(0.82, 0.82, 0.82)
-        tierFS:SetText("Tiers: " .. tierCol .. tierRange .. "|r")
+        tierFS:SetText(PBM_L["Tiers: "] .. tierCol .. tierRange .. "|r")
         -- Level Cap line (indented)
         local capFS = ipPanel:CreateFontString(nil, "OVERLAY")
         capFS:SetFont(IP_FONT, 8, "OUTLINE")
         capFS:SetPoint("TOPLEFT", ipPanel, "TOPLEFT", EXP_SUB_X, y - EXP_LINE * 2)
         capFS:SetWidth(190); capFS:SetJustifyH("LEFT")
         capFS:SetTextColor(0.82, 0.82, 0.82)
-        capFS:SetText("Level Cap: |cffd4af37" .. capLvl .. "|r")
+        capFS:SetText(PBM_L["Level Cap: |cffd4af37"] .. capLvl .. "|r")
     end
 
     -- Center 3 blocks (82px) in the 127px space between gold lines
     local EXP_Y = INFO_TOP  -- align with Commands header row
     ExpBadge(EXP_Y,
-        0.55, 0.08, 0.08, "|cffFF7070", "Classic World of Warcraft", "T0 \226\128\147 T7",  "60")
+        0.55, 0.08, 0.08, "|cffFF7070", PBM_L["Classic World of Warcraft"], "T0 \226\128\147 T7",  "60")
     ExpBadge(EXP_Y - EXP_GAP,
-        0.05, 0.45, 0.10, "|cff66CC44", "The Burning Crusade",       "T8 \226\128\147 T12", "70")
+        0.05, 0.45, 0.10, "|cff66CC44", PBM_L["The Burning Crusade"],       "T8 \226\128\147 T12", "70")
     ExpBadge(EXP_Y - EXP_GAP * 2,
-        0.05, 0.18, 0.50, "|cff69CCF0", "Wrath of the Lich King",    "T13 \226\128\147 T17","80")
+        0.05, 0.18, 0.50, "|cff69CCF0", PBM_L["Wrath of the Lich King"],    "T13 \226\128\147 T17","80")
 
     -- ── Tier table ───────────────────────────────────────────────
     local TABLE_TOP = -162
@@ -197,70 +199,70 @@ function PBM.BuildIPProgressionPanel(ipPanel, ctx)
         fs:SetText(text)
     end
 
-    TblHdr(COL_TIER_X,   tblHdrY, "Tier",              COL_TIER_W,  "CENTER")
-    TblHdr(COL_RAID_X,   tblHdrY, "Raid / Event",       COL_RAID_W)
-    TblHdr(COL_LEVEL_X,  tblHdrY, "LvL",                COL_LEVEL_W, "CENTER")
-    TblHdr(COL_FINAL_X,  tblHdrY, "Final Boss / Quest", COL_FINAL_W)
-    TblHdr(COL_UNLOCK_X, tblHdrY, "Unlocks",            COL_UNLOCK_W)
+    TblHdr(COL_TIER_X,   tblHdrY, PBM_L["Tier"],              COL_TIER_W,  "CENTER")
+    TblHdr(COL_RAID_X,   tblHdrY, PBM_L["Raid / Event"],       COL_RAID_W)
+    TblHdr(COL_LEVEL_X,  tblHdrY, PBM_L["LvL"],                COL_LEVEL_W, "CENTER")
+    TblHdr(COL_FINAL_X,  tblHdrY, PBM_L["Final Boss / Quest"], COL_FINAL_W)
+    TblHdr(COL_UNLOCK_X, tblHdrY, PBM_L["Unlocks"],            COL_UNLOCK_W)
 
     -- ── Tier data ────────────────────────────────────────────────
     -- { tierNum, raidName, levelCap, finalBoss, unlocks, tooltipText }
     -- In tooltipText: \n = line break. Boss/quest names wrapped in |cffFFD900...|r
     local TIER_DATA = {
-        { 0,  "Starting Tier",                         60, "Ragnaros & Onyxia",
-              "Default starting tier (no unlock required)",
-              "All players start at this tier by default. Level is capped to 60.\n \nTier 0 and Tier 1 are available simultaneously, as was the case for the original Vanilla release.\n \nFinal bosses: |cffFFD900Ragnaros|r and |cffFFD900Onyxia|r." },
-        { 1,  "Molten Core / Onyxia's Lair",          60, "Ragnaros & Onyxia",
-              "Default starting tier (no unlock required)",
-              "All players start at this tier by default. Level is capped to 60.\n \nTier 0 and Tier 1 are available simultaneously, as was the case for the original Vanilla release.\n \nFinal bosses: |cffFFD900Ragnaros|r and |cffFFD900Onyxia|r." },
-        { 2,  "Blackwing Lair",                       60, "Nefarian",
-              "BWL access (Onyxia Scale Cloak required)",
-              "Blackwing Lair is now available. Players can enter without having defeated |cffFFD900Onyxia|r, but will not survive Shadowflame without the Onyxia Scale Cloak.\n \nThis tier has a natural RPG-style progression requirement.\n \nFinal boss: |cffFFD900Nefarian|r.\n \n|cffFF8C00Altbots and Rndbots do not require the Onyxia Scale Cloak. The effect is applied automatically.|r" },
-        { 3,  "Ahn'Qiraj War Effort",                  60, "Bang a Gong!",
-              "AQ war effort unlocked; Zul'Gurub (optional) opens",
-              "This phase includes the Scarab Lord quest chain and the AQ war effort. Every player must complete each resource turn-in quest at least once.\n \nZul'Gurub becomes available during this tier.\n \nFinal quest: |cffFFD900Bang a Gong!|r\n \n|cffFF8C00Zul'Gurub is optional and can be configured to open at an earlier tier.|r" },
-        { 4,  "Ahn'Qiraj War",                         60, "Chaos and Destruction",
-              "AQ20 and AQ40 become available",
-              "The AQ conflict is active and both AQ20 and AQ40 are accessible. Quest NPCs for AQ equipment are not available until after the war effort ends.\n \nFinal quest: |cffFFD900Chaos and Destruction|r.\n \n|cffFF8C00The Scarab Gate does not stay open during the war. AQ War enemies will block the gate when it is closed. Click the gong to re-open it. Once the war is fully completed, the gate stays open permanently.|r" },
-        { 5,  "Ahn'Qiraj",                            60, "C'Thun",
-              "Catch-up gearing quests in Silithus",
-              "Completing AQ40 is required to advance to the next tier. Catch-up gearing quests and upgrades are available through AQ20.\n \nFinal boss: |cffFFD900C'Thun|r" },
-        { 6,  "Naxxramas 40",                         60, "Kel'Thuzad",
-              "Scourge Invasion; Light's Hope attunement",
-              "The Light's Hope Chapel and its associated quests unlock, enabling the Naxxramas attunement. Once attuned, players can enter through the Naxxramas teleport in the Eastern Plaguelands.\n \nThe Scourge Invasion is also active during this tier.\n \nFinal boss: |cffFFD900Kel'Thuzad|r\n \n|cffFF8C00The crystal teleporter is located in the Eastern Plaguelands, inside the Ziggurat that hosts the Naxxramas meeting stone.|r" },
-        { 7,  "Pre-TBC",                              60, "Into the Breach",
-              "Dark Portal defense scenario",
-              "A brief phase where enemies are emerging from the Dark Portal, requiring players to mount a defense.\n \nFinal quest: |cffFFD900Into the Breach|r" },
-        { 8,  "Karazhan / Gruul's Lair / Magtheridon's Lair", 70, "Prince Malchezaar",
-              "Dark Portal opens; level cap raised to 70",
-              "Players may enter the Dark Portal and level to 70.\n \nFinal boss: |cffFFD900Prince Malchezaar|r\n \n|cffFF8C00Attunements will be necessary to enter TBC raids, which will require completing TBC heroics.|r" },
-        { 9,  "Serpentshrine Cavern / Tempest Keep",  70, "Kael'thas Sunstrider",
-              "Hyjal Summit / Black Temple - Attunements required",
-              "Players complete attunements for the next tier of TBC raids, progressing through Serpentshrine Cavern and Tempest Keep.\n \nFinal boss: |cffFFD900Kael'thas Sunstrider|r" },
-        { 10, "Hyjal Summit / Black Temple",          70, "Illidan Stormrage",
-              "Completing this tier unlocks Sunwell Plateau",
-              "Hyjal Summit and Black Temple are now accessible. Completing this tier unlocks Sunwell Plateau.\n \nFinal boss: |cffFFD900Illidan Stormrage|r\n \n|cffFF8C00You may enter Black Temple without fully completing Hyjal.|r" },
-        { 11, "Zul'Aman (Optional)",                  70, "Zul'jin",
-              "Optional \226\128\148 Ghostlands raid; can be configured earlier",
-              "An optional raid located in the Ghostlands.\n \nFinal boss: |cffFFD900Zul'jin|r\n \n|cffFF8C00Can be configured to open earlier; by default unlocks after Black Temple.|r" },
-        { 12, "Sunwell Plateau",                      70, "Kil'jaeden",
-              "Isle of Quel'Danas; final TBC raid content",
-              "The Isle of Quel'Danas unlocks, enabling its questlines and access to Sunwell Plateau.\n \nFinal boss: |cffFFD900Kil'jaeden|r\n \n|cffFF8C00Unlocks daily quests and areas as their reputation with the Shattered Sun Offensive increases.|r" },
-        { 13, "Naxxramas / Eye of Eternity / Obsidian Sanctum", 80, "Kel'Thuzad  (80)",
-              "Northrend opens; level cap raised to 80",
-              "Players enter Northrend and may level to 80. Three raids are available: Naxxramas, Eye of Eternity, and Obsidian Sanctum.\n \nFinal boss: |cffFFD900Kel'Thuzad|r (level 80)" },
-        { 14, "Ulduar",                               80, "Yogg-Saron",
-              "Ulduar access with associated quest chain",
-              "Players are now able to enter and complete Ulduar, along with its associated quest chain.\n \nFinal boss: |cffFFD900Yogg-Saron|r" },
-        { 15, "Trial of the Crusader",                80, "Anub'arak",
-              "Argent Tournament and associated content",
-              "The Argent Tournament and all related content unlock alongside Trial of the Crusader.\n \nFinal boss: |cffFFD900Anub'arak|r" },
-        { 16, "Icecrown Citadel",                     80, "The Lich King",
-              "Final WotLK raid tier",
-              "Players can finally enter Icecrown Citadel and challenge the Lich King.\n \nFinal boss: |cffFFD900The Lich King|r" },
-        { 17, "Ruby Sanctum",                         80, "Halion",
-              "Bonus endgame content",
-              "Ruby Sanctum is the only content unlocked in this tier, considered bonus endgame content.\n \nFinal boss: |cffFFD900Halion|r" },
+        { 0,  PBM_L["Starting Tier"],                         60, PBM_L["Ragnaros & Onyxia"],
+              PBM_L["Default starting tier (no unlock required)"],
+              PBM_L["All players start at this tier by default. Level is capped to 60.\n \nTier 0 and Tier 1 are available simultaneously, as was the case for the original Vanilla release.\n \nFinal bosses: |cffFFD900Ragnaros|r and |cffFFD900Onyxia|r."] },
+        { 1,  PBM_L["Molten Core / Onyxia's Lair"],          60, PBM_L["Ragnaros & Onyxia"],
+              PBM_L["Default starting tier (no unlock required)"],
+              PBM_L["All players start at this tier by default. Level is capped to 60.\n \nTier 0 and Tier 1 are available simultaneously, as was the case for the original Vanilla release.\n \nFinal bosses: |cffFFD900Ragnaros|r and |cffFFD900Onyxia|r."] },
+        { 2,  PBM_L["Blackwing Lair"],                       60, PBM_L["Nefarian"],
+              PBM_L["BWL access (Onyxia Scale Cloak required)"],
+              PBM_L["Blackwing Lair is now available. Players can enter without having defeated |cffFFD900Onyxia|r, but will not survive Shadowflame without the Onyxia Scale Cloak.\n \nThis tier has a natural RPG-style progression requirement.\n \nFinal boss: |cffFFD900Nefarian|r.\n \n|cffFF8C00Altbots and Rndbots do not require the Onyxia Scale Cloak. The effect is applied automatically.|r"] },
+        { 3,  PBM_L["Ahn'Qiraj War Effort"],                  60, PBM_L["Bang a Gong!"],
+              PBM_L["AQ war effort unlocked; Zul'Gurub (optional) opens"],
+              PBM_L["This phase includes the Scarab Lord quest chain and the AQ war effort. Every player must complete each resource turn-in quest at least once.\n \nZul'Gurub becomes available during this tier.\n \nFinal quest: |cffFFD900Bang a Gong!|r\n \n|cffFF8C00Zul'Gurub is optional and can be configured to open at an earlier tier.|r"] },
+        { 4,  PBM_L["Ahn'Qiraj War"],                         60, PBM_L["Chaos and Destruction"],
+              PBM_L["AQ20 and AQ40 become available"],
+              PBM_L["The AQ conflict is active and both AQ20 and AQ40 are accessible. Quest NPCs for AQ equipment are not available until after the war effort ends.\n \nFinal quest: |cffFFD900Chaos and Destruction|r.\n \n|cffFF8C00The Scarab Gate does not stay open during the war. AQ War enemies will block the gate when it is closed. Click the gong to re-open it. Once the war is fully completed, the gate stays open permanently.|r"] },
+        { 5,  PBM_L["Ahn'Qiraj"],                            60, PBM_L["C'Thun"],
+              PBM_L["Catch-up gearing quests in Silithus"],
+              PBM_L["Completing AQ40 is required to advance to the next tier. Catch-up gearing quests and upgrades are available through AQ20.\n \nFinal boss: |cffFFD900C'Thun|r"] },
+        { 6,  PBM_L["Naxxramas 40"],                         60, PBM_L["Kel'Thuzad"],
+              PBM_L["Scourge Invasion; Light's Hope attunement"],
+              PBM_L["The Light's Hope Chapel and its associated quests unlock, enabling the Naxxramas attunement. Once attuned, players can enter through the Naxxramas teleport in the Eastern Plaguelands.\n \nThe Scourge Invasion is also active during this tier.\n \nFinal boss: |cffFFD900Kel'Thuzad|r\n \n|cffFF8C00The crystal teleporter is located in the Eastern Plaguelands, inside the Ziggurat that hosts the Naxxramas meeting stone.|r"] },
+        { 7,  PBM_L["Pre-TBC"],                              60, PBM_L["Into the Breach"],
+              PBM_L["Dark Portal defense scenario"],
+              PBM_L["A brief phase where enemies are emerging from the Dark Portal, requiring players to mount a defense.\n \nFinal quest: |cffFFD900Into the Breach|r"] },
+        { 8,  PBM_L["Karazhan / Gruul's Lair / Magtheridon's Lair"], 70, PBM_L["Prince Malchezaar"],
+              PBM_L["Dark Portal opens; level cap raised to 70"],
+              PBM_L["Players may enter the Dark Portal and level to 70.\n \nFinal boss: |cffFFD900Prince Malchezaar|r\n \n|cffFF8C00Attunements will be necessary to enter TBC raids, which will require completing TBC heroics.|r"] },
+        { 9,  PBM_L["Serpentshrine Cavern / Tempest Keep"],  70, PBM_L["Kael'thas Sunstrider"],
+              PBM_L["Hyjal Summit / Black Temple - Attunements required"],
+              PBM_L["Players complete attunements for the next tier of TBC raids, progressing through Serpentshrine Cavern and Tempest Keep.\n \nFinal boss: |cffFFD900Kael'thas Sunstrider|r"] },
+        { 10, PBM_L["Hyjal Summit / Black Temple"],          70, PBM_L["Illidan Stormrage"],
+              PBM_L["Completing this tier unlocks Sunwell Plateau"],
+              PBM_L["Hyjal Summit and Black Temple are now accessible. Completing this tier unlocks Sunwell Plateau.\n \nFinal boss: |cffFFD900Illidan Stormrage|r\n \n|cffFF8C00You may enter Black Temple without fully completing Hyjal.|r"] },
+        { 11, PBM_L["Zul'Aman (Optional)"],                  70, PBM_L["Zul'jin"],
+              PBM_L["Optional \226\128\148 Ghostlands raid; can be configured earlier"],
+              PBM_L["An optional raid located in the Ghostlands.\n \nFinal boss: |cffFFD900Zul'jin|r\n \n|cffFF8C00Can be configured to open earlier; by default unlocks after Black Temple.|r"] },
+        { 12, PBM_L["Sunwell Plateau"],                      70, PBM_L["Kil'jaeden"],
+              PBM_L["Isle of Quel'Danas; final TBC raid content"],
+              PBM_L["The Isle of Quel'Danas unlocks, enabling its questlines and access to Sunwell Plateau.\n \nFinal boss: |cffFFD900Kil'jaeden|r\n \n|cffFF8C00Unlocks daily quests and areas as their reputation with the Shattered Sun Offensive increases.|r"] },
+        { 13, PBM_L["Naxxramas / Eye of Eternity / Obsidian Sanctum"], 80, PBM_L["Kel'Thuzad  (80)"],
+              PBM_L["Northrend opens; level cap raised to 80"],
+              PBM_L["Players enter Northrend and may level to 80. Three raids are available: Naxxramas, Eye of Eternity, and Obsidian Sanctum.\n \nFinal boss: |cffFFD900Kel'Thuzad|r (level 80)"] },
+        { 14, PBM_L["Ulduar"],                               80, PBM_L["Yogg-Saron"],
+              PBM_L["Ulduar access with associated quest chain"],
+              PBM_L["Players are now able to enter and complete Ulduar, along with its associated quest chain.\n \nFinal boss: |cffFFD900Yogg-Saron|r"] },
+        { 15, PBM_L["Trial of the Crusader"],                80, PBM_L["Anub'arak"],
+              PBM_L["Argent Tournament and associated content"],
+              PBM_L["The Argent Tournament and all related content unlock alongside Trial of the Crusader.\n \nFinal boss: |cffFFD900Anub'arak|r"] },
+        { 16, PBM_L["Icecrown Citadel"],                     80, PBM_L["The Lich King"],
+              PBM_L["Final WotLK raid tier"],
+              PBM_L["Players can finally enter Icecrown Citadel and challenge the Lich King.\n \nFinal boss: |cffFFD900The Lich King|r"] },
+        { 17, PBM_L["Ruby Sanctum"],                         80, PBM_L["Halion"],
+              PBM_L["Bonus endgame content"],
+              PBM_L["Ruby Sanctum is the only content unlocked in this tier, considered bonus endgame content.\n \nFinal boss: |cffFFD900Halion|r"] },
     }
 
     local ROW_H   = 22
@@ -289,27 +291,27 @@ function PBM.BuildIPProgressionPanel(ipPanel, ctx)
         -- Expansion section dividers
         if tierNum == 0 then
             curY = curY - 10    -- room for "CLASSIC" text above the line
-            ExpDivider(curY, 0.85, 0.18, 0.18, "CLASSIC")
+            ExpDivider(curY, 0.85, 0.18, 0.18, PBM_L["CLASSIC"])
             curY = curY - 6    -- gap below line before first row
         elseif tierNum == 8 then
             curY = curY - 8    -- gap from T7
-            TblHdr(COL_TIER_X,   curY, "Tier",               COL_TIER_W,  "CENTER")
-            TblHdr(COL_RAID_X,   curY, "Raid / Event",       COL_RAID_W)
-            TblHdr(COL_LEVEL_X,  curY, "LvL",                COL_LEVEL_W, "CENTER")
-            TblHdr(COL_FINAL_X,  curY, "Final Boss / Quest", COL_FINAL_W)
-            TblHdr(COL_UNLOCK_X, curY, "Unlocks",            COL_UNLOCK_W)
+            TblHdr(COL_TIER_X,   curY, PBM_L["Tier"],               COL_TIER_W,  "CENTER")
+            TblHdr(COL_RAID_X,   curY, PBM_L["Raid / Event"],       COL_RAID_W)
+            TblHdr(COL_LEVEL_X,  curY, PBM_L["LvL"],                COL_LEVEL_W, "CENTER")
+            TblHdr(COL_FINAL_X,  curY, PBM_L["Final Boss / Quest"], COL_FINAL_W)
+            TblHdr(COL_UNLOCK_X, curY, PBM_L["Unlocks"],            COL_UNLOCK_W)
             curY = curY - 14   -- room for expansion label above line
-            ExpDivider(curY, 0.12, 0.68, 0.20, "THE BURNING CRUSADE")
+            ExpDivider(curY, 0.12, 0.68, 0.20, PBM_L["THE BURNING CRUSADE"])
             curY = curY - 6
         elseif tierNum == 13 then
             curY = curY - 8    -- gap from T12
-            TblHdr(COL_TIER_X,   curY, "Tier",               COL_TIER_W,  "CENTER")
-            TblHdr(COL_RAID_X,   curY, "Raid / Event",       COL_RAID_W)
-            TblHdr(COL_LEVEL_X,  curY, "LvL",                COL_LEVEL_W, "CENTER")
-            TblHdr(COL_FINAL_X,  curY, "Final Boss / Quest", COL_FINAL_W)
-            TblHdr(COL_UNLOCK_X, curY, "Unlocks",            COL_UNLOCK_W)
+            TblHdr(COL_TIER_X,   curY, PBM_L["Tier"],               COL_TIER_W,  "CENTER")
+            TblHdr(COL_RAID_X,   curY, PBM_L["Raid / Event"],       COL_RAID_W)
+            TblHdr(COL_LEVEL_X,  curY, PBM_L["LvL"],                COL_LEVEL_W, "CENTER")
+            TblHdr(COL_FINAL_X,  curY, PBM_L["Final Boss / Quest"], COL_FINAL_W)
+            TblHdr(COL_UNLOCK_X, curY, PBM_L["Unlocks"],            COL_UNLOCK_W)
             curY = curY - 14   -- room for expansion label above line
-            ExpDivider(curY, 0.20, 0.50, 0.95, "WRATH OF THE LICH KING")
+            ExpDivider(curY, 0.20, 0.50, 0.95, PBM_L["WRATH OF THE LICH KING"])
             curY = curY - 6
         end
 
@@ -417,13 +419,12 @@ function PBM.BuildIPProgressionPanel(ipPanel, ctx)
     footerFS:SetPoint("BOTTOMRIGHT", ipPanel, "BOTTOMRIGHT", -MARGIN, 6)
     footerFS:SetJustifyH("CENTER")
     footerFS:SetTextColor(0.72, 0.72, 0.72)
-    footerFS:SetText("** This tab requires |cffd4af37mod-individual-progression|r." ..
-                     "  Source: |cff69CCF0github.com/ZhengPeiRu21/mod-individual-progression|r")
+    footerFS:SetText(PBM_L["** This tab requires |cffd4af37mod-individual-progression|r.  Source: |cff69CCF0github.com/ZhengPeiRu21/mod-individual-progression|r"])
 
     local footerFS2 = ipPanel:CreateFontString(nil, "OVERLAY")
     footerFS2:SetFont(IP_FONT, 9, "OUTLINE")
     footerFS2:SetPoint("BOTTOMLEFT",  ipPanel, "BOTTOMLEFT",  MARGIN, 20)
     footerFS2:SetPoint("BOTTOMRIGHT", ipPanel, "BOTTOMRIGHT", -MARGIN, 20)
     footerFS2:SetJustifyH("CENTER")
-    footerFS2:SetText("|cffff4444** Information is subject to change as mod-individual-progression is updated.|r")
+    footerFS2:SetText(PBM_L["|cffff4444** Information is subject to change as mod-individual-progression is updated.|r"])
 end

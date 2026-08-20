@@ -420,7 +420,7 @@ function PBM.BuildRows(parent, yStart)
                 if d and d.name and d.name ~= "" then
                     dragTex:SetVertexColor(0.9, 0.7, 0.1, 1.0)
                     GameTooltip:SetOwner(dragBtn, "ANCHOR_RIGHT")
-                    GameTooltip:AddLine("Drag to reorder", 1, 1, 1)
+                    GameTooltip:AddLine(PBM_L["Drag to reorder"], 1, 1, 1)
                     GameTooltip:Show()
                 end
             end
@@ -458,7 +458,7 @@ function PBM.BuildRows(parent, yStart)
             if row.dbIndex and LichborneTrackerDB.rows[row.dbIndex] then
                 local spec = LichborneTrackerDB.rows[row.dbIndex].spec or ""
                 GameTooltip:SetOwner(specBtn, "ANCHOR_RIGHT")
-                GameTooltip:AddLine(spec ~= "" and spec or "No spec set", 1, 1, 1)
+                GameTooltip:AddLine(spec ~= "" and spec or PBM_L["No spec set"], 1, 1, 1)
                 GameTooltip:Show()
             end
         end)
@@ -572,10 +572,10 @@ function PBM.BuildRows(parent, yStart)
         arb:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
         arb:SetScript("OnEnter", function()
             GameTooltip:SetOwner(arb, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cff44ff44+ Add to Raid|r", 1, 1, 1)
-            GameTooltip:AddLine("Adds to the Raid tab.", 0.7, 0.7, 0.7)
-            GameTooltip:AddLine("|cff44ff44Left-click to add to raid.|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffff2020Right-click to remove.|r", 1, 1, 1)
+            GameTooltip:AddLine("|cff44ff44" .. PBM_L["+ Add to Raid"] .. "|r", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Adds to the Raid tab."], 0.7, 0.7, 0.7)
+            GameTooltip:AddLine("|cff44ff44" .. PBM_L["Left-click to add to raid."] .. "|r", 1, 1, 1)
+            GameTooltip:AddLine("|cffff2020" .. PBM_L["Right-click to remove."] .. "|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         arb:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -592,9 +592,9 @@ function PBM.BuildRows(parent, yStart)
         agb:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
         agb:SetScript("OnEnter", function()
             GameTooltip:SetOwner(agb, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cff44eeff> Invite to Group|r", 1, 1, 1)
-            GameTooltip:AddLine("|cff44ff44Left-click to invite to group.|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffff2020Right-click to remove.|r", 1, 1, 1)
+            GameTooltip:AddLine("|cff44eeff" .. PBM_L["> Invite to Group"] .. "|r", 1, 1, 1)
+            GameTooltip:AddLine("|cff44ff44" .. PBM_L["Left-click to invite to group."] .. "|r", 1, 1, 1)
+            GameTooltip:AddLine("|cffff2020" .. PBM_L["Right-click to remove."] .. "|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         agb:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -610,8 +610,8 @@ function PBM.BuildRows(parent, yStart)
         db:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
         db:SetScript("OnEnter", function()
             GameTooltip:SetOwner(db, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("Remove Character", 1, 0.3, 0.3)
-            GameTooltip:AddLine("Removes from tracker.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Remove Character"], 1, 0.3, 0.3)
+            GameTooltip:AddLine(PBM_L["Removes from tracker."], 0.8, 0.8, 0.8)
             GameTooltip:Show()
         end)
         db:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -673,7 +673,7 @@ function PBM.SetNeedsCellMode(mode)
     end
     if PBM.State.needsProfHdrLabel then
         PBM.State.needsProfHdrLabel:SetText(
-            mode == "prof" and "|cffd4af37Prof.|r" or "|cffd4af37Need|r")
+            mode == "prof" and "|cffd4af37" .. PBM_L["Prof."] .. "|r" or "|cffd4af37" .. PBM_L["Need"] .. "|r")
     end
 end
 
@@ -837,7 +837,7 @@ function PBM.RefreshRows()
                                 roster[ri] = {name="", cls="", spec="", gs=0, realGs=0, role="", notes=""}
                                 row.addRaidBtn:SetText("|cff44ff44+|r")
                                 if LichborneAddStatus then
-                                    LichborneAddStatus:SetText(hex..srcData.name.."|r removed from raid slot "..slot..".")
+                                    LichborneAddStatus:SetText(hex..srcData.name.."|r " .. PBM_L["removed from raid slot"] .. " "..slot..".")
                                 end
                                 if LichborneRaidFrame then PBM.RefreshRaidRows() end
                                 PBM.RefreshRows()
@@ -855,9 +855,9 @@ function PBM.RefreshRows()
                             local c2 = PBM.CLASS_COLORS[srcData.cls]
                             local hex2 = c2 and string.format("|cff%02x%02x%02x", math.floor(c2.r*255), math.floor(c2.g*255), math.floor(c2.b*255)) or "|cffffffff"
                             if LichborneAddStatus then
-                                LichborneAddStatus:SetText(hex2..srcData.name.."|r is already in the Raid.")
+                                LichborneAddStatus:SetText(hex2..srcData.name.."|r " .. PBM_L["is already in the Raid."])
                             end
-                            LichborneOutput("|cffC69B3APBM:|r "..hex2..srcData.name.."|r is already in the Raid.", 1, 0.5, 0.5)
+                            LichborneOutput("|cffC69B3APBM:|r "..hex2..srcData.name.."|r " .. PBM_L["is already in the Raid."], 1, 0.5, 0.5)
                             return
                         end
                     end
@@ -870,8 +870,8 @@ function PBM.RefreshRows()
                         end
                     end
                     if not slot then
-                        local raidLabel = LichborneTrackerDB.raidName or "Raid"
-                        LichborneOutput("|cffC69B3APBM:|r "..raidLabel.." is full ("..maxSlots.."/"..maxSlots..").", 1, 0.5, 0.5)
+                        local raidLabel = LichborneTrackerDB.raidName or PBM_L["Raid"]
+                        LichborneOutput("|cffC69B3APBM:|r "..raidLabel.." " .. PBM_L["is full"] .. " ("..maxSlots.."/"..maxSlots..").", 1, 0.5, 0.5)
                         return
                     end
                     roster[slot] = {
@@ -883,9 +883,9 @@ function PBM.RefreshRows()
                         role   = "",
                         notes  = "",
                     }
-                    LichborneOutput("|cffC69B3APBM:|r Added "..hex..srcData.name.."|r to Raid slot "..slot..".", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r " .. PBM_L["Added"] .. " "..hex..srcData.name.."|r " .. PBM_L["to Raid slot"] .. " "..slot..".", 1, 0.85, 0)
                     if LichborneAddStatus then
-                        LichborneAddStatus:SetText(hex..srcData.name.."|r added to raid slot "..slot..".")
+                        LichborneAddStatus:SetText(hex..srcData.name.."|r " .. PBM_L["added to raid slot"] .. " "..slot..".")
                     end
                     -- Color + orange after successful add
                     row.addRaidBtn:SetText("|cffb25b00+|r")
@@ -904,13 +904,13 @@ function PBM.RefreshRows()
                     if btn == "RightButton" then
                         UninviteUnit(srcData.name)
                         SendChatMessage(".playerbots bot remove "..srcData.name, "SAY")
-                        LichborneOutput("|cffC69B3APBM:|r Removed "..hex..srcData.name.."|r from bots.", 1, 0.85, 0)
+                        LichborneOutput("|cffC69B3APBM:|r " .. PBM_L["Removed"] .. " "..hex..srcData.name.."|r " .. PBM_L["from bots."], 1, 0.85, 0)
                         return
                     end
                     SendChatMessage(".playerbots bot add "..srcData.name, "SAY")
-                    LichborneOutput("|cffC69B3APBM:|r Inviting "..hex..srcData.name.."|r to group...", 1, 0.85, 0)
+                    LichborneOutput("|cffC69B3APBM:|r " .. PBM_L["Inviting"] .. " "..hex..srcData.name.."|r " .. PBM_L["to group..."], 1, 0.85, 0)
                     if LichborneAddStatus then
-                        LichborneAddStatus:SetText("Invited "..hex..srcData.name.."|r to group.")
+                        LichborneAddStatus:SetText(PBM_L["Invited"] .. " "..hex..srcData.name.."|r " .. PBM_L["to group..."])
                     end
                 end)
             end
@@ -1050,7 +1050,7 @@ function PBM.BuildIgnoredSpellTable()
 
     local hdr = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     hdr:SetPoint("TOP", f, "TOP", 0, -6)
-    hdr:SetText("|cffd4af37Ignored Spell List|r")
+    hdr:SetText("|cffd4af37" .. PBM_L["Ignored Spell List"] .. "|r")
 
     for i = 1, NUM_IGNORE_ROWS do
         local fs = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")

@@ -67,7 +67,7 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     -- ── Command sender ─────────────────────────────────────────
     local function lsSendCmd(cmd)
         if InCombatLockdown() then
-            LichborneOutput("|cffC69B3APBM:|r Cannot send commands while in combat.")
+            LichborneOutput("|cffC69B3APBM:|r " .. (PBM_L["Cannot send commands while in combat."] or "Cannot send commands while in combat."))
             return
         end
         local box = ChatFrame1EditBox
@@ -232,7 +232,7 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
         hdrFS:SetPoint("TOPLEFT", cell, "TOPLEFT", 2, -3)
         hdrFS:SetWidth(LS_CELL_W - 4); hdrFS:SetJustifyH("CENTER")
         hdrFS:SetTextColor(LT_GOLD_R, LT_GOLD_G, LT_GOLD_B)
-        hdrFS:SetText("— empty —")
+        hdrFS:SetText(PBM_L["— empty —"])
 
         local acctSep = cell:CreateTexture(nil, "ARTWORK")
         acctSep:SetHeight(1)
@@ -248,8 +248,8 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
             fs:SetTextColor(LT_GOLD_R, LT_GOLD_G, LT_GOLD_B)
             fs:SetText(text)
         end
-        ColHdr("Character", LS_NAM_X, LS_NAM_W)
-        ColHdr("Tier",      LS_TIR_X, LS_TIR_W)
+        ColHdr(PBM_L["Character"], LS_NAM_X, LS_NAM_W)
+        ColHdr(PBM_L["Tier"],      LS_TIR_X, LS_TIR_W)
 
         local hdrSep = cell:CreateTexture(nil, "ARTWORK")
         hdrSep:SetHeight(1)
@@ -334,7 +334,7 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     lsRefreshBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     local lsRefLbl = lsRefreshBtn:CreateFontString(nil, "OVERLAY")
     lsRefLbl:SetFont(LT_FONT, 10, "OUTLINE"); lsRefLbl:SetAllPoints(lsRefreshBtn)
-    lsRefLbl:SetJustifyH("CENTER"); lsRefLbl:SetText("|cffd4af37Refresh|r")
+    lsRefLbl:SetJustifyH("CENTER"); lsRefLbl:SetText("|cffd4af37" .. PBM_L["Refresh"] .. "|r")
     lsRefreshBtn:SetScript("OnEnter", function(self)
         self:SetBackdropBorderColor(1, 0.95, 0.5, 1)
     end)
@@ -347,25 +347,25 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     lsAccountsFS:SetFont(LT_FONT, 10, "OUTLINE")
     lsAccountsFS:SetPoint("TOPLEFT", lsPanel, "TOPLEFT", 192, lsStatY)
     lsAccountsFS:SetWidth(130); lsAccountsFS:SetJustifyH("CENTER")
-    lsAccountsFS:SetTextColor(0.70, 0.75, 0.85); lsAccountsFS:SetText("Accounts: —")
+    lsAccountsFS:SetTextColor(0.70, 0.75, 0.85); lsAccountsFS:SetText(PBM_L["Accounts: —"])
 
     local lsTotalCharsFS = lsPanel:CreateFontString(nil, "OVERLAY")
     lsTotalCharsFS:SetFont(LT_FONT, 10, "OUTLINE")
     lsTotalCharsFS:SetPoint("TOPLEFT", lsPanel, "TOPLEFT", 409, lsStatY)
     lsTotalCharsFS:SetWidth(130); lsTotalCharsFS:SetJustifyH("CENTER")
-    lsTotalCharsFS:SetTextColor(0.70, 0.75, 0.85); lsTotalCharsFS:SetText("Characters: —")
+    lsTotalCharsFS:SetTextColor(0.70, 0.75, 0.85); lsTotalCharsFS:SetText(PBM_L["Characters: —"])
 
     local lsLevelSyncFS = lsPanel:CreateFontString(nil, "OVERLAY")
     lsLevelSyncFS:SetFont(LT_FONT, 10, "OUTLINE")
     lsLevelSyncFS:SetPoint("TOPLEFT", lsPanel, "TOPLEFT", 626, lsStatY)
     lsLevelSyncFS:SetWidth(130); lsLevelSyncFS:SetJustifyH("CENTER")
-    lsLevelSyncFS:SetTextColor(0.70, 0.75, 0.85); lsLevelSyncFS:SetText("Level Sync: —")
+    lsLevelSyncFS:SetTextColor(0.70, 0.75, 0.85); lsLevelSyncFS:SetText(PBM_L["Level Sync: —"])
 
     local lsIpSyncFS = lsPanel:CreateFontString(nil, "OVERLAY")
     lsIpSyncFS:SetFont(LT_FONT, 10, "OUTLINE")
     lsIpSyncFS:SetPoint("TOPLEFT", lsPanel, "TOPLEFT", 843, lsStatY)
     lsIpSyncFS:SetWidth(130); lsIpSyncFS:SetJustifyH("CENTER")
-    lsIpSyncFS:SetTextColor(0.70, 0.75, 0.85); lsIpSyncFS:SetText("IP Sync: —")
+    lsIpSyncFS:SetTextColor(0.70, 0.75, 0.85); lsIpSyncFS:SetText(PBM_L["IP Sync: —"])
 
     -- ── Command Reference ──────────────────────────────────────
     local LS_CMD_Y    = LS_GRID_END - 42
@@ -380,20 +380,20 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     cmdHdr:SetFont(LT_FONT, 13, "OUTLINE")
     cmdHdr:SetPoint("TOPLEFT", lsPanel, "TOPLEFT", LS_MARGIN, LS_CMD_Y - 8)
     cmdHdr:SetTextColor(LT_GOLD_R, LT_GOLD_G, LT_GOLD_B)
-    cmdHdr:SetText("Commands")
+    cmdHdr:SetText(PBM_L["Commands"])
 
     local notesHdr = lsPanel:CreateFontString(nil, "OVERLAY")
     notesHdr:SetFont(LT_FONT, 13, "OUTLINE")
     notesHdr:SetPoint("TOPLEFT", lsPanel, "TOPLEFT", LS_CMD_COL3, LS_CMD_Y - 8)
     notesHdr:SetTextColor(LT_GOLD_R, LT_GOLD_G, LT_GOLD_B)
-    notesHdr:SetText("Notes")
+    notesHdr:SetText(PBM_L["Notes"])
 
     local setupHdr = lsPanel:CreateFontString(nil, "OVERLAY")
     setupHdr:SetFont(LT_FONT, 13, "OUTLINE")
     setupHdr:SetPoint("TOPRIGHT", lsPanel, "TOPRIGHT", -(LS_MARGIN + 26), lsStatY)
     setupHdr:SetWidth(90); setupHdr:SetJustifyH("RIGHT")
     setupHdr:SetTextColor(LT_GOLD_R, LT_GOLD_G, LT_GOLD_B)
-    setupHdr:SetText("Setup:")
+    setupHdr:SetText(PBM_L["Setup:"])
 
     local setupIcon1 = CreateFrame("Button", nil, lsPanel)
     setupIcon1:SetSize(20, 20)
@@ -404,28 +404,28 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     setupIcon1:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
         GameTooltip:ClearLines()
-        GameTooltip:AddLine("|cffd4af37HOW TO USE LEVELSYNC|r")
+        GameTooltip:AddLine("|cffd4af37" .. PBM_L["HOW TO USE LEVELSYNC"] .. "|r")
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("1. Set a |cffFF8C00security key|r for your account:", 1, 1, 1)
-        GameTooltip:AddLine("   |cffd4af37.levelsync setkey <yourkey>|r", 1, 1, 1)
-        GameTooltip:AddLine("   You need this key to add your accounts to the sync group.", 1, 1, 1)
-        GameTooltip:AddLine("   |cffff4444Keep it private \226\128\148 it's the \"password\" for linking.|r", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["1. Set a |cffFF8C00security key|r for your account:"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   |cffd4af37.levelsync setkey <yourkey>|r"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   You need this key to add your accounts to the sync group."], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   |cffff4444Keep it private \226\128\148 it's the \"password\" for linking.|r"], 1, 1, 1)
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("2. Link other accounts or characters into your |cff66ccffsync|r group:", 1, 1, 1)
-        GameTooltip:AddLine("   |cffd4af37.levelsync addaccount <accountname> <key>|r", 1, 1, 1)
-        GameTooltip:AddLine("   |cffd4af37.levelsync addchar <charname> <key>|r", 1, 1, 1)
-        GameTooltip:AddLine("   The key is |cffff4444NOT|r required if you're adding your own account.", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["2. Link other accounts or characters into your |cff66ccffsync|r group:"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   |cffd4af37.levelsync addaccount <accountname> <key>|r"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   |cffd4af37.levelsync addchar <charname> <key>|r"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   The key is |cffff4444NOT|r required if you're adding your own account."], 1, 1, 1)
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("3. |cff66ccffLevel Sync|r and |cff66ccffIP Sync|r are |cffFF8C00toggle only|r. To toggle:", 1, 1, 1)
-        GameTooltip:AddLine("   |cffd4af37.levelsync level on|r", 1, 1, 1)
-        GameTooltip:AddLine("   |cffd4af37.levelsync IP on|r", 1, 1, 1)
-        GameTooltip:AddLine("   |cff44dd44Available|r indicates syncs are available.", 1, 1, 1)
-        GameTooltip:AddLine("   |cffdd4444Disabled|r indicates syncs are disabled.", 1, 1, 1)
-        GameTooltip:AddLine("   A |cffFF8C0010 second cooldown|r is applied after each sync.", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["3. |cff66ccffLevel Sync|r and |cff66ccffIP Sync|r are |cffFF8C00toggle only|r. To toggle:"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   |cffd4af37.levelsync level on|r"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   |cffd4af37.levelsync IP on|r"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   |cff44dd44Available|r indicates syncs are available."], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   |cffdd4444Disabled|r indicates syncs are disabled."], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   A |cffFF8C0010 second cooldown|r is applied after each sync."], 1, 1, 1)
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("4. Use |cff66ccffpool gold|r to drain your level sync group members'", 1, 1, 1)
-        GameTooltip:AddLine("   wallets into yours:", 1, 1, 1)
-        GameTooltip:AddLine("   |cffd4af37.levelsync money|r", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["4. Use |cff66ccffpool gold|r to drain your level sync group members'"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   wallets into yours:"], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["   |cffd4af37.levelsync money|r"], 1, 1, 1)
         GameTooltip:Show()
     end)
     setupIcon1:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -457,23 +457,23 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     end
 
     BuildLSCmdColumn(LS_MARGIN, {
-        { ".levelsync setkey <key>",            "Set your account security key"            },
-        { ".levelsync addaccount <acct> [key]", "Link all characters from another account" },
-        { ".levelsync addchar <name> [key]",    "Link a single character into your group"  },
-        { ".levelsync removechar <name>",       "Remove one character from your group"     },
-        { ".levelsync removeaccount <acct>",    "Remove all characters of an account"      },
-        { ".levelsync removeaccount # <acct#>", "Remove an account by its account number"  },
-        { ".levelsync money",                   "Pool all group money to the caller"       },
+        { ".levelsync setkey <key>",            PBM_L["Set your account security key"]            },
+        { ".levelsync addaccount <acct> [key]", PBM_L["Link all characters from another account"] },
+        { ".levelsync addchar <name> [key]",    PBM_L["Link a single character into your group"]  },
+        { ".levelsync removechar <name>",       PBM_L["Remove one character from your group"]     },
+        { ".levelsync removeaccount <acct>",    PBM_L["Remove all characters of an account"]      },
+        { ".levelsync removeaccount # <acct#>", PBM_L["Remove an account by its account number"]  },
+        { ".levelsync money",                   PBM_L["Pool all group money to the caller"]       },
     })
 
     BuildLSCmdColumn(LS_CMD_COL2, {
-        { ".levelsync removeall",                "Disband your sync group"                        },
-        { ".levelsync disbandaccount",           "Disband all groups tied to your account"        },
-        { ".levelsync listaccount <acct> [key]", "List all characters on an account"              },
-        { ".levelsync status",                   "Show full group summary and all members"        },
-        { ".levelsync level on|off",             "Toggle level synchronization for the group"     },
-        { ".levelsync IP on|off",                "Toggle progression (IP tier) sync for the group" },
-        { ".levelsync unbindall",                "Resets all instances for target (requires server auth)" },
+        { ".levelsync removeall",                PBM_L["Disband your sync group"]                        },
+        { ".levelsync disbandaccount",           PBM_L["Disband all groups tied to your account"]        },
+        { ".levelsync listaccount <acct> [key]", PBM_L["List all characters on an account"]              },
+        { ".levelsync status",                   PBM_L["Show full group summary and all members"]        },
+        { ".levelsync level on|off",             PBM_L["Toggle level synchronization for the group"]     },
+        { ".levelsync IP on|off",                PBM_L["Toggle progression (IP tier) sync for the group"] },
+        { ".levelsync unbindall",                PBM_L["Resets all instances for target (requires server auth)"] },
     })
 
     -- ── Notes columns (A = left, B = right) ───────────────────
@@ -492,16 +492,16 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
         n:SetText(text)
     end
 
-    MakeNote(NOTE_COL_A, 0,              "|cffd4af37UPWARD ONLY|r \226\128\148 Levels, XP, and IP tier are never lowered. Sub-max members get pulled up.")
-    MakeNote(NOTE_COL_A, -NOTE_STEP,     "|cffd4af37SESSION SYNC|r \226\128\148 Syncs must be explicitly triggered via toggle \226\128\148 they do not fire automatically.")
-    MakeNote(NOTE_COL_A, -NOTE_STEP * 2, "|cffd4af37IP TIER|r \226\128\148 Tier syncs must be triggered manually via the IP toggle.")
-    MakeNote(NOTE_COL_A, -NOTE_STEP * 3, "|cffd4af37COOLDOWN|r \226\128\148 10-sec shared cooldown covers level, IP, and money commands.")
-    MakeNote(NOTE_COL_A, -NOTE_STEP * 4, "|cffd4af37SECURITY KEY|r \226\128\148 Controls who can link to your account. Keep it private.")
+    MakeNote(NOTE_COL_A, 0,              PBM_L["|cffd4af37UPWARD ONLY|r \226\128\148 Levels, XP, and IP tier are never lowered. Sub-max members get pulled up."])
+    MakeNote(NOTE_COL_A, -NOTE_STEP,     PBM_L["|cffd4af37SESSION SYNC|r \226\128\148 Syncs must be explicitly triggered via toggle \226\128\148 they do not fire automatically."])
+    MakeNote(NOTE_COL_A, -NOTE_STEP * 2, PBM_L["|cffd4af37IP TIER|r \226\128\148 Tier syncs must be triggered manually via the IP toggle."])
+    MakeNote(NOTE_COL_A, -NOTE_STEP * 3, PBM_L["|cffd4af37COOLDOWN|r \226\128\148 10-sec shared cooldown covers level, IP, and money commands."])
+    MakeNote(NOTE_COL_A, -NOTE_STEP * 4, PBM_L["|cffd4af37SECURITY KEY|r \226\128\148 Controls who can link to your account. Keep it private."])
 
-    MakeNote(NOTE_COL_B, 0,              "|cffd4af37DEATH KNIGHTS|r \226\128\148 DK's can't pull up sub-55 levels/IP. Configurable server-side.")
-    MakeNote(NOTE_COL_B, -NOTE_STEP,     "|cffd4af37MONEY POOL|r \226\128\148 Toggle money pooling on/off. Pools group gold onto the caller.")
-    MakeNote(NOTE_COL_B, -NOTE_STEP * 2, "|cffd4af37GROUP LIMIT|r \226\128\148 Default cap is 6 accounts per group (up to 10 server-side).")
-    MakeNote(NOTE_COL_B, -NOTE_STEP * 3, "|cffd4af37UNBIND ALL|r \226\128\148 Uses the GM command to reset target instances. (Automated in the Playerbots tab)")
+    MakeNote(NOTE_COL_B, 0,              PBM_L["|cffd4af37DEATH KNIGHTS|r \226\128\148 DK's can't pull up sub-55 levels/IP. Configurable server-side."])
+    MakeNote(NOTE_COL_B, -NOTE_STEP,     PBM_L["|cffd4af37MONEY POOL|r \226\128\148 Toggle money pooling on/off. Pools group gold onto the caller."])
+    MakeNote(NOTE_COL_B, -NOTE_STEP * 2, PBM_L["|cffd4af37GROUP LIMIT|r \226\128\148 Default cap is 6 accounts per group (up to 10 server-side)."])
+    MakeNote(NOTE_COL_B, -NOTE_STEP * 3, PBM_L["|cffd4af37UNBIND ALL|r \226\128\148 Uses the GM command to reset target instances. (Automated in the Playerbots tab)"])
 
     -- ── Bottom footer ──────────────────────────────────────────
     local lsFooter = lsPanel:CreateFontString(nil, "OVERLAY")
@@ -510,7 +510,7 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     lsFooter:SetPoint("BOTTOMRIGHT", lsPanel, "BOTTOMRIGHT", -LS_MARGIN, 8)
     lsFooter:SetJustifyH("CENTER")
     lsFooter:SetTextColor(0.75, 0.75, 0.75)
-    lsFooter:SetText("** This tab requires |cffd4af37mod-levelsync|r on your server. Latest release at |cff66ccffgithub.com/Lichborne-AC/mod-levelsync|r")
+    lsFooter:SetText(PBM_L["** This tab requires |cffd4af37mod-levelsync|r on your server. Latest release at |cff66ccffgithub.com/Lichborne-AC/mod-levelsync|r"])
 
     -- ── Export LevelSync data into the PBM tracker ─────────────
     -- Copies each synced character's name, class, level and IP tier into the
@@ -519,7 +519,7 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     local function lsExportToPBM()
         local d = lsData
         if not d.members or #d.members == 0 then
-            LichborneOutput("|cffC69B3APBM:|r No LevelSync data to export. Click |cffd4af37Refresh|r first.", 1, 0.6, 0.2)
+            LichborneOutput("|cffC69B3APBM:|r " .. PBM_L["No LevelSync data to export. Click |cffd4af37Refresh|r first."], 1, 0.6, 0.2)
             return
         end
         if not LichborneTrackerDB.rows   then LichborneTrackerDB.rows   = {} end
@@ -568,14 +568,14 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
         if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
         if PBM.State.raidRowFrames    and #PBM.State.raidRowFrames    > 0 then PBM.RefreshRaidRows()    end
 
-        local msg = "Exported LevelSync: |cff44ff44"..added.." added|r, |cffd4af37"..updated.." updated|r"
-        if skipped > 0 then msg = msg..", |cffff6666"..skipped.." skipped (unknown class)|r" end
+        local msg = string.format(PBM_L["Exported LevelSync: |cff44ff44%s added|r, |cffd4af37%s updated|r"], tostring(added), tostring(updated))
+        if skipped > 0 then msg = msg .. string.format(PBM_L[", |cffff6666%s skipped (unknown class)|r"], tostring(skipped)) end
         LichborneOutput("|cffC69B3APBM:|r "..msg, 1, 0.85, 0)
     end
 
     if not StaticPopupDialogs["PBM_EXPORT_LEVELSYNC"] then
         StaticPopupDialogs["PBM_EXPORT_LEVELSYNC"] = {
-            text         = "Are you sure you want to export LevelSync data?\n\nThis copies each synced character's |cffd4af37name, class, level, and IP tier|r into the PBM tracker.",
+            text         = PBM_L["Are you sure you want to export LevelSync data?\n\nThis copies each synced character's |cffd4af37name, class, level, and IP tier|r into the PBM tracker."],
             button1      = "Yes",
             button2      = "No",
             OnAccept     = function() lsExportToPBM() end,
@@ -596,13 +596,13 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     lsExportBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     local lsExportLbl = lsExportBtn:CreateFontString(nil, "OVERLAY")
     lsExportLbl:SetFont(LT_FONT, 11, "OUTLINE"); lsExportLbl:SetAllPoints(lsExportBtn)
-    lsExportLbl:SetJustifyH("CENTER"); lsExportLbl:SetText("|cffd4af37Export|r")
+    lsExportLbl:SetJustifyH("CENTER"); lsExportLbl:SetText("|cffd4af37" .. (PBM_L["Export"] or "Export") .. "|r")
     lsExportBtn:SetScript("OnEnter", function(self)
         self:SetBackdropColor(0.45, 0.08, 0.08, 1)
         GameTooltip:SetOwner(self, "ANCHOR_TOP")
-        GameTooltip:AddLine("Export LevelSync Data", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Copies name, class, level, and IP tier of every", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("synced character into the PBM tracker.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["Export LevelSync Data"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Copies name, class, level, and IP tier of every"], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["synced character into the PBM tracker."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     lsExportBtn:SetScript("OnLeave", function(self)
@@ -614,13 +614,13 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
     lsRebuildGrid = function()
         local d = lsData
         if d.inGroup then
-            lsAccountsFS:SetText("Accounts: |cffd4af37"..d.accountsCur.."/"..d.accountsMax.."|r")
-            lsTotalCharsFS:SetText("Characters: |cffd4af37"..d.totalChars.."|r")
-            lsLevelSyncFS:SetText("Level Sync: "..(d.levelSync and "|cff44dd44Available|r" or "|cffdd4444Disabled|r"))
-            lsIpSyncFS:SetText("IP Sync: "..(d.ipSync and "|cff44dd44Available|r" or "|cffdd4444Disabled|r"))
+            lsAccountsFS:SetText(string.format(PBM_L["Accounts: |cffd4af37%s/%s|r"], tostring(d.accountsCur), tostring(d.accountsMax)))
+            lsTotalCharsFS:SetText(string.format(PBM_L["Characters: |cffd4af37%s|r"], tostring(d.totalChars)))
+            lsLevelSyncFS:SetText(PBM_L["Level Sync: "] .. (d.levelSync and "|cff44dd44Available|r" or "|cffdd4444Disabled|r"))
+            lsIpSyncFS:SetText(PBM_L["IP Sync: "] .. (d.ipSync and "|cff44dd44Available|r" or "|cffdd4444Disabled|r"))
         else
-            lsAccountsFS:SetText("Accounts: —"); lsTotalCharsFS:SetText("Characters: —")
-            lsLevelSyncFS:SetText("Level Sync: —"); lsIpSyncFS:SetText("IP Sync: —")
+            lsAccountsFS:SetText(PBM_L["Accounts: —"]); lsTotalCharsFS:SetText(PBM_L["Characters: —"])
+            lsLevelSyncFS:SetText(PBM_L["Level Sync: —"]); lsIpSyncFS:SetText(PBM_L["IP Sync: —"])
         end
 
         local accountOrder, accountMap = {}, {}
@@ -636,7 +636,7 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
             local cell  = lsCells[cellIdx]
             local accId = accountOrder[cellIdx]
             if not accId then
-                cell.hdrFS:SetTextColor(0.35, 0.35, 0.50); cell.hdrFS:SetText("— empty —")
+                cell.hdrFS:SetTextColor(0.35, 0.35, 0.50); cell.hdrFS:SetText(PBM_L["— empty —"])
                 cell.frame:SetBackdropBorderColor(0.25, 0.35, 0.55, 0.80)
                 for r = 1, LS_SLOT_CNT do
                     cell.rows[r].nameFS:SetText(""); cell.rows[r].lvlFS:SetText("")
@@ -646,7 +646,7 @@ function PBM.BuildLevelSyncPanel(lsPanel, ctx)
                 end
             else
                 cell.hdrFS:SetTextColor(LT_GOLD_R, LT_GOLD_G, LT_GOLD_B)
-                cell.hdrFS:SetText("Account "..accId)
+                cell.hdrFS:SetText(PBM_L["Account "] .. accId)
                 cell.frame:SetBackdropBorderColor(LT_GOLD_R*0.7, LT_GOLD_G*0.7, LT_GOLD_B*0.7, 0.9)
                 local members = accountMap[accId]
                 for r = 1, LS_SLOT_CNT do

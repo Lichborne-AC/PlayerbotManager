@@ -13,14 +13,14 @@ function PBM.SendToGroup(cmd)
     elseif GetNumPartyMembers() > 0 then
         SendChatMessage(cmd, "PARTY")
     else
-        DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r Not in a group.")
+        DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. PBM_L["Not in a group."])
     end
 end
 
 -- Whisper a command to a specific bot by name.
 function PBM.SendToBot(cmd, name)
     if not name or name == "" then
-        DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r No bot name specified.")
+        DEFAULT_CHAT_FRAME:AddMessage("|cffFFAA00PBM:|r " .. PBM_L["No bot name specified."])
         return
     end
     -- Track CO/NC type so unsolicited Strategies replies route correctly

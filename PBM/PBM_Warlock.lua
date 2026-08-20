@@ -1,5 +1,8 @@
 PBM = PBM or {}
 
+-- Localize translation engine
+local PBM_L = PBM_L or PBM.L
+
 -- Timer helper (mirrors Multibot pattern): uses C_Timer if available, else OnUpdate fallback
 local function PBM_TimerAfter(delay, callback)
     if C_Timer and C_Timer.After then
@@ -18,12 +21,12 @@ end
 
 -- Talent spec templates for the Set Talents menu
 local WARLOCK_TALENT_SPECS = {
-    { label="Affliction |cffffcc00PvE|r",  spec="affli pve",  wowSpec="Affliction",  icon="Interface\\Icons\\Spell_Shadow_DeathCoil"      },
-    { label="Demonology |cffffcc00PvE|r",  spec="demo pve",   wowSpec="Demonology",  icon="Interface\\Icons\\Spell_Shadow_Metamorphosis"  },
-    { label="Destruction |cffffcc00PvE|r", spec="destro pve", wowSpec="Destruction", icon="Interface\\Icons\\Spell_Shadow_RainOfFire"     },
-    { label="Affliction |cffff4444PvP|r",  spec="affli pvp",  wowSpec="Affliction",  icon="Interface\\Icons\\Spell_Shadow_DeathCoil"      },
-    { label="Demonology |cffff4444PvP|r",  spec="demo pvp",   wowSpec="Demonology",  icon="Interface\\Icons\\Spell_Shadow_Metamorphosis"  },
-    { label="Destruction |cffff4444PvP|r", spec="destro pvp", wowSpec="Destruction", icon="Interface\\Icons\\Spell_Shadow_RainOfFire"     },
+    { label=PBM_L["Affliction"] .. " |cffffcc00PvE|r",  spec="affli pve",  wowSpec="Affliction",  icon="Interface\\Icons\\Spell_Shadow_DeathCoil"      },
+    { label=PBM_L["Demonology"] .. " |cffffcc00PvE|r",  spec="demo pve",   wowSpec="Demonology",  icon="Interface\\Icons\\Spell_Shadow_Metamorphosis"  },
+    { label=PBM_L["Destruction"] .. " |cffffcc00PvE|r", spec="destro pve", wowSpec="Destruction", icon="Interface\\Icons\\Spell_Shadow_RainOfFire"     },
+    { label=PBM_L["Affliction"] .. " |cffff4444PvP|r",  spec="affli pvp",  wowSpec="Affliction",  icon="Interface\\Icons\\Spell_Shadow_DeathCoil"      },
+    { label=PBM_L["Demonology"] .. " |cffff4444PvP|r",  spec="demo pvp",   wowSpec="Demonology",  icon="Interface\\Icons\\Spell_Shadow_Metamorphosis"  },
+    { label=PBM_L["Destruction"] .. " |cffff4444PvP|r", spec="destro pvp", wowSpec="Destruction", icon="Interface\\Icons\\Spell_Shadow_RainOfFire"     },
 }
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -177,37 +180,37 @@ function PBM.OpenWarlockMenu(row)
         local stonesColW  = 2 * EXT_ICON_SIZE + 4
 
         -- ── Row 1: Spec columns ──────────────────────────────────────
-        MakeSpecBox(col1X, specBoxY, SPEC_COL_W, "Affliction",
+        MakeSpecBox(col1X, specBoxY, SPEC_COL_W, PBM_L["Affliction"],
             "Interface\\Icons\\Spell_Shadow_DeathCoil")
-        MakeSpecBox(col2X, specBoxY, SPEC_COL_W, "Demonology",
+        MakeSpecBox(col2X, specBoxY, SPEC_COL_W, PBM_L["Demonology"],
             "Interface\\Icons\\Spell_Shadow_Metamorphosis")
-        MakeSpecBox(col3X, specBoxY, SPEC_COL_W, "Destruction",
+        MakeSpecBox(col3X, specBoxY, SPEC_COL_W, PBM_L["Destruction"],
             "Interface\\Icons\\Spell_Shadow_RainOfFire")
 
         local treeAffliBtn = MakeTreeBtn(col1X + ICON_OFF, specIconY,
             "Interface\\Icons\\Spell_Shadow_DeathCoil",
             function()
-                GameTooltip:SetText("|cffffcc00Affliction|r |cff999999- |r|cff8787EDaffli|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Affliction DoT specialization|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Demonology, Destruction.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Affliction"] .. "|r |cff999999- |r|cff8787EDaffli|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Affliction DoT specialization"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Mutually exclusive with Demonology, Destruction."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeAffliBtn = treeAffliBtn
 
         local treeDemoBtn = MakeTreeBtn(col2X + ICON_OFF, specIconY,
             "Interface\\Icons\\Spell_Shadow_Metamorphosis",
             function()
-                GameTooltip:SetText("|cffffcc00Demonology|r |cff999999- |r|cff8787EDdemo|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Demonology burst specialization|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Affliction, Destruction.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Demonology"] .. "|r |cff999999- |r|cff8787EDdemo|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Demonology burst specialization"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Mutually exclusive with Affliction, Destruction."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeDemoBtn = treeDemoBtn
 
         local treeDestroBtn = MakeTreeBtn(col3X + ICON_OFF, specIconY,
             "Interface\\Icons\\Spell_Shadow_RainOfFire",
             function()
-                GameTooltip:SetText("|cffffcc00Destruction|r |cff999999- |r|cff8787EDdestro|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Destruction fire specialization|r", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Mutually exclusive with Affliction, Demonology.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Destruction"] .. "|r |cff999999- |r|cff8787EDdestro|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Destruction fire specialization"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Mutually exclusive with Affliction, Demonology."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeDestroBtn = treeDestroBtn
 
@@ -216,98 +219,98 @@ function PBM.OpenWarlockMenu(row)
         local R2_TOTAL = 3 * EXT_ICON_SIZE + 2 * 4
         local R2_PAD   = math.floor((TREE_TOTAL_W - R2_TOTAL) / 2)
         local function r2X(i) return TREE_X + R2_PAD + i * (EXT_ICON_SIZE + 4) end
-        MakeWideBox(TREE_X + R2_PAD, r2BoxY, R2_TOTAL, "Combat")
+        MakeWideBox(TREE_X + R2_PAD, r2BoxY, R2_TOTAL, PBM_L["Combat"])
 
         local treeWarlockAoeBtn = MakeTreeBtn(r2X(0), r2IconY,
             "Interface\\Icons\\Spell_Frost_IceStorm",
             function()
-                GameTooltip:SetText("|cffffcc00AoE|r |cff999999- |r|cff8787EDaoe|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Warlock AoE rotation|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["AoE"] .. "|r |cff999999- |r|cff8787EDaoe|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Warlock AoE rotation"] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeWarlockAoeBtn = treeWarlockAoeBtn
 
         local treeMetaMeleeBtn = MakeTreeBtn(r2X(1), r2IconY,
             "Interface\\Icons\\Spell_Shadow_DemonForm",
             function()
-                GameTooltip:SetText("|cffffcc00Meta Melee|r |cff999999- |r|cff8787EDmeta melee|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Demonology melee mode|r", 1, 1, 1)
-                GameTooltip:AddLine("While |cff8787EDImmolation Aura|r is active,", 1, 1, 1)
-                GameTooltip:AddLine("closes to melee and uses |cff8787EDDemon Charge|r.", 1, 1, 1)
-                GameTooltip:AddLine("No effect without |cffffcc00Metamorphosis|r active.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Meta Melee"] .. "|r |cff999999- |r|cff8787EDmeta melee|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Demonology melee mode"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["While |cff8787EDImmolation Aura|r is active,"], 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["closes to melee and uses |cff8787EDDemon Charge|r."], 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["No effect without |cffffcc00Metamorphosis|r active."], 1, 1, 1)
             end)
         LichborneWarlockMenu.treeMetaMeleeBtn = treeMetaMeleeBtn
 
         local treeTankBtn = MakeTreeBtn(r2X(2), r2IconY,
             "Interface\\Icons\\Ability_Warrior_ShieldMastery",
             function()
-                GameTooltip:SetText("|cffffcc00Tank|r |cff999999- |r|cff8787EDtank|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Warlock tank role|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Tank"] .. "|r |cff999999- |r|cff8787EDtank|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Warlock tank role"] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeTankBtn = treeTankBtn
 
 
         -- ── Left column: Curses (1-wide) beside Affliction ──────────
-        MakeSpecBox(cursesHdrX, cursesHdrY, 44, "Curses")
+        MakeSpecBox(cursesHdrX, cursesHdrY, 44, PBM_L["Curses"])
 
         local treeCurseAgonyBtn = MakeTreeBtn(cursesX, curseIcon1Y,
             "Interface\\Icons\\Spell_Shadow_CurseOfSargeras",
             function()
-                GameTooltip:SetText("|cffffcc00Curse of Agony|r |cff999999- |r|cff8787EDcurse of agony|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Shadow DoT curse|r", 1, 1, 1)
-                GameTooltip:AddLine("Stacking shadow damage over 24 seconds.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one curse active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Curse of Agony"] .. "|r |cff999999- |r|cff8787EDcurse of agony|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Shadow DoT curse"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Stacking shadow damage over 24 seconds."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one curse active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeCurseAgonyBtn = treeCurseAgonyBtn
 
         local treeCurseElementsBtn = MakeTreeBtn(cursesX, curseIcon2Y,
             "Interface\\Icons\\Spell_Shadow_ChillTouch",
             function()
-                GameTooltip:SetText("|cffffcc00Curse of the Elements|r |cff999999- |r|cff8787EDcurse of elements|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Spell damage amplifier|r", 1, 1, 1)
-                GameTooltip:AddLine("Increases Fire, Frost, Arcane, Shadow damage taken.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one curse active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Curse of the Elements"] .. "|r |cff999999- |r|cff8787EDcurse of elements|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Spell damage amplifier"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Increases Fire, Frost, Arcane, Shadow damage taken."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one curse active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeCurseElementsBtn = treeCurseElementsBtn
 
         local treeCurseExhaustionBtn = MakeTreeBtn(cursesX, curseIcon3Y,
             "Interface\\Icons\\Spell_Shadow_GrimWard",
             function()
-                GameTooltip:SetText("|cffffcc00Curse of Exhaustion|r |cff999999- |r|cff8787EDcurse of exhaustion|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Movement speed slow curse|r", 1, 1, 1)
-                GameTooltip:AddLine("Reduces target movement speed by 30%.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one curse active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Curse of Exhaustion"] .. "|r |cff999999- |r|cff8787EDcurse of exhaustion|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Movement speed slow curse"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Reduces target movement speed by 30%."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one curse active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeCurseExhaustionBtn = treeCurseExhaustionBtn
 
         local treeCurseDoomBtn = MakeTreeBtn(cursesX, curseIcon4Y,
             "Interface\\Icons\\Spell_Shadow_AuraOfDarkness",
             function()
-                GameTooltip:SetText("|cffffcc00Curse of Doom|r |cff999999- |r|cff8787EDcurse of doom|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Heavy delayed-hit curse|r", 1, 1, 1)
-                GameTooltip:AddLine("Massive shadow damage after 60 seconds.", 1, 1, 1)
-                GameTooltip:AddLine("Best on long boss fights.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one curse active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Curse of Doom"] .. "|r |cff999999- |r|cff8787EDcurse of doom|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Heavy delayed-hit curse"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Massive shadow damage after 60 seconds."], 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Best on long boss fights."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one curse active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeCurseDoomBtn = treeCurseDoomBtn
 
         local treeCurseWeaknessBtn = MakeTreeBtn(cursesX, curseIcon5Y,
             "Interface\\Icons\\Spell_Shadow_CurseOfMannoroth",
             function()
-                GameTooltip:SetText("|cffffcc00Curse of Weakness|r |cff999999- |r|cff8787EDcurse of weakness|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Attack power reduction curse|r", 1, 1, 1)
-                GameTooltip:AddLine("Reduces target attack power by 478.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one curse active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Curse of Weakness"] .. "|r |cff999999- |r|cff8787EDcurse of weakness|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Attack power reduction curse"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Reduces target attack power by 478."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one curse active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeCurseWeaknessBtn = treeCurseWeaknessBtn
 
         local treeCurseTonguesBtn = MakeTreeBtn(cursesX, curseIcon6Y,
             "Interface\\Icons\\Spell_Shadow_CurseOfTounges",
             function()
-                GameTooltip:SetText("|cffffcc00Curse of Tongues|r |cff999999- |r|cff8787EDcurse of tongues|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Spellcasting slow curse|r", 1, 1, 1)
-                GameTooltip:AddLine("Reduces target casting speed by 50%.", 1, 1, 1)
-                GameTooltip:AddLine("Best against caster targets.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one curse active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Curse of Tongues"] .. "|r |cff999999- |r|cff8787EDcurse of tongues|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Spellcasting slow curse"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Reduces target casting speed by 50%."], 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Best against caster targets."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one curse active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeCurseTonguesBtn = treeCurseTonguesBtn
 
@@ -322,7 +325,7 @@ function PBM.OpenWarlockMenu(row)
         stonesHdrLbl:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
         stonesHdrLbl:SetTextColor(0.78, 0.61, 0.23, 1)
         stonesHdrLbl:SetAllPoints(); stonesHdrLbl:SetJustifyH("CENTER")
-        stonesHdrLbl:SetText("Stones")
+        stonesHdrLbl:SetText(PBM_L["Stones"])
 
         local treeStoneSpellBtn = CreateFrame("Button", nil, LichborneWarlockMenu)
         treeStoneSpellBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
@@ -337,10 +340,10 @@ function PBM.OpenWarlockMenu(row)
         treeStoneSpellBtn:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
             GameTooltip:SetFrameLevel(LichborneWarlockMenu:GetFrameLevel() + 20)
-            GameTooltip:SetText("|cffffcc00Spellstone|r |cff999999- |r|cff8787EDspellstone|r |cffee4433NC|r")
-            GameTooltip:AddLine("|cffffcc00Apply Spellstone|r", 1, 1, 1)
-            GameTooltip:AddLine("Max |cff3A8FC4mana|r, spell |cffFF9900crit|r, dispels one magic effect.", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF4444Only one stone active at a time.|r", 1, 1, 1)
+            GameTooltip:SetText("|cffffcc00" .. PBM_L["Spellstone"] .. "|r |cff999999- |r|cff8787EDspellstone|r |cffee4433NC|r")
+            GameTooltip:AddLine("|cffffcc00" .. PBM_L["Apply Spellstone"] .. "|r", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Max |cff3A8FC4mana|r, spell |cffFF9900crit|r, dispels one magic effect."], 1, 1, 1)
+            GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one stone active at a time."] .. "|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         treeStoneSpellBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -359,10 +362,10 @@ function PBM.OpenWarlockMenu(row)
         treeStoneFireBtn:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
             GameTooltip:SetFrameLevel(LichborneWarlockMenu:GetFrameLevel() + 20)
-            GameTooltip:SetText("|cffffcc00Firestone|r |cff999999- |r|cff8787EDfirestone|r |cffee4433NC|r")
-            GameTooltip:AddLine("|cffffcc00Apply Firestone|r", 1, 1, 1)
-            GameTooltip:AddLine("Adds |cffFF4444fire damage|r procs to weapon.", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF4444Only one stone active at a time.|r", 1, 1, 1)
+            GameTooltip:SetText("|cffffcc00" .. PBM_L["Firestone"] .. "|r |cff999999- |r|cff8787EDfirestone|r |cffee4433NC|r")
+            GameTooltip:AddLine("|cffffcc00" .. PBM_L["Apply Firestone"] .. "|r", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Adds |cffFF4444fire damage|r procs to weapon."], 1, 1, 1)
+            GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one stone active at a time."] .. "|r", 1, 1, 1)
             GameTooltip:Show()
         end)
         treeStoneFireBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -385,7 +388,7 @@ function PBM.OpenWarlockMenu(row)
         ccSideHdrLabel:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
         ccSideHdrLabel:SetTextColor(0.78, 0.61, 0.23, 1)
         ccSideHdrLabel:SetAllPoints(); ccSideHdrLabel:SetJustifyH("CENTER")
-        ccSideHdrLabel:SetText("CC")
+        ccSideHdrLabel:SetText(PBM_L["CC"])
 
         local treeCCBtn = CreateFrame("Button", nil, LichborneWarlockMenu)
         treeCCBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
@@ -400,10 +403,10 @@ function PBM.OpenWarlockMenu(row)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
             GameTooltip:SetFrameLevel(LichborneWarlockMenu:GetFrameLevel() + 20)
             GameTooltip:ClearLines()
-            GameTooltip:SetText("|cffffcc00CC|r |cff999999- |r|cff8787EDcc|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Crowd control|r", 1, 1, 1)
-            GameTooltip:AddLine("Fears or Banishes extra targets in combat.", 1, 1, 1)
-            GameTooltip:AddLine("Re-applies when the effect breaks.", 1, 1, 1)
+            GameTooltip:SetText("|cffffcc00" .. PBM_L["CC"] .. "|r |cff999999- |r|cff8787EDcc|r |cffee4433CO|r")
+            GameTooltip:AddLine("|cffffcc00" .. PBM_L["Crowd control"] .. "|r", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Fears or Banishes extra targets in combat."], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Re-applies when the effect breaks."], 1, 1, 1)
             GameTooltip:Show()
         end)
         treeCCBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -412,56 +415,56 @@ function PBM.OpenWarlockMenu(row)
         LichborneWarlockMenu.treeCCBtn = treeCCBtn
 
         -- ── Right column: Pets (1-wide) beside Destruction ─────────
-        MakeSpecBox(petsX, petsHdrY, EXT_ICON_SIZE, "Pets")
+        MakeSpecBox(petsX, petsHdrY, EXT_ICON_SIZE, PBM_L["Pets"])
 
         local treePetImpBtn = MakeTreeBtn(petsX, petIcon1Y,
             "Interface\\Icons\\Spell_Shadow_SummonImp",
             function()
-                GameTooltip:SetText("|cffffcc00Imp|r |cff999999- |r|cff8787EDimp|r |cffee4433NC|r")
-                GameTooltip:AddLine("|cffffcc00Summon Imp|r", 1, 1, 1)
-                GameTooltip:AddLine("Ranged fire damage, Firebolt spam.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one pet active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Imp"] .. "|r |cff999999- |r|cff8787EDimp|r |cffee4433NC|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Summon Imp"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Ranged fire damage, Firebolt spam."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one pet active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treePetImpBtn = treePetImpBtn
 
         local treePetVoidBtn = MakeTreeBtn(petsX, petIcon2Y,
             "Interface\\Icons\\Spell_Shadow_SummonVoidWalker",
             function()
-                GameTooltip:SetText("|cffffcc00Voidwalker|r |cff999999- |r|cff8787EDvoidwalker|r |cffee4433NC|r")
-                GameTooltip:AddLine("|cffffcc00Summon Voidwalker|r", 1, 1, 1)
-                GameTooltip:AddLine("Tanking pet — taunts and absorbs damage.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one pet active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Voidwalker"] .. "|r |cff999999- |r|cff8787EDvoidwalker|r |cffee4433NC|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Summon Voidwalker"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Tanking pet — taunts and absorbs damage."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one pet active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treePetVoidBtn = treePetVoidBtn
 
         local treePetSuccubusBtn = MakeTreeBtn(petsX, petIcon3Y,
             "Interface\\Icons\\Spell_Shadow_SummonSuccubus",
             function()
-                GameTooltip:SetText("|cffffcc00Succubus|r |cff999999- |r|cff8787EDsuccubus|r |cffee4433NC|r")
-                GameTooltip:AddLine("|cffffcc00Summon Succubus|r", 1, 1, 1)
-                GameTooltip:AddLine("DPS pet — |cff8787EDLash of Pain, Seduction|r CC.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one pet active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Succubus"] .. "|r |cff999999- |r|cff8787EDsuccubus|r |cffee4433NC|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Summon Succubus"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["DPS pet — |cff8787EDLash of Pain, Seduction|r CC."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one pet active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treePetSuccubusBtn = treePetSuccubusBtn
 
         local treePetFelhunterBtn = MakeTreeBtn(petsX, petIcon4Y,
             "Interface\\Icons\\Spell_Shadow_SummonFelHunter",
             function()
-                GameTooltip:SetText("|cffffcc00Felhunter|r |cff999999- |r|cff8787EDfelhunter|r |cffee4433NC|r")
-                GameTooltip:AddLine("|cffffcc00Summon Felhunter|r", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDSpell Lock|r interrupts enemy casters.", 1, 1, 1)
-                GameTooltip:AddLine("|cff8787EDDevour Magic|r purges buffs, cleanses allies.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one pet active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Felhunter"] .. "|r |cff999999- |r|cff8787EDfelhunter|r |cffee4433NC|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Summon Felhunter"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["|cff8787EDSpell Lock|r interrupts enemy casters."], 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["|cff8787EDDevour Magic|r purges buffs, cleanses allies."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one pet active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treePetFelhunterBtn = treePetFelhunterBtn
 
         local treePetFelguardBtn = MakeTreeBtn(petsX, petIcon5Y,
             "Interface\\Icons\\Spell_Shadow_SummonFelGuard",
             function()
-                GameTooltip:SetText("|cffffcc00Felguard|r |cff999999- |r|cff8787EDfelguard|r |cffee4433NC|r")
-                GameTooltip:AddLine("|cffffcc00Summon Felguard|r", 1, 1, 1)
-                GameTooltip:AddLine("Melee DPS pet, empowered by |cffffcc00Demonic Empowerment|r.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one pet active at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Felguard"] .. "|r |cff999999- |r|cff8787EDfelguard|r |cffee4433NC|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Summon Felguard"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Melee DPS pet, empowered by |cffffcc00Demonic Empowerment|r."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one pet active at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treePetFelguardBtn = treePetFelguardBtn
 
@@ -469,45 +472,45 @@ function PBM.OpenWarlockMenu(row)
         local SS_TOTAL = 4 * EXT_ICON_SIZE + 3 * 4
         local ssPad    = math.floor((TREE_TOTAL_W - SS_TOTAL) / 2)
         local function ssX(i) return TREE_X + ssPad + i * (EXT_ICON_SIZE + 4) end
-        MakeWideBox(TREE_X + ssPad, r5BoxY, SS_TOTAL, "Soulstone")
+        MakeWideBox(TREE_X + ssPad, r5BoxY, SS_TOTAL, PBM_L["Soulstone"])
 
         local treeSSSelfBtn = MakeTreeBtn(ssX(0), r5IconY,
             "Interface\\Icons\\Spell_Shadow_Shadowform",
             function()
-                GameTooltip:SetText("|cffffcc00SS Self|r |cff999999- |r|cff8787EDss self|r |cffee4433NC|r")
-                GameTooltip:AddLine("|cffffcc00Soulstone self|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot places |cff8787EDSoulstone|r on itself.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one Soulstone target at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["SS Self"] .. "|r |cff999999- |r|cff8787EDss self|r |cffee4433NC|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Soulstone self"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot places |cff8787EDSoulstone|r on itself."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one Soulstone target at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeSSSelfBtn = treeSSSelfBtn
 
         local treeSSMasterBtn = MakeTreeBtn(ssX(1), r5IconY,
             "Interface\\Icons\\Achievement_WorldEvent_LittleHelper",
             function()
-                GameTooltip:SetText("|cffffcc00SS Master|r |cff999999- |r|cff8787EDss master|r |cffee4433NC|r")
-                GameTooltip:AddLine("|cffffcc00Soulstone the group leader|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot places |cff8787EDSoulstone|r on the group leader.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one Soulstone target at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["SS Master"] .. "|r |cff999999- |r|cff8787EDss master|r |cffee4433NC|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Soulstone the group leader"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot places |cff8787EDSoulstone|r on the group leader."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one Soulstone target at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeSSMasterBtn = treeSSMasterBtn
 
         local treeSSTankBtn = MakeTreeBtn(ssX(2), r5IconY,
             "Interface\\Icons\\Ability_Warrior_DefensiveStance",
             function()
-                GameTooltip:SetText("|cffffcc00SS Tank|r |cff999999- |r|cff8787EDss tank|r |cffee4433NC|r")
-                GameTooltip:AddLine("|cffffcc00Soulstone the main tank|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot places |cff8787EDSoulstone|r on the tank.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one Soulstone target at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["SS Tank"] .. "|r |cff999999- |r|cff8787EDss tank|r |cffee4433NC|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Soulstone the main tank"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot places |cff8787EDSoulstone|r on the tank."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one Soulstone target at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeSSTankBtn = treeSSTankBtn
 
         local treeSSHealerBtn = MakeTreeBtn(ssX(3), r5IconY,
             "Interface\\Icons\\INV_Elemental_Primal_Life",
             function()
-                GameTooltip:SetText("|cffffcc00SS Healer|r |cff999999- |r|cff8787EDss healer|r |cffee4433NC|r")
-                GameTooltip:AddLine("|cffffcc00Soulstone the main healer|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot places |cff8787EDSoulstone|r on the healer.", 1, 1, 1)
-                GameTooltip:AddLine("|cffFF4444Only one Soulstone target at a time.|r", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["SS Healer"] .. "|r |cff999999- |r|cff8787EDss healer|r |cffee4433NC|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Soulstone the main healer"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot places |cff8787EDSoulstone|r on the healer."], 1, 1, 1)
+                GameTooltip:AddLine("|cffFF4444" .. PBM_L["Only one Soulstone target at a time."] .. "|r", 1, 1, 1)
             end)
         LichborneWarlockMenu.treeSSHealerBtn = treeSSHealerBtn
 
@@ -515,32 +518,32 @@ function PBM.OpenWarlockMenu(row)
         local R6_TOTAL = 3 * EXT_ICON_SIZE + 2 * 4
         local R6_PAD   = math.floor((TREE_TOTAL_W - R6_TOTAL) / 2)
         local function r6X(i) return TREE_X + R6_PAD + i * (EXT_ICON_SIZE + 4) end
-        MakeWideBox(TREE_X + R6_PAD, r6BoxY, R6_TOTAL, "Assist")
+        MakeWideBox(TREE_X + R6_PAD, r6BoxY, R6_TOTAL, PBM_L["Assist"])
 
         local treeTankAssistBtn = MakeTreeBtn(r6X(0), r6IconY,
             "Interface\\Icons\\inv_shield_02",
             function()
-                GameTooltip:SetText("|cffffcc00Tank Assist|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r")
-                GameTooltip:AddLine("|cffffcc00Tank target focus|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot attacks the tank's current target.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["Tank Assist"] .. "|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Tank target focus"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot attacks the tank's current target."], 1, 1, 1)
             end)
         LichborneWarlockMenu.treeTankAssistBtn = treeTankAssistBtn
 
         local treeDpsAssistBtn = MakeTreeBtn(r6X(1), r6IconY,
             "Interface\\Icons\\Ability_Warrior_Challange",
             function()
-                GameTooltip:SetText("|cffffcc00DPS Assist|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r")
-                GameTooltip:AddLine("|cffffcc00DPS target focus|r", 1, 1, 1)
-                GameTooltip:AddLine("Bot attacks the group's coordinated DPS target.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["DPS Assist"] .. "|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["DPS target focus"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Bot attacks the group's coordinated DPS target."], 1, 1, 1)
             end)
         LichborneWarlockMenu.treeDpsAssistBtn = treeDpsAssistBtn
 
         local treeDpsAoeBtn = MakeTreeBtn(r6X(2), r6IconY,
             "Interface\\Icons\\Spell_Shadow_RainOfFire",
             function()
-                GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cff8787EDaoe|r |cffee4433CO|r")
-                GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
-                GameTooltip:AddLine("Switches to AoE rotation on multiple targets.", 1, 1, 1)
+                GameTooltip:SetText("|cffffcc00" .. PBM_L["DPS AoE"] .. "|r |cff999999- |r|cff8787EDaoe|r |cffee4433CO|r")
+                GameTooltip:AddLine("|cffffcc00" .. PBM_L["Cross-role AoE mode"] .. "|r", 1, 1, 1)
+                GameTooltip:AddLine(PBM_L["Switches to AoE rotation on multiple targets."], 1, 1, 1)
             end)
         LichborneWarlockMenu.treeDpsAoeBtn = treeDpsAoeBtn
 

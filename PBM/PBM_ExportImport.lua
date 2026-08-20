@@ -76,7 +76,7 @@ function PBM.LB_ExportDB()
 end
 
 function PBM.LB_ImportDB(str)
-    if not str or str == "" then return nil, "Nothing to import — paste text first." end
+    if not str or str == "" then return nil, PBM_L["Nothing to import — paste text first."] end
     str = str:match("^%s*(.-)%s*$")
     local data
     if str:find(PBM.EXPORT_PREFIX, 1, true) then
@@ -87,13 +87,13 @@ function PBM.LB_ImportDB(str)
     elseif str:find(PBM.EXPORT_PREFIX_V1, 1, true) then
         data = str:sub(#PBM.EXPORT_PREFIX_V1 + 1)
     else
-        return nil, "Not a valid Lichborne export string."
+        return nil, PBM_L["Not a valid Lichborne export string."]
     end
     local fn, err = loadstring("return " .. data)
-    if not fn then return nil, "Parse error: " .. (err or "unknown") end
+    if not fn then return nil, PBM_L["Parse error: "] .. (err or PBM_L["unknown"]) end
     local ok, result = pcall(fn)
-    if not ok then return nil, "Load error: " .. tostring(result) end
-    if type(result) ~= "table" then return nil, "Invalid data format." end
+    if not ok then return nil, PBM_L["Load error: "] .. tostring(result) end
+    if type(result) ~= "table" then return nil, PBM_L["Invalid data format."] end
     -- V2 legacy: restore pipe placeholders in any ilvlLink strings
     if str:find(PBM.EXPORT_PREFIX_V2, 1, true) and result.rows then
         for _, row in pairs(result.rows) do

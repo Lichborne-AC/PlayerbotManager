@@ -1,5 +1,5 @@
 -- ============================================================
---  LBT_Constants.lua  |  Pure data — no logic, no UI, no state
+--  PBM_Constants.lua  |  Pure data — no logic, no UI, no state
 -- ============================================================
 PBM = PBM or {}
 
@@ -7,7 +7,12 @@ PBM.MAX_RAID_SLOTS = 40
 PBM.ROW_HEIGHT     = 24
 PBM.GEAR_SLOTS     = 17
 PBM.MAX_ROWS       = 18
-PBM.SLOT_ABBR      = {"Head","Neck","Shldr","Back","Chest","Wrist","Hands","Waist","Legs","Feet","Ring1","Ring2","Trnk1","Trnk2","MH","OH","Rngd"}
+PBM.SLOT_ABBR      = {
+    PBM_L["Head"], PBM_L["Neck"], PBM_L["Shldr"], PBM_L["Back"], 
+    PBM_L["Chest"], PBM_L["Wrist"], PBM_L["Hands"], PBM_L["Waist"], 
+    PBM_L["Legs"], PBM_L["Feet"], PBM_L["Ring1"], PBM_L["Ring2"], 
+    PBM_L["Trnk1"], PBM_L["Trnk2"], PBM_L["MH"], PBM_L["OH"], PBM_L["Rngd"]
+}
 
 PBM.GS_SCALE = 1.8618
 PBM.GS_ITEM_TYPES = {
@@ -53,21 +58,21 @@ PBM.GS_FORMULA = {
 
 -- ── Needs ─────────────────────────────────────────────────────
 PBM.NEEDS_SLOTS = {
-    { key="head",    icon="Interface\\Icons\\INV_Helmet_03",              label="Head"      },
-    { key="neck",    icon="Interface\\Icons\\INV_Jewelry_Necklace_07",    label="Neck"      },
-    { key="shoulder",icon="Interface\\Icons\\INV_Shoulder_22",            label="Shoulders" },
-    { key="back",    icon="Interface\\Icons\\INV_Misc_Cape_07",           label="Back"      },
-    { key="chest",   icon="Interface\\Icons\\INV_Chest_Cloth_04",         label="Chest"     },
-    { key="wrist",   icon="Interface\\Icons\\INV_Bracer_07",              label="Wrists"    },
-    { key="hands",   icon="Interface\\Icons\\INV_Gauntlets_04",           label="Hands"     },
-    { key="waist",   icon="Interface\\Icons\\INV_Belt_13",                label="Waist"     },
-    { key="legs",    icon="Interface\\Icons\\INV_Pants_06",               label="Legs"      },
-    { key="feet",    icon="Interface\\Icons\\INV_Boots_05",               label="Feet"      },
-    { key="ring",    icon="Interface\\Icons\\INV_Jewelry_Ring_02",        label="Ring"      },
-    { key="trinket", icon="Interface\\Icons\\INV_Misc_Rune_06",           label="Trinket"   },
-    { key="mh",      icon="Interface\\Icons\\INV_Sword_27",               label="Main Hand" },
-    { key="oh",      icon="Interface\\Icons\\INV_Shield_06",              label="Off Hand"  },
-    { key="ranged",  icon="Interface\\Icons\\INV_Weapon_Bow_07",          label="Ranged"    },
+    { key="head",    icon="Interface\\Icons\\INV_Helmet_03",              label=PBM_L["Head"]      },
+    { key="neck",    icon="Interface\\Icons\\INV_Jewelry_Necklace_07",    label=PBM_L["Neck"]      },
+    { key="shoulder",icon="Interface\\Icons\\INV_Shoulder_22",            label=PBM_L["Shoulders"] },
+    { key="back",    icon="Interface\\Icons\\INV_Misc_Cape_07",           label=PBM_L["Back"]      },
+    { key="chest",   icon="Interface\\Icons\\INV_Chest_Cloth_04",         label=PBM_L["Chest"]     },
+    { key="wrist",   icon="Interface\\Icons\\INV_Bracer_07",              label=PBM_L["Wrists"]    },
+    { key="hands",   icon="Interface\\Icons\\INV_Gauntlets_04",           label=PBM_L["Hands"]     },
+    { key="waist",   icon="Interface\\Icons\\INV_Belt_13",                label=PBM_L["Waist"]     },
+    { key="legs",    icon="Interface\\Icons\\INV_Pants_06",               label=PBM_L["Legs"]      },
+    { key="feet",    icon="Interface\\Icons\\INV_Boots_05",               label=PBM_L["Feet"]      },
+    { key="ring",    icon="Interface\\Icons\\INV_Jewelry_Ring_02",        label=PBM_L["Ring"]      },
+    { key="trinket", icon="Interface\\Icons\\INV_Misc_Rune_06",           label=PBM_L["Trinket"]   },
+    { key="mh",      icon="Interface\\Icons\\INV_Sword_27",               label=PBM_L["Main Hand"] },
+    { key="oh",      icon="Interface\\Icons\\INV_Shield_06",              label=PBM_L["Off Hand"]  },
+    { key="ranged",  icon="Interface\\Icons\\INV_Weapon_Bow_07",          label=PBM_L["Ranged"]    },
 }
 PBM.NEEDS_ICON_SIZE = 18
 PBM.MAX_NEEDS = 2
@@ -75,20 +80,20 @@ PBM.MAX_NEEDS = 2
 -- ── Profession Slots ────────────────────────────────────────────
 PBM.PROF_SLOTS = {
     -- Row 1 (crafting professions)
-    { key="alchemy",        icon="Interface\\Icons\\Trade_Alchemy",                label="Alchemy"        },
-    { key="blacksmithing",  icon="Interface\\Icons\\Trade_BlackSmithing",          label="Blacksmithing"  },
-    { key="jewelcrafting",  icon="Interface\\Icons\\INV_Misc_Gem_01",              label="Jewelcrafting"  },
-    { key="enchanting",     icon="Interface\\Icons\\Trade_Engraving",              label="Enchanting"     },
-    { key="engineering",    icon="Interface\\Icons\\Trade_Engineering",            label="Engineering"    },
-    { key="leatherworking", icon="Interface\\Icons\\Trade_LeatherWorking",         label="Leatherworking" },
-    { key="tailoring",      icon="Interface\\Icons\\Trade_Tailoring",              label="Tailoring"      },
+    { key="alchemy",        icon="Interface\\Icons\\Trade_Alchemy",                label=PBM_L["Alchemy"]        },
+    { key="blacksmithing",  icon="Interface\\Icons\\Trade_BlackSmithing",          label=PBM_L["Blacksmithing"]  },
+    { key="jewelcrafting",  icon="Interface\\Icons\\INV_Misc_Gem_01",              label=PBM_L["Jewelcrafting"]  },
+    { key="enchanting",     icon="Interface\\Icons\\Trade_Engraving",              label=PBM_L["Enchanting"]     },
+    { key="engineering",    icon="Interface\\Icons\\Trade_Engineering",            label=PBM_L["Engineering"]    },
+    { key="leatherworking", icon="Interface\\Icons\\Trade_LeatherWorking",         label=PBM_L["Leatherworking"] },
+    { key="tailoring",      icon="Interface\\Icons\\Trade_Tailoring",              label=PBM_L["Tailoring"]      },
     -- Row 2 (gathering / secondary professions)
-    { key="inscription",    icon="Interface\\Icons\\INV_Inscription_Tradeskill01", label="Inscription"    },
-    { key="herbalism",      icon="Interface\\Icons\\Trade_Herbalism",              label="Herbalism"      },
-    { key="mining",         icon="Interface\\Icons\\Trade_Mining",                 label="Mining"         },
-    { key="skinning",       icon="Interface\\Icons\\INV_Misc_Pelt_Wolf_01",        label="Skinning"       },
-    { key="cooking",        icon="Interface\\Icons\\INV_Misc_Food_15",             label="Cooking"        },
-    { key="fishing",        icon="Interface\\Icons\\Trade_Fishing",                label="Fishing"        },
+    { key="inscription",    icon="Interface\\Icons\\INV_Inscription_Tradeskill01", label=PBM_L["Inscription"]    },
+    { key="herbalism",      icon="Interface\\Icons\\Trade_Herbalism",              label=PBM_L["Herbalism"]      },
+    { key="mining",         icon="Interface\\Icons\\Trade_Mining",                 label=PBM_L["Mining"]         },
+    { key="skinning",       icon="Interface\\Icons\\INV_Misc_Pelt_Wolf_01",        label=PBM_L["Skinning"]       },
+    { key="cooking",        icon="Interface\\Icons\\INV_Misc_Food_15",             label=PBM_L["Cooking"]        },
+    { key="fishing",        icon="Interface\\Icons\\Trade_Fishing",                label=PBM_L["Fishing"]        },
 }
 PBM.MAX_PROFS      = 2
 PBM.MAX_CHAR_ROLES = 2
@@ -167,13 +172,13 @@ PBM.CLASS_COLORS = {
 PBM.CLASS_TABS = {"Death Knight","Druid","Hunter","Mage","Paladin","Priest","Rogue","Shaman","Warlock","Warrior","Raid","Overview"}
 -- Overrides TAB_LABELS for the tab buttons only (avg bars etc still use TAB_LABELS)
 PBM.TAB_BUTTON_LABELS = {
-    ["Death Knight"] = "Death Knight",
+    ["Death Knight"] = PBM_L["Death Knight"],
 }
 
 PBM.TAB_LABELS = {
-    ["Death Knight"]="DK",["Druid"]="Druid",["Hunter"]="Hunter",["Mage"]="Mage",
-    ["Paladin"]="Paladin",["Priest"]="Priest",["Rogue"]="Rogue",["Shaman"]="Shaman",
-    ["Warlock"]="Warlock",["Warrior"]="Warrior",["Group"]="Group",["Raid"]="Raid",["Overview"]="Overview",
+    ["Death Knight"]="DK",["Druid"]=PBM_L["Druid"],["Hunter"]=PBM_L["Hunter"],["Mage"]=PBM_L["Mage"],
+    ["Paladin"]=PBM_L["Paladin"],["Priest"]=PBM_L["Priest"],["Rogue"]=PBM_L["Rogue"],["Shaman"]=PBM_L["Shaman"],
+    ["Warlock"]=PBM_L["Warlock"],["Warrior"]=PBM_L["Warrior"],["Group"]=PBM_L["Group"],["Raid"]=PBM_L["Raid"],["Overview"]=PBM_L["Overview"],
 }
 
 -- Tier tables moved to IPTiersColor.lua (single source of truth).
@@ -181,9 +186,9 @@ PBM.TAB_LABELS = {
 -- and TIER_TOOLTIP_RAIDS are all defined there.
 
 PBM.ROLE_DEFS = {
-    {key="TNK", label="Tank",   color={r=0.00,g=0.44,b=0.87}, icon="Interface\\Icons\\Ability_Warrior_DefensiveStance"},  -- Rare blue
-    {key="HLR", label="Healer", color={r=0.12,g=1.00,b=0.00}, icon="Interface\\Icons\\Spell_ChargePositive"},             -- Uncommon green
-    {key="DPS", label="DPS",    color={r=1.00,g=0.50,b=0.00}, icon="Interface\\Icons\\Ability_DualWield"},                -- Legendary orange
+    {key="TNK", label=PBM_L["Tank"],   color={r=0.00,g=0.44,b=0.87}, icon="Interface\\Icons\\Ability_Warrior_DefensiveStance"},  -- Rare blue
+    {key="HLR", label=PBM_L["Healer"], color={r=0.12,g=1.00,b=0.00}, icon="Interface\\Icons\\Spell_ChargePositive"},             -- Uncommon green
+    {key="DPS", label=PBM_L["DPS"],    color={r=1.00,g=0.50,b=0.00}, icon="Interface\\Icons\\Ability_DualWield"},                -- Legendary orange
 }
 PBM.ROLE_BY_KEY = {}
 for _, rd in ipairs(PBM.ROLE_DEFS) do PBM.ROLE_BY_KEY[rd.key] = rd end
@@ -240,11 +245,11 @@ PBM.QUALITY_COLORS = {
 -- Sort
 PBM.SORT_GOLD = "|cffd4af37"
 PBM.SORT_OPTS = {
-    {key="gs",   label="GS",   numeric=true},
-    {key="ilvl", label="iLvL", numeric=true},
-    {key="name", label="Name", numeric=false},
-    {key="spec", label="Spec", numeric=false},
-    {key="role", label="Role", numeric=false},
+    {key="gs",   label=PBM_L["GS"],   numeric=true},
+    {key="ilvl", label=PBM_L["iLvL"], numeric=true},
+    {key="name", label=PBM_L["Name"], numeric=false},
+    {key="spec", label=PBM_L["Spec"], numeric=false},
+    {key="role", label=PBM_L["Role"], numeric=false},
 }
 
 -- Overview layout
