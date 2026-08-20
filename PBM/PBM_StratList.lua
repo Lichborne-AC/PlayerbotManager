@@ -11,16 +11,16 @@ PBM = PBM or {}
 
 -- ── Class colour hex strings ─────────────────────────────────────
 PBM.CLASS_COLOR_HEX = {
-    ["Death Knight"] = "C41F3B",
-    ["Druid"]        = "FF7D0A",
-    ["Hunter"]       = "ABD473",
-    ["Mage"]         = "40C7EB",
-    ["Paladin"]      = "F58CBA",
-    ["Priest"]       = "FFFFFF",
-    ["Rogue"]        = "FFF569",
-    ["Shaman"]       = "0070DE",
-    ["Warlock"]      = "8787ED",
-    ["Warrior"]      = "C79C6E",
+    [PBM_L["Death Knight"]] = "C41F3B",
+    [PBM_L["Druid"]]        = "FF7D0A",
+    [PBM_L["Hunter"]]       = "ABD473",
+    [PBM_L["Mage"]]         = "40C7EB",
+    [PBM_L["Paladin"]]      = "F58CBA",
+    [PBM_L["Priest"]]       = "FFFFFF",
+    [PBM_L["Rogue"]]        = "FFF569",
+    [PBM_L["Shaman"]]       = "0070DE",
+    [PBM_L["Warlock"]]      = "8787ED",
+    [PBM_L["Warrior"]]      = "C79C6E",
 }
 
 -- ── Label / name colours by tier ─────────────────────────────────
@@ -54,7 +54,7 @@ local UNIVERSAL_GREY = {
 PBM.CLASS_STRAT_LIST = {
 
     -- ── Warrior ─────────────────────────────────────────────────
-    ["Warrior"] = {
+    [PBM_L["Warrior"]] = {
         {n="tank",        lab="CO", t=1},
         {n="arms",        lab="CO", t=1},
         {n="fury",        lab="CO", t=1},
@@ -89,7 +89,7 @@ PBM.CLASS_STRAT_LIST = {
     },
 
     -- ── Paladin ──────────────────────────────────────────────────
-    ["Paladin"] = {
+    [PBM_L["Paladin"]] = {
         {n="tank",        lab="CO",   t=1},
         {n="dps",         lab="CO",   t=1},
         {n="heal",        lab="CO",   t=1},
@@ -140,7 +140,7 @@ PBM.CLASS_STRAT_LIST = {
     },
 
     -- ── Hunter ───────────────────────────────────────────────────
-    ["Hunter"] = {
+    [PBM_L["Hunter"]] = {
         {n="bm",          lab="CO",   t=1},
         {n="mm",          lab="CO",   t=1},
         {n="surv",        lab="CO",   t=1},
@@ -180,7 +180,7 @@ PBM.CLASS_STRAT_LIST = {
     },
 
     -- ── Rogue ────────────────────────────────────────────────────
-    ["Rogue"] = {
+    [PBM_L["Rogue"]] = {
         {n="dps",         lab="CO", t=1},
         {n="melee",       lab="CO", t=1},
         {n="aoe",         lab="CO", t=1},
@@ -216,7 +216,7 @@ PBM.CLASS_STRAT_LIST = {
     },
 
     -- ── Priest ───────────────────────────────────────────────────
-    ["Priest"] = {
+    [PBM_L["Priest"]] = {
         {n="holy heal",     lab="CO", t=1},
         {n="heal",          lab="CO", t=1},
         {n="shadow",        lab="CO", t=1},
@@ -257,7 +257,7 @@ PBM.CLASS_STRAT_LIST = {
     },
 
     -- ── Shaman ───────────────────────────────────────────────────
-    ["Shaman"] = {
+    [PBM_L["Shaman"]] = {
         {n="ele",              lab="CO", t=1},
         {n="enh",              lab="CO", t=1},
         {n="resto",            lab="CO", t=1},
@@ -314,7 +314,7 @@ PBM.CLASS_STRAT_LIST = {
     },
 
     -- ── Mage ─────────────────────────────────────────────────────
-    ["Mage"] = {
+    [PBM_L["Mage"]] = {
         {n="frost",       lab="CO", t=1},
         {n="fire",        lab="CO", t=1},
         {n="arcane",      lab="CO", t=1},
@@ -354,7 +354,7 @@ PBM.CLASS_STRAT_LIST = {
     },
 
     -- ── Warlock ──────────────────────────────────────────────────
-    ["Warlock"] = {
+    [PBM_L["Warlock"]] = {
         {n="affli",              lab="CO", t=1},
         {n="demo",               lab="CO", t=1},
         {n="destro",             lab="CO", t=1},
@@ -408,7 +408,7 @@ PBM.CLASS_STRAT_LIST = {
     },
 
     -- ── Druid ────────────────────────────────────────────────────
-    ["Druid"] = {
+    [PBM_L["Druid"]] = {
         {n="bear",         lab="CO", t=1},
         {n="cat",          lab="CO", t=1},
         {n="balance",      lab="CO", t=1},
@@ -454,7 +454,7 @@ PBM.CLASS_STRAT_LIST = {
     },
 
     -- ── Death Knight ─────────────────────────────────────────────
-    ["Death Knight"] = {
+    [PBM_L["Death Knight"]] = {
         {n="blood",      lab="CO", t=1},
         {n="frost",      lab="CO", t=1},
         {n="unholy",     lab="CO", t=1},
@@ -538,9 +538,9 @@ function PBM.InstallTieredStratDisplay(menuFrame, cls)
     }
     -- Canonical key → full display name shown in the strategy list
     local STRAT_DISPLAY = {
-        ["ele"]   = "Elemental",
-        ["enh"]   = "Enhancement",
-        ["resto"] = "resto",
+        ["ele"]   = PBM_L["Elemental"],
+        ["enh"]   = PBM_L["Enhancement"],
+        ["resto"] = PBM_L["Restoration"],
     }
 
     local CLASS_FILTER = {}
@@ -599,7 +599,12 @@ function PBM.InstallTieredStratDisplay(menuFrame, cls)
                     if lname == "pvp" then
                         nameHex = LAB_RED
                     elseif lname == "heal" or lname == "resto" or lname == "healer dps" then
-                        local healClasses = {Paladin=true, Druid=true, Priest=true, Shaman=true}
+                        local healClasses = {
+                            [PBM_L["Paladin"]] = true,
+                            [PBM_L["Druid"]]   = true,
+                            [PBM_L["Priest"]]  = true,
+                            [PBM_L["Shaman"]]  = true
+                        }
                         nameHex = healClasses[cls] and clsHex or LAB_GOLD
                     else
                         nameHex = clsHex

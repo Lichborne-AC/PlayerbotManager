@@ -31,7 +31,7 @@ PBM.RefreshOverviewRows = function()
     local g = LichborneTrackerDB.allGroup or "A"
     if LichborneAllPageLbl then
         local pageNum = ({A="1",B="2",C="3"})[g] or g
-        LichborneAllPageLbl:SetText("|cffd4af37Page "..pageNum.." v|r")
+        LichborneAllPageLbl:SetText(string.format("|cffd4af37"..PBM_L["Page %s v"].."|r", pageNum))
     end
 
     -- Overflow sync: rebuild all three groups from class tabs sequentially
@@ -327,9 +327,9 @@ PBM.RefreshOverviewRows = function()
                     local charName = data.name
                     rf.roleArea:SetScript("OnEnter", function()
                         GameTooltip:SetOwner(rf.roleArea, "ANCHOR_RIGHT")
-                        GameTooltip:AddLine("Role", 1, 1, 1)
+                        GameTooltip:AddLine(PBM_L["Role"], 1, 1, 1)
                         local fr2 = PBM.GetFilterRolesByName(charName) or {}
-                        local roleLabels = {T="Tank",H="Healer",D="DPS",A="AoE"}
+                        local roleLabels = {T=PBM_L["Tank"],H=PBM_L["Healer"],D=PBM_L["DPS"],A=PBM_L["AoE"]}
                         local roleColors = {T={0.20,0.60,1.00},H={0.20,1.00,0.40},D={1.00,0.40,0.20},A={0.58,0.51,0.79}}
                         local any = false
                         for _, k in ipairs({"T","H","D","A"}) do
@@ -340,8 +340,8 @@ PBM.RefreshOverviewRows = function()
                                 any = true
                             end
                         end
-                        if not any then GameTooltip:AddLine("No role set", 0.5,0.5,0.5) end
-                        GameTooltip:AddLine("|cff888888Click to set  ·  Right-click to clear|r", 0.6,0.6,0.6)
+                        if not any then GameTooltip:AddLine(PBM_L["No role set"], 0.5,0.5,0.5) end
+                        GameTooltip:AddLine(PBM_L["|cff888888Click to set  ·  Right-click to clear|r"], 0.6,0.6,0.6)
                         GameTooltip:Show()
                     end)
                     rf.roleArea:SetScript("OnClick", function(self, btn)
@@ -360,10 +360,10 @@ PBM.RefreshOverviewRows = function()
                     -- Filter off: restore static tooltip, remove click
                     rf.roleArea:SetScript("OnEnter", function()
                         GameTooltip:SetOwner(rf.roleArea, "ANCHOR_RIGHT")
-                        GameTooltip:AddLine("Role", 1, 1, 1)
+                        GameTooltip:AddLine(PBM_L["Role"], 1, 1, 1)
                         if hasData then
                             local roles = PBM.GetSortedVisRoles(data.name)
-                            local roleLabels = {T="Tank",H="Healer",D="DPS",A="AoE"}
+                            local roleLabels = {T=PBM_L["Tank"],H=PBM_L["Healer"],D=PBM_L["DPS"],A=PBM_L["AoE"]}
                             local roleColors = {T={0.20,0.60,1.00},H={0.20,1.00,0.40},D={1.00,0.40,0.20},A={0.58,0.51,0.79}}
                             for _, k in ipairs(roles) do
                                 local ic = PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[k] or ""
@@ -442,14 +442,14 @@ PBM.RefreshOverviewRows = function()
                     local c = cls ~= "" and PBM.CLASS_COLORS[cls]
                     GameTooltip:SetOwner(specFrame, "ANCHOR_RIGHT")
                     if spec ~= "" then
-                        GameTooltip:AddLine(spec, 1, 1, 1)
+                        GameTooltip:AddLine(PBM_L[spec] or spec, 1, 1, 1)
                     end
                     if cls ~= "" then
-                        if c then GameTooltip:AddLine(cls, c.r, c.g, c.b)
-                        else GameTooltip:AddLine(cls, 0.8, 0.8, 0.9) end
+                        if c then GameTooltip:AddLine(PBM_L[cls] or cls, c.r, c.g, c.b)
+                        else GameTooltip:AddLine(PBM_L[cls] or cls, 0.8, 0.8, 0.9) end
                     end
                     if spec == "" and cls == "" then
-                        GameTooltip:AddLine("Empty", 0.4, 0.4, 0.4)
+                        GameTooltip:AddLine(PBM_L["Empty"], 0.4, 0.4, 0.4)
                     end
                     GameTooltip:Show()
                 end)
@@ -467,11 +467,11 @@ PBM.RefreshOverviewRows = function()
                 if btn == "RightButton" then
                     UninviteUnit(d.name)
                     SendChatMessage(".playerbots bot remove "..d.name, "SAY")
-                    LichborneOutput("|cffC69B3APBM:|r Removed "..hex..d.name.."|r from bots.", 1, 0.85, 0)
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r Removed "]..hex..d.name.."|r"..PBM_L[" from bots."], 1, 0.85, 0)
                     return
                 end
                 SendChatMessage(".playerbots bot add "..d.name, "SAY")
-                if LichborneAddStatus then LichborneAddStatus:SetText("Invited "..hex..d.name.."|r to group.") end
+                if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["Invited "]..hex..d.name.."|r"..PBM_L[" to group."]) end
             end)
         end
         -- Add to Raid btn
@@ -496,7 +496,7 @@ PBM.RefreshOverviewRows = function()
                             roster[ri] = {name="", cls="", spec="", gs=0, realGs=0, role="", notes=""}
                             rf.addRaidBtn:SetText("|cff44ff44+|r")
                             if LichborneAddStatus then
-                                LichborneAddStatus:SetText(hex..d.name.."|r removed from raid slot "..slot..".")
+                                LichborneAddStatus:SetText(hex..d.name.."|r"..PBM_L[" removed from raid slot "]..slot..".")
                             end
                             if LichborneRaidFrame then PBM.RefreshRaidRows() end
                             PBM.RefreshOverviewRows()
@@ -509,20 +509,20 @@ PBM.RefreshOverviewRows = function()
                 local roster, raidSize = PBM.GetCurrentRoster()
                 for ri = 1, raidSize do
                     if roster[ri] and roster[ri].name and roster[ri].name:lower() == d.name:lower() then
-                        if LichborneAddStatus then LichborneAddStatus:SetText(hex..d.name.."|r is already in the Raid.") end; return
+                        if LichborneAddStatus then LichborneAddStatus:SetText(hex..d.name.."|r"..PBM_L[" is already in the Raid."]) end; return
                     end
                 end
                 for ri = 1, raidSize do
                     if not roster[ri] or roster[ri].name == "" then
                         roster[ri] = {name=d.name, cls=d.cls or "",spec=d.spec or "",gs=d.gs or 0, realGs=d.realGs or 0, role="", notes=""}
-                        if LichborneAddStatus then LichborneAddStatus:SetText(hex..d.name.."|r added to raid slot "..ri..".") end
+                        if LichborneAddStatus then LichborneAddStatus:SetText(hex..d.name.."|r"..PBM_L[" added to raid slot "]..ri..".") end
                         -- Color + orange after successful add
                         rf.addRaidBtn:SetText("|cffb25b00+|r")
                         if LichborneRaidFrame then PBM.RefreshRaidRows() end
                         return
                     end
                 end
-                if LichborneAddStatus then LichborneAddStatus:SetText("Raid is full!") end
+                if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["Raid is full!"]) end
             end)
         end
         -- Wire delete button
@@ -533,7 +533,7 @@ PBM.RefreshOverviewRows = function()
                 local charName = d.name
                 PBM.RemoveCharacterReferences(charName)
                 if LichborneAddStatus then
-                    LichborneAddStatus:SetText("|cffff6666"..charName.."|r removed from tracker.")
+                    LichborneAddStatus:SetText("|cffff6666"..charName.."|r"..PBM_L[" removed from tracker."])
                 end
                 PBM.RefreshRows()
                 PBM.RefreshOverviewRows()
@@ -557,7 +557,7 @@ PBM.RefreshOverviewRows = function()
             if c then
                 local n = allCounts[cls] or 0
                 local hex = string.format("|cff%02x%02x%02x",math.floor(c.r*255),math.floor(c.g*255),math.floor(c.b*255))
-                lbl:SetText(hex..(PBM.TAB_LABELS[cls])..": |cffd4af37"..n.."|r")
+                lbl:SetText(hex..(PBM.TAB_LABELS[cls] or cls)..": |cffd4af37"..n.."|r")
                 local sw = lbl:GetParent()
                 if sw and sw.bg then
                     if n > 0 then sw.bg:SetTexture(c.r*0.25,c.g*0.25,c.b*0.30,1)
@@ -593,7 +593,7 @@ function PBM.BuildOverviewFrame(parent, fl)
     local allTitle = allHdr:CreateFontString(nil,"OVERLAY","GameFontNormal")
     allTitle:SetPoint("TOPLEFT",allHdr,"TOPLEFT",0,0); allTitle:SetPoint("TOPRIGHT",allHdr,"TOPRIGHT",0,0)
     allTitle:SetHeight(24); allTitle:SetJustifyH("CENTER"); allTitle:SetJustifyV("MIDDLE")
-    allTitle:SetText("|cffd4af37Overview|r")
+    allTitle:SetText("|cffd4af37"..PBM_L["Overview"].."|r")
 
     -- Sort / Clear buttons
     local function MakeHdrBtn(lbl, br, bg2, bb, xOff, w)
@@ -617,7 +617,7 @@ function PBM.BuildOverviewFrame(parent, fl)
     overviewPageBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     local allPageLbl = overviewPageBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     allPageLbl:SetAllPoints(overviewPageBtn); allPageLbl:SetJustifyH("CENTER"); allPageLbl:SetJustifyV("MIDDLE")
-    allPageLbl:SetText("|cffd4af37Page 1 v|r")
+    allPageLbl:SetText("|cffd4af37"..PBM_L["Page 1 v"].."|r")
     LichborneAllPageLbl  = allPageLbl
     LichborneAllPagePrev = nil
     LichborneAllPageNext = nil
@@ -658,7 +658,7 @@ function PBM.BuildOverviewFrame(parent, fl)
         local g = LichborneTrackerDB.allGroup or "A"
         if LichborneAllPageLbl then
             local pageNum = ({A="1",B="2",C="3"})[g] or g
-            LichborneAllPageLbl:SetText("|cffd4af37Page "..pageNum.." v|r")
+            LichborneAllPageLbl:SetText(string.format("|cffd4af37"..PBM_L["Page %s v"].."|r", pageNum))
         end
         if LichborneAllPagePrev then LichborneAllPagePrev:SetAlpha(g ~= "A" and 1.0 or 0.35) end
         if LichborneAllPageNext then LichborneAllPageNext:SetAlpha(g ~= "C" and 1.0 or 0.35) end
@@ -677,7 +677,7 @@ function PBM.BuildOverviewFrame(parent, fl)
         mb:SetBackdrop({bgFile="Interface\\ChatFrame\\ChatFrameBackground",edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",tile=true,tileSize=16,edgeSize=8,insets={left=1,right=1,top=1,bottom=1}})
         mb:SetBackdropColor(0.05,0.08,0.20,1); mb:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
         local mblbl=mb:CreateFontString(nil,"OVERLAY","GameFontNormal"); mblbl:SetAllPoints(mb); mblbl:SetJustifyH("CENTER")
-        mblbl:SetText("|cffd4af37Page "..gi.."|r")
+        mblbl:SetText(string.format("|cffd4af37"..PBM_L["Page %d"].."|r", gi))
         local cap=gname
         mb:SetScript("OnClick",function()
             LichborneTrackerDB.allGroup=cap; UpdateOverviewGroupDD(); overviewGroupMenu:Hide(); PBM.RefreshOverviewRows()
@@ -727,7 +727,7 @@ function PBM.BuildOverviewFrame(parent, fl)
                 entry.fsList[#entry.fsList+1] = fs
                 btn:SetScript("OnEnter",function()
                     GameTooltip:SetOwner(btn,"ANCHOR_RIGHT")
-                    GameTooltip:AddLine("Click to sort",1,1,1)
+                    GameTooltip:AddLine(PBM_L["Click to sort"],1,1,1)
                     GameTooltip:Show()
                 end)
                 btn:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -742,15 +742,15 @@ function PBM.BuildOverviewFrame(parent, fl)
                     PBM.RefreshOverviewRows()
                 end)
             end
-            H("#",0,14)
-            ASH("Spec",14,48,"spec",false)
-            ASH("Name",60,128,"name",false)
-            ASH("iLvL",189,38,"ilvl",true)
-            ASH("GS",227,38,"gs",true)
-            ASH("Role",268,36,"role",false)
-            ASH("+",308,18,"inraid",false)
+            H(PBM_L["#"],0,14)
+            ASH(PBM_L["Spec"],14,48,"spec",false)
+            ASH(PBM_L["Name"],60,128,"name",false)
+            ASH(PBM_L["iLvL"],189,38,"ilvl",true)
+            ASH(PBM_L["GS"],227,38,"gs",true)
+            ASH(PBM_L["Role"],268,36,"role",false)
+            ASH(PBM_L["+"],308,18,"inraid",false)
         else
-            H("Spec",16,44); H("Name",62,126); H("iLvL",192,36); H("GS",230,36); H("Role",268,36)
+            H(PBM_L["Spec"],16,44); H(PBM_L["Name"],62,126); H(PBM_L["iLvL"],192,36); H(PBM_L["GS"],230,36); H(PBM_L["Role"],268,36)
         end
     end
 
@@ -820,8 +820,8 @@ function PBM.BuildOverviewFrame(parent, fl)
         roleArea:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
         roleArea:SetScript("OnEnter", function()
             GameTooltip:SetOwner(roleArea, "ANCHOR_RIGHT")
-            GameTooltip:AddLine("Role",1,1,1)
-            local roleLabels = { T={"Tank",0.20,0.60,1.00}, H={"Healer",0.20,1.00,0.40}, D={"DPS",1.00,0.40,0.20}, A={"AoE",0.58,0.51,0.79} }
+            GameTooltip:AddLine(PBM_L["Role"],1,1,1)
+            local roleLabels = { T={PBM_L["Tank"],0.20,0.60,1.00}, H={PBM_L["Healer"],0.20,1.00,0.40}, D={PBM_L["DPS"],1.00,0.40,0.20}, A={PBM_L["AoE"],0.58,0.51,0.79} }
             for _, k in ipairs({"T","H","D","A"}) do
                 local v = roleLabels[k]
                 local icon = PBM.NOTES_ROLE_ICONS and PBM.NOTES_ROLE_ICONS[k] or ""
@@ -853,10 +853,10 @@ function PBM.BuildOverviewFrame(parent, fl)
             local tierStr = tier > 0 and ("T"..tier) or "T0"
             local grp = LichborneTrackerDB.raidGroup or "A"
             GameTooltip:SetOwner(ar,"ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cff44ff44+ Add to Raid|r", 1, 1, 1)
-            GameTooltip:AddLine("Adds to the Raid tab.", 0.7, 0.7, 0.7)
-            GameTooltip:AddLine("|cff44ff44Left-click to add to raid.|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffff2020Right-click to remove.|r", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["|cff44ff44+ Add to Raid|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Adds to the Raid tab."], 0.7, 0.7, 0.7)
+            GameTooltip:AddLine(PBM_L["|cff44ff44Left-click to add to raid.|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["|cffff2020Right-click to remove.|r"], 1, 1, 1)
             GameTooltip:Show()
         end)
         ar:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -869,9 +869,9 @@ function PBM.BuildOverviewFrame(parent, fl)
         ag:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
         ag:SetScript("OnEnter",function()
             GameTooltip:SetOwner(ag,"ANCHOR_RIGHT")
-            GameTooltip:AddLine("|cff44eeff> Invite to Group|r",1,1,1)
-            GameTooltip:AddLine("|cff44ff44Left-click to invite to group.|r",1,1,1)
-            GameTooltip:AddLine("|cffff2020Right-click to remove.|r",1,1,1)
+            GameTooltip:AddLine(PBM_L["|cff44eeff> Invite to Group|r"],1,1,1)
+            GameTooltip:AddLine(PBM_L["|cff44ff44Left-click to invite to group.|r"],1,1,1)
+            GameTooltip:AddLine(PBM_L["|cffff2020Right-click to remove.|r"],1,1,1)
             GameTooltip:Show()
         end)
         ag:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -883,8 +883,8 @@ function PBM.BuildOverviewFrame(parent, fl)
         dx:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
         dx:SetScript("OnEnter",function()
             GameTooltip:SetOwner(dx,"ANCHOR_RIGHT")
-            GameTooltip:AddLine("Delete Character",1,0.3,0.3)
-            GameTooltip:AddLine("Removes from tracker.",0.8,0.8,0.8)
+            GameTooltip:AddLine(PBM_L["Delete Character"],1,0.3,0.3)
+            GameTooltip:AddLine(PBM_L["Removes from tracker."],0.8,0.8,0.8)
             GameTooltip:Show()
         end)
         dx:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -912,7 +912,7 @@ function PBM.BuildOverviewFrame(parent, fl)
     allCB:SetPoint("TOPLEFT",PBM.State.LichborneOverviewFrame,"TOPLEFT",0,cbY)
     allCB:SetSize(ALL_NCOLS*ALL_COL_W,24); allCB:SetFrameLevel(fl+11)
     local acbBg=allCB:CreateTexture(nil,"BACKGROUND"); acbBg:SetAllPoints(allCB); acbBg:SetTexture(0.05,0.07,0.13,1)
-    local acT=allCB:CreateFontString(nil,"OVERLAY","GameFontNormalSmall"); acT:SetPoint("LEFT",allCB,"LEFT",4,0); acT:SetText("|cffC69B3ACount:|r"); acT:SetWidth(44)
+    local acT=allCB:CreateFontString(nil,"OVERLAY","GameFontNormalSmall"); acT:SetPoint("LEFT",allCB,"LEFT",4,0); acT:SetText(PBM_L["|cffC69B3ACount:|r"]); acT:SetWidth(44)
     PBM.State.LichborneAllCountLabels={}
     local acW=(ALL_NCOLS*ALL_COL_W-50)/10
     for ci,cls in ipairs(PBM.CLASS_TABS) do
@@ -923,6 +923,6 @@ function PBM.BuildOverviewFrame(parent, fl)
         local sbg=sw:CreateTexture(nil,"BACKGROUND"); sbg:SetAllPoints(sw); sbg:SetTexture(0.08,0.10,0.18,1); sw.bg=sbg
         local hex=string.format("|cff%02x%02x%02x",math.floor(c.r*255),math.floor(c.g*255),math.floor(c.b*255))
         local sl=sw:CreateFontString(nil,"OVERLAY","GameFontNormalSmall"); sl:SetAllPoints(sw); sl:SetJustifyH("CENTER"); sl:SetJustifyV("MIDDLE")
-        sl:SetText(hex..(PBM.TAB_LABELS[cls])..": "..hex.."0|r"); sw.lbl=sl; PBM.State.LichborneAllCountLabels[cls]=sl
+        sl:SetText(hex..(PBM.TAB_LABELS[cls] or cls)..": "..hex.."0|r"); sw.lbl=sl; PBM.State.LichborneAllCountLabels[cls]=sl
     end
 end

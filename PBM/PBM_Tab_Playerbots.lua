@@ -72,24 +72,24 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     end
 
     -- ── Column 1 – Add RndBot (x = 400) ───────────────────────
-    PBLabel(400, PB_ROW_TOP, "Add RndBot")
+    PBLabel(400, PB_ROW_TOP, PBM_L["Add RndBot"])
     PBDivider(400, PB_ROW_TOP + 16, 190)
 
     local CLASS_DEFS = {
-        { name="Death Knight", cmd="dk",      hex="C41F3B", icon=PB_ADDON.."addclass_deathknight.blp" },
-        { name="Druid",        cmd="druid",   hex="FF7D0A", icon=PB_ADDON.."addclass_druid.blp"       },
-        { name="Hunter",       cmd="hunter",  hex="ABD473", icon=PB_ADDON.."addclass_hunter.blp"      },
-        { name="Mage",         cmd="mage",    hex="3FC7EB", icon=PB_ADDON.."addclass_mage.blp"        },
-        { name="Paladin",      cmd="paladin", hex="F58CBA", icon=PB_ADDON.."addclass_paladin.blp"     },
-        { name="Priest",       cmd="priest",  hex="FFFFFF", icon=PB_ADDON.."addclass_priest.blp"      },
-        { name="Rogue",        cmd="rogue",   hex="FFF569", icon=PB_ADDON.."addclass_rogue.blp"       },
-        { name="Shaman",       cmd="shaman",  hex="0070DE", icon=PB_ADDON.."addclass_shaman.blp"      },
-        { name="Warlock",      cmd="warlock", hex="8787ED", icon=PB_ADDON.."addclass_warlock.blp"     },
-        { name="Warrior",      cmd="warrior", hex="C79C3B", icon=PB_ADDON.."addclass_warrior.blp"     },
+        { name=PBM_L["Death Knight"], cmd="dk",      hex="C41F3B", icon=PB_ADDON.."addclass_deathknight.blp" },
+        { name=PBM_L["Druid"],        cmd="druid",   hex="FF7D0A", icon=PB_ADDON.."addclass_druid.blp"       },
+        { name=PBM_L["Hunter"],       cmd="hunter",  hex="ABD473", icon=PB_ADDON.."addclass_hunter.blp"      },
+        { name=PBM_L["Mage"],         cmd="mage",    hex="3FC7EB", icon=PB_ADDON.."addclass_mage.blp"        },
+        { name=PBM_L["Paladin"],      cmd="paladin", hex="F58CBA", icon=PB_ADDON.."addclass_paladin.blp"     },
+        { name=PBM_L["Priest"],       cmd="priest",  hex="FFFFFF", icon=PB_ADDON.."addclass_priest.blp"      },
+        { name=PBM_L["Rogue"],        cmd="rogue",   hex="FFF569", icon=PB_ADDON.."addclass_rogue.blp"       },
+        { name=PBM_L["Shaman"],       cmd="shaman",  hex="0070DE", icon=PB_ADDON.."addclass_shaman.blp"      },
+        { name=PBM_L["Warlock"],      cmd="warlock", hex="8787ED", icon=PB_ADDON.."addclass_warlock.blp"     },
+        { name=PBM_L["Warrior"],      cmd="warrior", hex="C79C3B", icon=PB_ADDON.."addclass_warrior.blp"     },
     }
     local cy = PB_ROW_TOP + 24
     for _, cd in ipairs(CLASS_DEFS) do
-        local cb = PBIconBtn(400, cy, cd.icon, cd.name, "Summon a random "..cd.name.." RndBot.")
+        local cb = PBIconBtn(400, cy, cd.icon, cd.name, string.format(PBM_L["Summon a random %s RndBot."], cd.name))
         local cap = cd.cmd
         cb:SetScript("OnClick", function() SendChatMessage(".playerbots bot addclass "..cap, "SAY") end)
         local cl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -103,7 +103,7 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     local CMD_DIV_W = 190
     local CMD_STEP  = 34
 
-    PBLabel(CMD_X1, PB_ROW_TOP, "Bot Commands")
+    PBLabel(CMD_X1, PB_ROW_TOP, PBM_L["Bot Commands"])
     PBDivider(CMD_X1, PB_ROW_TOP + 16, CMD_DIV_W)
 
     local function CMDEntry(x, y, cmd, desc)
@@ -131,10 +131,10 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     -- Bot management commands
     local ey1 = PB_ROW_TOP + 26
     local ALTBOT_CMDS = {
-        { ".playerbots bot add <name>",        "Login altbot(s)"               },
-        { ".playerbots bot addaccount <acct>", "Login entire account"          },
-        { "maintenance",                       "Learn spells, enchant, repair" },
-        { "autogear",                          "Auto-equip best gear"          },
+        { ".playerbots bot add <name>",        PBM_L["Login altbot(s)"]               },
+        { ".playerbots bot addaccount <acct>", PBM_L["Login entire account"]          },
+        { "maintenance",                       PBM_L["Learn spells, enchant, repair"] },
+        { "autogear",                          PBM_L["Auto-equip best gear"]          },
     }
     for _, e in ipairs(ALTBOT_CMDS) do
         CMDEntry(CMD_X1, ey1, e[1], e[2])
@@ -143,14 +143,14 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
 
     -- Account Linking sub-section
     ey1 = ey1 + 8
-    CMDSection(CMD_X1, ey1, "Account Linking")
+    CMDSection(CMD_X1, ey1, PBM_L["Account Linking"])
     ey1 = ey1 + 20
 
     local ACCT_CMDS = {
-        { ".playerbots account setKey <key>",      "Set account security key" },
-        { ".playerbots account link <acct> <key>", "Link account by key"      },
-        { ".playerbots account linkedAccounts",    "List linked accounts"     },
-        { ".playerbots account unlink <acct>",     "Unlink account"           },
+        { ".playerbots account setKey <key>",      PBM_L["Set account security key"] },
+        { ".playerbots account link <acct> <key>", PBM_L["Link account by key"]      },
+        { ".playerbots account linkedAccounts",    PBM_L["List linked accounts"]     },
+        { ".playerbots account unlink <acct>",     PBM_L["Unlink account"]           },
     }
     for _, e in ipairs(ACCT_CMDS) do
         CMDEntry(CMD_X1, ey1, e[1], e[2])
@@ -159,14 +159,14 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
 
     -- Reset Instances sub-section
     ey1 = ey1 + 8
-    CMDSection(CMD_X1, ey1, "Reset Instances")
+    CMDSection(CMD_X1, ey1, PBM_L["Reset Instances"])
     ey1 = ey1 + 20
 
     if not StaticPopupDialogs["PBM_RESET_INSTANCES"] then
         StaticPopupDialogs["PBM_RESET_INSTANCES"] = {
-            text = "|cffd4af37Reset Instances|r\n\nSend |cffFF8C00.playerbots bot refresh=raid *|r\nfor your current group/raid?",
-            button1 = "Yes, Reset All",
-            button2 = "Cancel",
+            text = "|cffd4af37" .. PBM_L["Reset Instances"] .. "|r\n\n" .. PBM_L["Send |cffFF8C00.playerbots bot refresh=raid *|r\nfor your current group/raid?"],
+            button1 = PBM_L["Yes, Reset All"],
+            button2 = PBM_L["Cancel"],
             OnAccept = function()
                 SendChatMessage(".playerbots bot refresh=raid *", "SAY")
             end,
@@ -177,13 +177,13 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     end
 
     local resetInstBtn = PBIconBtn(CMD_X1, ey1, PB_ICON.."inv_misc_punchcards_yellow",
-        "Reset Instances", nil)
+        PBM_L["Reset Instances"], nil)
     resetInstBtn:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:AddLine("Reset Instances", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Resets instances for entire group using", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["Reset Instances"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Resets instances for entire group using"], 0.8, 0.8, 0.8)
         GameTooltip:AddLine(".playerbots bot refresh=raid *", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("Requires AiPlayerbot.ResetInstanceIdForAltBots = 1", 1, 0.2, 0.2)
+        GameTooltip:AddLine(PBM_L["Requires AiPlayerbot.ResetInstanceIdForAltBots = 1"], 1, 0.2, 0.2)
         GameTooltip:Show()
     end)
     resetInstBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -191,7 +191,7 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     local riyl = pbPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     riyl:SetPoint("LEFT", resetInstBtn, "RIGHT", 6, 0)
     riyl:SetJustifyH("LEFT")
-    riyl:SetText("|cffffffffReset Instances for group|r")
+    riyl:SetText("|cffffffff"..PBM_L["Reset Instances for group"].."|r")
     ey1 = ey1 + PB_STEP
 
     -- ── Universal Strategies List ─────────────────────────────────
@@ -203,88 +203,88 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     local SL_W   = 190
     local SL_ROW = 19
 
-    PBLabel(SL_X1, PB_ROW_TOP, "Universal Strategies")
+    PBLabel(SL_X1, PB_ROW_TOP, PBM_L["Universal Strategies"])
     PBDivider(SL_X1, PB_ROW_TOP + 16, 285)
 
     -- 38 entries, alphabetical — left col = 1-19, right col = 20-38
     local STRAT_LIST = {
         { n="adds",        hex="aaaaaa", tp="CO",    tphex="aaaaaa",
-          desc="Abort the pull if extra mobs are detected near the target" },
+          desc=PBM_L["Abort the pull if extra mobs are detected near the target"] },
         { n="aggressive",  hex="aabb55", tp="CO",    tphex="aaaaaa",
-          desc="Proactively engages nearby threats" },
+          desc=PBM_L["Proactively engages nearby threats"] },
         { n="avoid aoe",   hex="7799ff", tp="CO",    tphex="aaaaaa",
-          desc="Reposition to avoid AoE damage patterns" },
+          desc=PBM_L["Reposition to avoid AoE damage patterns"] },
         { n="boost",       hex="ff9900", tp="CO",    tphex="aaaaaa",
-          desc="Activate offensive cooldowns (class-specific)" },
+          desc=PBM_L["Activate offensive cooldowns (class-specific)"] },
         { n="buff",        hex="ffff00", tp="NC",    tphex="44aa44",
-          desc="Apply class-specific party buffs to the group out of combat" },
+          desc=PBM_L["Apply class-specific party buffs to the group out of combat"] },
         { n="cast time",   hex="ffff88", tp="CO",    tphex="aaaaaa",
-          desc="Skip long casts when target is about to die" },
+          desc=PBM_L["Skip long casts when target is about to die"] },
         { n="chat",        hex="aaaaaa", tp="NC",    tphex="44aa44",
-          desc="Respond to party chat commands" },
+          desc=PBM_L["Respond to party chat commands"] },
         { n="cure",        hex="ffff00", tp="CO",    tphex="ff8000",
-          desc="Cleanse party debuffs (class-appropriate ability)" },
+          desc=PBM_L["Cleanse party debuffs (class-appropriate ability)"] },
         { n="default",     hex="aaaaaa", tp="NC",    tphex="aaaaaa",
-          desc="Revert to base default rotation" },
+          desc=PBM_L["Revert to base default rotation"] },
         { n="dps",         hex="ddaa00", tp="CO",    tphex="ee4433",
-          desc="Generic DPS rotation (spec inferred from talents)" },
+          desc=PBM_L["Generic DPS rotation (spec inferred from talents)"] },
         { n="dps aoe",     hex="ff8000", tp="CO",    tphex="ffcc00",
-          desc="Bot switches to AoE rotation (area attacks)" },
+          desc=PBM_L["Bot switches to AoE rotation (area attacks)"] },
         { n="dps assist",  hex="ff8000", tp="CO",    tphex="ffcc00",
-          desc="Bot attacks the group DPS focus target (coordinates kill order)" },
+          desc=PBM_L["Bot attacks the group DPS focus target (coordinates kill order)"] },
         { n="duel",        hex="aaaaaa", tp="NC",    tphex="aaaaaa",
-          desc="Auto-accept or decline duel requests" },
+          desc=PBM_L["Auto-accept or decline duel requests"] },
         { n="emote",       hex="aaaaaa", tp="NC",    tphex="aaaaaa",
-          desc="Play social emotes" },
+          desc=PBM_L["Play social emotes"] },
         { n="flee",        hex="aaaaaa", tp="CO",    tphex="aaaaaa",
-          desc="Retreat when critical HP or outnumbered" },
+          desc=PBM_L["Retreat when critical HP or outnumbered"] },
         { n="follow",      hex="7799bb", tp="NC",    tphex="44aa44",
-          desc="Follow master" },
+          desc=PBM_L["Follow master"] },
         { n="food",        hex="d4af37", tp="NC",    tphex="44aa44",
-          desc="Auto-eat and drink to recover health and mana between pulls" },
+          desc=PBM_L["Auto-eat and drink to recover health and mana between pulls"] },
         { n="formation",   hex="5599ee", tp="CO",    tphex="aaaaaa",
-          desc="Maintain positional formation with group" },
+          desc=PBM_L["Maintain positional formation with group"] },
         { n="gather",      hex="d4af37", tp="NC",    tphex="44aa44",
-          desc="Harvest herbs, ore, or skinning nodes while moving" },
+          desc=PBM_L["Harvest herbs, ore, or skinning nodes while moving"] },
         { n="grind",       hex="aaaaaa", tp="NC",    tphex="aaaaaa",
-          desc="Auto-attack nearby mobs, manage food/drink" },
+          desc=PBM_L["Auto-attack nearby mobs, manage food/drink"] },
         -- right column starts here (20)
         { n="guard",       hex="aaaa44", tp="NC",    tphex="44aa44",
-          desc="Hold position as a guard" },
+          desc=PBM_L["Hold position as a guard"] },
         { n="heal",        hex="ffcc00", tp="CO",    tphex="ee4433",
-          desc="Bot takes healer role (must be healer-capable class)" },
+          desc=PBM_L["Bot takes healer role (must be healer-capable class)"] },
         { n="healer dps",  hex="ffcc00", tp="CO",    tphex="ee4433",
-          desc="Healer bot also attacks between heals" },
+          desc=PBM_L["Healer bot also attacks between heals"] },
         { n="kite",        hex="aaaaaa", tp="",      tphex="",
-          desc="Runs the bot away the instant it has aggro — keeps melee mobs perpetually chasing" },
+          desc=PBM_L["Runs the bot away the instant it has aggro — keeps melee mobs perpetually chasing"] },
         { n="loot",        hex="d4af37", tp="NC",    tphex="44aa44",
-          desc="Auto-loot corpses and containers" },
+          desc=PBM_L["Auto-loot corpses and containers"] },
         { n="mount",       hex="aaaaaa", tp="NC",    tphex="aaaaaa",
-          desc="Use a mount when traveling" },
+          desc=PBM_L["Use a mount when traveling"] },
         { n="offheal",     hex="55cc77", tp="CO",    tphex="ee4433",
-          desc="DPS bot assists with emergency heals (Paladin only)" },
+          desc=PBM_L["DPS bot assists with emergency heals (Paladin only)"] },
         { n="passive",     hex="aabb55", tp="",      tphex="",
-          desc="Bot does nothing (fully passive)" },
+          desc=PBM_L["Bot does nothing (fully passive)"] },
         { n="potions",     hex="00ffaa", tp="CO",    tphex="aaaaaa",
-          desc="Auto-use health and mana potions / healthstones" },
+          desc=PBM_L["Auto-use health and mana potions / healthstones"] },
         { n="pull",        hex="ff8000", tp="CO/NC", tphex="ffcc00",
-          desc="Class-specific opening attack — tank-only initiation" },
+          desc=PBM_L["Class-specific opening attack — tank-only initiation"] },
         { n="pull back",   hex="ff8000", tp="CO",    tphex="ffcc00",
-          desc="Anchor at pull spot — bot opens then returns instead of running into melee" },
+          desc=PBM_L["Anchor at pull spot — bot opens then returns instead of running into melee"] },
         { n="pvp",         hex="ee4433", tp="CO",    tphex="ee4433",
-          desc="Enable attacking hostile players (player-targeting toggle ONLY — rotation unchanged)" },
+          desc=PBM_L["Enable attacking hostile players (player-targeting toggle ONLY — rotation unchanged)"] },
         { n="racials",     hex="cc88ff", tp="CO",    tphex="aaaaaa",
-          desc="Use racial abilities — EMFH, War Stomp, Berserking, etc." },
+          desc=PBM_L["Use racial abilities — EMFH, War Stomp, Berserking, etc."] },
         { n="save mana",   hex="6699cc", tp="CO",    tphex="aaaaaa",
-          desc="Suppress expensive casts when mana is low" },
+          desc=PBM_L["Suppress expensive casts when mana is low"] },
         { n="stay",        hex="aaaaaa", tp="",      tphex="",
-          desc="Hold at current spot; return to saved stay position if drifted" },
+          desc=PBM_L["Hold at current spot; return to saved stay position if drifted"] },
         { n="tank assist", hex="ff8000", tp="CO",    tphex="ffcc00",
-          desc="Bot attacks the tank's current target" },
+          desc=PBM_L["Bot attacks the tank's current target"] },
         { n="tank face",   hex="ff9966", tp="",      tphex="",
-          desc="Tank rotates to face the current target each combat tick" },
+          desc=PBM_L["Tank rotates to face the current target each combat tick"] },
         { n="threat",      hex="aaaaaa", tp="CO",    tphex="aaaaaa",
-          desc="Suppress actions when threat >80% (prevents pulling aggro)" },
+          desc=PBM_L["Suppress actions when threat >80% (prevents pulling aggro)"] },
     }
 
     for i, def in ipairs(STRAT_LIST) do
@@ -342,5 +342,5 @@ function PBM.BuildPlayerbotsPanel(pbPanel, ctx)
     pbFooter:SetPoint("BOTTOMLEFT",  pbPanel, "BOTTOMLEFT",  310, 6)
     pbFooter:SetPoint("BOTTOMRIGHT", pbPanel, "BOTTOMRIGHT", -10, 6)
     pbFooter:SetJustifyH("CENTER")
-    pbFooter:SetText("|cffff4444** Information and strategies are subject to change as mod-playerbots is updated.|r")
+    pbFooter:SetText("|cffff4444" .. PBM_L["** Information and strategies are subject to change as mod-playerbots is updated."] .. "|r")
 end

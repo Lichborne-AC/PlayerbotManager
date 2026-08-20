@@ -13,7 +13,7 @@ PBM.addItem = function(pFrame, pInfo)
 	if(tRare == nil) then tRare = 4 end -- for Security
 
 	local tButton = pFrame.addButton(tName, tX, tY, tIcon, tLink)
-	pFrame.catButton("Catecher", 270, -490, 308, 524)
+	pFrame.catButton(PBM_L["Catecher"], 270, -490, 308, 524)
 
 	tButton.item = {}
 	tButton.item.id = tID

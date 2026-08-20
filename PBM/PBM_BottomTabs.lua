@@ -22,9 +22,9 @@ local BD_CELL = {
 
 -- ── Tab definitions (colors match LT exactly) ─────────────────
 local BOTTOM_TABS = {
-    { id="Playerbots", label="Playerbots", r=PERI_R,  g=PERI_G,  b=PERI_B  },
-    { id="LevelSync",  label="LevelSync",  r=GOLD_R,  g=GOLD_G,  b=GOLD_B  },
-    { id="Notes",      label="Notes",      r=GOLD_R,  g=GOLD_G,  b=GOLD_B  },
+    { id="Playerbots", label=PBM_L["Playerbots"], r=PERI_R,  g=PERI_G,  b=PERI_B  },
+    { id="LevelSync",  label=PBM_L["LevelSync"],  r=GOLD_R,  g=GOLD_G,  b=GOLD_B  },
+    { id="Notes",      label=PBM_L["Notes"],      r=GOLD_R,  g=GOLD_G,  b=GOLD_B  },
 }
 
 -- ── Tab button layout (title bar row, right of Clear buttons) ─
@@ -175,17 +175,17 @@ function PBM.BuildBottomTabs(parent, fl)
     }
 
     -- ── Playerbots panel ─────────────────────────────────────
-    local pbPanel = MakeContentFrame("PBMTabPanel_Playerbots", parent, fl, "Playerbots", false)
+    local pbPanel = MakeContentFrame("PBMTabPanel_Playerbots", parent, fl, PBM_L["Playerbots"], false)
     PBM.State.bottomTabPanels["Playerbots"] = pbPanel
     PBM.BuildPlayerbotsPanel(pbPanel, ctx)
 
     -- ── LevelSync panel (gold header, full height) ────────────
-    local lsPanel = MakeContentFrame("PBMTabPanel_LevelSync", parent, fl, "LevelSync", true, GOLD_R, GOLD_G, GOLD_B)
+    local lsPanel = MakeContentFrame("PBMTabPanel_LevelSync", parent, fl, PBM_L["LevelSync"], true, GOLD_R, GOLD_G, GOLD_B)
     PBM.State.bottomTabPanels["LevelSync"] = lsPanel
     PBM.BuildLevelSyncPanel(lsPanel, ctx)
 
     -- ── Notes panel (gold header) ─────────────────────────────
-    local notesPanel = MakeContentFrame("PBMTabPanel_Notes", parent, fl, "Notes", false, GOLD_R, GOLD_G, GOLD_B)
+    local notesPanel = MakeContentFrame("PBMTabPanel_Notes", parent, fl, PBM_L["Notes"], false, GOLD_R, GOLD_G, GOLD_B)
     PBM.State.bottomTabPanels["Notes"] = notesPanel
     PBM.BuildNotesPanel(notesPanel, ctx)
 

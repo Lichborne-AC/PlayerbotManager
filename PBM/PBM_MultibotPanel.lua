@@ -61,7 +61,7 @@ local function ShowConfirm(titleText, bodyText, onYes)
         yBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
         local yLbl = yBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         yLbl:SetAllPoints(yBtn); yLbl:SetJustifyH("CENTER")
-        yLbl:SetText("Yes")
+        yLbl:SetText(PBM_L["Yes"])
         yLbl:SetTextColor(1, 1, 1)
         confirmFrame._yBtn = yBtn
 
@@ -76,7 +76,7 @@ local function ShowConfirm(titleText, bodyText, onYes)
         nBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
         local nLbl = nBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         nLbl:SetAllPoints(nBtn); nLbl:SetJustifyH("CENTER")
-        nLbl:SetText("Cancel")
+        nLbl:SetText(PBM_L["Cancel"])
         nLbl:SetTextColor(1, 1, 1)
         nBtn:SetScript("OnClick", function() confirmFrame:Hide() end)
     end
@@ -100,19 +100,19 @@ end
 local BUTTONS = {
     -- ── submenu ─────────────────────────────────────────────
     {
-        name = "Talent", icon = "Ability_Marksmanship", btype = "activate",
-        tipTitle = "Open Talents",
+        name = PBM_L["Talent"], icon = "Ability_Marksmanship", btype = "activate",
+        tipTitle = PBM_L["Open Talents"],
         cmd = function(bot) PBM.OpenTalentWindow(bot) end,
     },
     -- ── activate ────────────────────────────────────────────
     {
-        name = "Inv.", icon = "INV_Misc_Bag_08", btype = "activate",
-        tipTitle = "Open Inventory",
+        name = PBM_L["Inv."], icon = "INV_Misc_Bag_08", btype = "activate",
+        tipTitle = PBM_L["Open Inventory"],
         cmd = function(bot) PBM.OpenInventoryWindow(bot) end,
     },
     {
-        name = "Spells", icon = "INV_Misc_Book_09", btype = "activate",
-        tipTitle = "Open Spellbook",
+        name = PBM_L["Spells"], icon = "INV_Misc_Book_09", btype = "activate",
+        tipTitle = PBM_L["Open Spellbook"],
         cmd = function(bot) PBM.OpenSpellbookWindow(bot) end,
     },
 }

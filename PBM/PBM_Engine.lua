@@ -330,9 +330,9 @@ PBM.toTip = function(pClass, pLevel, pName)
 	local tTip = pClass .. " - "
 	if(pLevel ~= nil) then tTip = tTip .. pLevel .. " - " end
 	tTip = tTip .. pName .. PBM.tips.unit.button
-	tTip = PBM.doReplace(tTip, "NAME", pName)
-	tTip = PBM.doReplace(tTip, "NAME", pName)
-	tTip = PBM.doReplace(tTip, "NAME", pName)
+	tTip = PBM.doReplace(tTip, PBM_L["NAME"], pName)
+	tTip = PBM.doReplace(tTip, PBM_L["NAME"], pName)
+	tTip = PBM.doReplace(tTip, PBM_L["NAME"], pName)
 	return tTip
 end
 

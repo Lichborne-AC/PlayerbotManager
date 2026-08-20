@@ -212,7 +212,7 @@ end
 function PBM.ComputeBotNotes(name, coSet, ncSet)
     local cls = PBM.GetBotClass(name)
     if not cls then
-        LichborneOutput("|cffff4444CHARACTER NOT AVAILABLE: " .. name .. "|r")
+        LichborneOutput("|cffff4444" .. PBM_L["CHARACTER NOT AVAILABLE: "] .. name .. "|r")
         return nil, {}
     end
 

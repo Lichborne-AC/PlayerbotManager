@@ -26,7 +26,7 @@ local function CalcSpec()
     PBM.DBG("CalcSpec start: |cffffff88"..(rowData.name or "?").."|r cls=|cffffff88"..cls.."|r unit=|cffffff88"..(PBM.State.LichborneInspectUnit or "?").."|r UnitExists=|cffffff88"..tostring(UnitExists(PBM.State.LichborneInspectUnit or "target")).."|r")
     local specStartTime = GetTime()
     if not specNames then
-        LichborneOutput("|cffC69B3APBM:|r Unknown class: "..cls, 1, 0.5, 0.5)
+        LichborneOutput("|cffC69B3APBM:|r " .. PBM_L["Unknown class: "] .. cls, 1, 0.5, 0.5)
         PBM.State.LichborneSpecTarget = nil; PBM.State.specRetries = 0
         return
     end
@@ -80,9 +80,9 @@ local function CalcSpec()
         PBM.DBG("|cffff4444Spec talent data = 0/0/0 for |r|cffffff88"..(rowData.name or "?").."|r — retry "..PBM.State.specRetries.."/"..maxSpecRetries)
         if PBM.State.specRetries >= maxSpecRetries then
             PBM.DBG("|cffff4444FAILED spec for |r|cffffff88"..(rowData.name or "?").."|r — all trees 0 after "..maxSpecRetries.." retries")
-            LichborneOutput("|cffff4444"..(rowData.name or "?")..":|r |cffff4444FAILED — could not read talent data.|r", 1, 0.5, 0.5)
+            LichborneOutput("|cffff4444"..(rowData.name or "?").."|r" .. PBM_L[": FAILED — could not read talent data."], 1, 0.5, 0.5)
             if LichborneAddStatus then
-                LichborneAddStatus:SetText("|cffff4444Talent data unavailable. Try standing closer.|r")
+                LichborneAddStatus:SetText("|cffff4444" .. PBM_L["Talent data unavailable. Try standing closer."] .. "|r")
             end
             PBM.State.LichborneSpecTarget = nil; PBM.State.specRetries = 0
         end
@@ -98,9 +98,9 @@ local function CalcSpec()
     local c = PBM.CLASS_COLORS[cls]
     local hex = c and string.format("|cff%02x%02x%02x", math.floor(c.r*255), math.floor(c.g*255), math.floor(c.b*255)) or "|cffffffff"
     if LichborneAddStatus then
-        LichborneAddStatus:SetText(hex..(rowData.name or "?").."|r — Specialization: |cffffff00"..specName.."|r ("..bestPoints.." pts)")
+        LichborneAddStatus:SetText(hex..(rowData.name or "?").."|r" .. PBM_L[" — Specialization: "] .. "|cffffff00"..specName.."|r ("..bestPoints.. PBM_L[" pts)"])
     end
-    LichborneOutput(hex..(rowData.name or "?").."|r: |cffffff00"..specName.."|r ("..bestPoints.." pts)", 1, 0.85, 0)
+    LichborneOutput(hex..(rowData.name or "?").."|r: |cffffff00"..specName.."|r ("..bestPoints.. PBM_L[" pts)"], 1, 0.85, 0)
     PBM.DBG("|cff44ff44SUCCESS|r spec |cffffff88"..(rowData.name or "?").."|r = |cffffff00"..specName.."|r tree"..best.." ("..bestPoints.." pts)")
     PBM.DBG("CalcSpec elapsed: |cffffff88"..string.format("%.3f", GetTime()-specStartTime).."s|r")
 

@@ -117,7 +117,7 @@ local function CalcGS()
         -- Exhausted cache retries — proceed with whatever data we have
         PBM.DBG("|cffff4444Cache retries exhausted for |r|cffffff88"..rowName.."|r — proceeding with "..cachedCount.." cached slots")
         if LichborneAddStatus then
-            LichborneAddStatus:SetText("|cffff4444Some items not cached — using available data.|r")
+            LichborneAddStatus:SetText("|cffff4444" .. PBM_L["Some items not cached — using available data."] .. "|r")
         end
         PBM.State.LichborneCacheRetries = 0
     end
@@ -177,9 +177,9 @@ local function CalcGS()
         local c = PBM.CLASS_COLORS[cls]
         local hex = c and string.format("|cff%02x%02x%02x", math.floor(c.r * 255), math.floor(c.g * 255), math.floor(c.b * 255)) or "|cffffffff"
         if LichborneAddStatus then
-            LichborneAddStatus:SetText(hex..name.."|r ("..cls..") - iLvl |cffffff00"..ilvl.."|r, GS |cffffff00"..realGs.."|r added!")
+            LichborneAddStatus:SetText(hex..name.."|r ("..cls..") - iLvl |cffffff00"..ilvl.."|r, GS |cffffff00"..realGs.."|r " .. PBM_L["added!"])
         end
-        LichborneOutput(hex..name.."|r: iLvl |cffffff00"..ilvl.."|r  GS |cffffff00"..realGs.."|r ("..count.." slots)", 1, 0.85, 0)
+        LichborneOutput(hex..name.."|r: iLvl |cffffff00"..ilvl.."|r  GS |cffffff00"..realGs.."|r ("..count.." " .. PBM_L["slots"] .. ")", 1, 0.85, 0)
         PBM.DBG("|cff44ff44SUCCESS|r |cffffff88"..rowName.."|r iLvl="..ilvl.." GS="..realGs.." slots="..count)
 
         local targetName = UnitName("target")
@@ -196,7 +196,7 @@ local function CalcGS()
                 end
                 if bestPoints > 0 then
                     rowData.spec = specNames[bestTab] or rowData.spec
-                    LichborneOutput(hex..name.."|r: |cffffff00"..specNames[bestTab].."|r ("..bestPoints.." pts)", 1, 0.85, 0)
+                    LichborneOutput(hex..name.."|r: |cffffff00"..specNames[bestTab].."|r ("..bestPoints.." " .. PBM_L["pts"] .. ")", 1, 0.85, 0)
                 end
             end
         end
@@ -231,9 +231,9 @@ local function CalcGS()
             end
         end
         if LichborneAddStatus then
-            LichborneAddStatus:SetText("|cffff4444No gear data returned. Target may be out of range.|r")
+            LichborneAddStatus:SetText("|cffff4444" .. PBM_L["No gear data returned. Target may be out of range."] .. "|r")
         end
-        LichborneOutput("|cffff4444"..rowName..":|r |cffff4444FAILED — no gear data returned.|r", 1, 0.5, 0)
+        LichborneOutput("|cffff4444"..rowName..":|r |cffff4444" .. PBM_L["FAILED — no gear data returned."] .. "|r", 1, 0.5, 0)
     end
 
     PBM.DBG("CalcGS elapsed: |cffffff88"..string.format("%.3f", GetTime()-gsStartTime).."s|r")

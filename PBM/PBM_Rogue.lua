@@ -18,12 +18,12 @@ end
 
 -- Talent spec templates for the Set Talents menu
 local ROGUE_TALENT_SPECS = {
-    { label="Assassination |cffffcc00PvE|r", spec="as pve",       wowSpec="Assassination", icon="Interface\\Icons\\Ability_Rogue_Eviscerate" },
-    { label="Combat |cffffcc00PvE|r",        spec="combat pve",   wowSpec="Combat",        icon="Interface\\Icons\\Ability_BackStab"         },
-    { label="Subtlety |cffffcc00PvE|r",      spec="subtlety pve", wowSpec="Subtlety",      icon="Interface\\Icons\\Ability_Stealth"          },
-    { label="Assassination |cffff4444PvP|r", spec="as pvp",       wowSpec="Assassination", icon="Interface\\Icons\\Ability_Rogue_Eviscerate" },
-    { label="Combat |cffff4444PvP|r",        spec="combat pvp",   wowSpec="Combat",        icon="Interface\\Icons\\Ability_BackStab"         },
-    { label="Subtlety |cffff4444PvP|r",      spec="subtlety pvp", wowSpec="Subtlety",      icon="Interface\\Icons\\Ability_Stealth"          },
+    { label=PBM_L["Assassination |cffffcc00PvE|r"], spec="as pve",       wowSpec="Assassination", icon="Interface\\Icons\\Ability_Rogue_Eviscerate" },
+    { label=PBM_L["Combat |cffffcc00PvE|r"],        spec="combat pve",   wowSpec="Combat",        icon="Interface\\Icons\\Ability_BackStab"         },
+    { label=PBM_L["Subtlety |cffffcc00PvE|r"],      spec="subtlety pve", wowSpec="Subtlety",      icon="Interface\\Icons\\Ability_Stealth"          },
+    { label=PBM_L["Assassination |cffff4444PvP|r"], spec="as pvp",       wowSpec="Assassination", icon="Interface\\Icons\\Ability_Rogue_Eviscerate" },
+    { label=PBM_L["Combat |cffff4444PvP|r"],        spec="combat pvp",   wowSpec="Combat",        icon="Interface\\Icons\\Ability_BackStab"         },
+    { label=PBM_L["Subtlety |cffff4444PvP|r"],      spec="subtlety pvp", wowSpec="Subtlety",      icon="Interface\\Icons\\Ability_Stealth"          },
 }
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -172,107 +172,107 @@ function PBM.OpenRogueMenu(row)
         end
 
         -- ── Row 1: Specs ─────────────────────────────────────────────
-        MakeSpecBox(col1X, specBoxY, SPEC_COL_W, "Assassination", "Interface\\Icons\\Ability_Rogue_Eviscerate")
-        MakeSpecBox(col2X, specBoxY, SPEC_COL_W, "Combat",        "Interface\\Icons\\Ability_BackStab")
-        MakeSpecBox(col3X, specBoxY, SPEC_COL_W, "Subtlety",      "Interface\\Icons\\Ability_Stealth")
+        MakeSpecBox(col1X, specBoxY, SPEC_COL_W, PBM_L["Assassination"], "Interface\\Icons\\Ability_Rogue_Eviscerate")
+        MakeSpecBox(col2X, specBoxY, SPEC_COL_W, PBM_L["Combat"],        "Interface\\Icons\\Ability_BackStab")
+        MakeSpecBox(col3X, specBoxY, SPEC_COL_W, PBM_L["Subtlety"],      "Interface\\Icons\\Ability_Stealth")
 
         local treeAsBtn = MakeTreeBtn(col1X + ICON_OFF, specIconY,
             "Interface\\Icons\\Ability_Rogue_Eviscerate", function()
-            GameTooltip:SetText("|cffffcc00Assassination|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Assassination DoT specialization|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF4444Mutually exclusive with Combat, Subtlety.|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Assassination|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Assassination DoT specialization|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["|cffFF4444Mutually exclusive with Combat, Subtlety.|r"], 1, 1, 1)
         end)
         LichborneRogueMenu.treeAsBtn = treeAsBtn
 
         local treeCombatBtn = MakeTreeBtn(col2X + ICON_OFF, specIconY,
             "Interface\\Icons\\Ability_BackStab", function()
-            GameTooltip:SetText("|cffffcc00Combat|r |cff999999- |r|cffFFF569dps|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Combat sustained DPS|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF4444Mutually exclusive with Assassination, Subtlety.|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Combat|r |cff999999- |r|cffFFF569dps|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Combat sustained DPS|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["|cffFF4444Mutually exclusive with Assassination, Subtlety.|r"], 1, 1, 1)
         end)
         LichborneRogueMenu.treeCombatBtn = treeCombatBtn
 
         local treeSubtletyBtn = MakeTreeBtn(col3X + ICON_OFF, specIconY,
             "Interface\\Icons\\Ability_Stealth", function()
-            GameTooltip:SetText("|cffffcc00Subtlety|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Subtlety burst from Stealth|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF4444Mutually exclusive with Assassination, Combat.|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Subtlety|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Subtlety burst from Stealth|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["|cffFF4444Mutually exclusive with Assassination, Combat.|r"], 1, 1, 1)
         end)
         LichborneRogueMenu.treeSubtletyBtn = treeSubtletyBtn
 
         -- ── DPS section (3-wide, 1 row): DPS | Melee | Boost ────────────
-        MakeWideBox(dpsHdrX, dpsHdrY, dpsSectionW, "DPS")
+        MakeWideBox(dpsHdrX, dpsHdrY, dpsSectionW, PBM_L["DPS"])
 
         local treeDpsBtn = MakeTreeBtn(dpsHdrX, dpsIconY,
             "Interface\\Icons\\inv_sword_27", function()
-            GameTooltip:SetText("|cffffcc00Dps|r |cff999999- |r|cffFFF569dps|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Single-target DPS mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Uses the standard Combat rotation", 1, 1, 1)
-            GameTooltip:AddLine("on the current target.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Dps|r |cff999999- |r|cffFFF569dps|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Single-target DPS mode|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Uses the standard Combat rotation"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["on the current target."], 1, 1, 1)
         end)
         LichborneRogueMenu.treeDpsBtn = treeDpsBtn
 
         local treeMeleeBtn = MakeTreeBtn(dpsHdrX + 30, dpsIconY,
             "Interface\\Icons\\inv_sword_35", function()
-            GameTooltip:SetText("|cffffcc00Melee|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Melee DPS mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Core melee attack mode for", 1, 1, 1)
-            GameTooltip:AddLine("Assassination and Subtlety.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Melee|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Melee DPS mode|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Core melee attack mode for"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Assassination and Subtlety."], 1, 1, 1)
         end)
         LichborneRogueMenu.treeMeleeBtn = treeMeleeBtn
 
         local treeBoostBtn = MakeTreeBtn(dpsHdrX + 60, dpsIconY,
             "Interface\\Icons\\Ability_Mage_PotentSpirit", function()
-            GameTooltip:SetText("|cffffcc00Boost|r |cff999999- |r|cffFFF569boost|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Offensive cooldown burst|r", 1, 1, 1)
-            GameTooltip:AddLine("Works alongside all DPS modes.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Boost|r |cff999999- |r|cffFFF569boost|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Offensive cooldown burst|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Works alongside all DPS modes."], 1, 1, 1)
         end)
         LichborneRogueMenu.treeBoostBtn = treeBoostBtn
 
         -- ── Stealth section (2-wide, 1 row): Stealth | Stealthed ─────────
-        MakeWideBox(stlHdrX, stlHdrY, stlSectionW, "Stealth")
+        MakeWideBox(stlHdrX, stlHdrY, stlSectionW, PBM_L["Stealth"])
 
         local treeStealthBtn = MakeTreeBtn(stlHdrX, stlIconY,
             "Interface\\Icons\\Ability_Stealth", function()
-            GameTooltip:SetText("|cffffcc00Stealth|r |cff999999- |r|cffFFF569stealth|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Activates Stealth mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Enters |cffffcc00Stealth|r between fights when possible.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Stealth|r |cff999999- |r|cffFFF569stealth|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Activates Stealth mode|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Enters |cffffcc00Stealth|r between fights when possible."], 1, 1, 1)
         end)
         LichborneRogueMenu.treeStealthBtn = treeStealthBtn
 
         local treeStealthedBtn = MakeTreeBtn(stlHdrX + 30, stlIconY,
             "Interface\\Icons\\Ability_Sap", function()
-            GameTooltip:SetText("|cffffcc00Stealthed|r |cff999999- |r|cffFFF569stealthed|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00In-combat stealth behavior|r", 1, 1, 1)
-            GameTooltip:AddLine("Approaches targets in |cffffcc00Stealth|r.", 1, 1, 1)
-            GameTooltip:AddLine("May pause DPS to re-stealth.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Stealthed|r |cff999999- |r|cffFFF569stealthed|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00In-combat stealth behavior|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Approaches targets in |cffffcc00Stealth|r."], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["May pause DPS to re-stealth."], 1, 1, 1)
         end)
         LichborneRogueMenu.treeStealthedBtn = treeStealthedBtn
 
         -- ── Assist header (3 buttons wide, centred) ───────────────────
-        MakeWideBox(assistHdrX, assistHdrY, assistHdrW, "Assist")
+        MakeWideBox(assistHdrX, assistHdrY, assistHdrW, PBM_L["Assist"])
 
         local treeTankAssistBtn = MakeTreeBtn(assistHdrX, assistIconY,
             "Interface\\Icons\\inv_shield_02", function()
-            GameTooltip:SetText("|cffffcc00Tank Assist|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r")
-            GameTooltip:AddLine("|cffffcc00Tank target focus|r", 1, 1, 1)
-            GameTooltip:AddLine("Attacks the main tank's current target.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Tank Assist|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Tank target focus|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Attacks the main tank's current target."], 1, 1, 1)
         end)
         LichborneRogueMenu.treeTankAssistBtn = treeTankAssistBtn
 
         local treeDpsAssistBtn = MakeTreeBtn(assistHdrX + 30, assistIconY,
             "Interface\\Icons\\Ability_Warrior_Challange", function()
-            GameTooltip:SetText("|cffffcc00DPS Assist|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r")
-            GameTooltip:AddLine("|cffffcc00Assists the main assist target|r", 1, 1, 1)
-            GameTooltip:AddLine("Attacks the assist leader's target.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00DPS Assist|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Assists the main assist target|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Attacks the assist leader's target."], 1, 1, 1)
         end)
         LichborneRogueMenu.treeDpsAssistBtn = treeDpsAssistBtn
 
         local treeDpsAoeBtn = MakeTreeBtn(assistHdrX + 60, assistIconY,
             "Interface\\Icons\\Spell_Shadow_RainOfFire", function()
-            GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cffFFF569aoe|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Switches to |cffffcc00AoE|r attacks on multiple targets.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00DPS AoE|r |cff999999- |r|cffFFF569aoe|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Cross-role AoE mode|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Switches to |cffffcc00AoE|r attacks on multiple targets."], 1, 1, 1)
         end)
         LichborneRogueMenu.treeDpsAoeBtn = treeDpsAoeBtn
 

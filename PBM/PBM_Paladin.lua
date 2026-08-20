@@ -2,12 +2,12 @@ PBM = PBM or {}
 
 -- Talent spec templates for the Set Talents menu
 local PALADIN_TALENT_SPECS = {
-    { label="Holy |cffffcc00PvE|r",        spec="holy pve", wowSpec="Holy Pala",    icon="Interface\\Icons\\Spell_Holy_HolyBolt"                  },
-    { label="Protection |cffffcc00PvE|r",  spec="prot pve", wowSpec="Protection",   icon="Interface\\Icons\\Ability_Paladin_ShieldoftheTemplar"   },
-    { label="Retribution |cffffcc00PvE|r", spec="ret pve",  wowSpec="Retribution",  icon="Interface\\Icons\\Spell_Holy_AuraofLight"               },
-    { label="Holy |cffff4444PvP|r",        spec="holy pvp", wowSpec="Holy Pala",    icon="Interface\\Icons\\Spell_Holy_HolyBolt"                  },
-    { label="Protection |cffff4444PvP|r",  spec="prot pvp", wowSpec="Protection",   icon="Interface\\Icons\\Ability_Paladin_ShieldoftheTemplar"   },
-    { label="Retribution |cffff4444PvP|r", spec="ret pvp",  wowSpec="Retribution",  icon="Interface\\Icons\\Spell_Holy_AuraofLight"               },
+    { label=PBM_L["Holy |cffffcc00PvE|r"],        spec="holy pve", wowSpec=PBM_L["Holy Pala"],    icon="Interface\\Icons\\Spell_Holy_HolyBolt"                  },
+    { label=PBM_L["Protection |cffffcc00PvE|r"],  spec="prot pve", wowSpec=PBM_L["Protection"],   icon="Interface\\Icons\\Ability_Paladin_ShieldoftheTemplar"   },
+    { label=PBM_L["Retribution |cffffcc00PvE|r"], spec="ret pve",  wowSpec=PBM_L["Retribution"],  icon="Interface\\Icons\\Spell_Holy_AuraofLight"               },
+    { label=PBM_L["Holy |cffff4444PvP|r"],        spec="holy pvp", wowSpec=PBM_L["Holy Pala"],    icon="Interface\\Icons\\Spell_Holy_HolyBolt"                  },
+    { label=PBM_L["Protection |cffff4444PvP|r"],  spec="prot pvp", wowSpec=PBM_L["Protection"],   icon="Interface\\Icons\\Ability_Paladin_ShieldoftheTemplar"   },
+    { label=PBM_L["Retribution |cffff4444PvP|r"], spec="ret pvp",  wowSpec=PBM_L["Retribution"],  icon="Interface\\Icons\\Spell_Holy_AuraofLight"               },
 }
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -127,15 +127,15 @@ function PBM.OpenPaladinMenu(row)
         local assistIconY = assistHdrY - 18 - 4
 
         -- ── Row 1: Spec headers + CO/NC headers (same Y) ──────────
-        MakeSpecBox(LichbornePaladinMenu, col1X, specBoxY, COL_W, "Holy",        "Interface\\Icons\\Spell_Holy_HolyBolt")
-        MakeSpecBox(LichbornePaladinMenu, col2X, specBoxY, COL_W, "Protection",  "Interface\\Icons\\Ability_Paladin_ShieldoftheTemplar")
-        MakeSpecBox(LichbornePaladinMenu, col3X, specBoxY, COL_W, "Retribution", "Interface\\Icons\\Spell_Holy_AuraofLight")
+        MakeSpecBox(LichbornePaladinMenu, col1X, specBoxY, COL_W, PBM_L["Holy"],        "Interface\\Icons\\Spell_Holy_HolyBolt")
+        MakeSpecBox(LichbornePaladinMenu, col2X, specBoxY, COL_W, PBM_L["Protection"],  "Interface\\Icons\\Ability_Paladin_ShieldoftheTemplar")
+        MakeSpecBox(LichbornePaladinMenu, col3X, specBoxY, COL_W, PBM_L["Retribution"], "Interface\\Icons\\Spell_Holy_AuraofLight")
         local aurasHdrW  = EXT_ICON_SIZE + BTN_GAP + EXT_ICON_SIZE  -- 56px (CO + gap + NC)
         local coNcHdrY   = specBoxY - 18 - 3   -- CO/NC headers one step below Auras
         local coNcIconY  = coNcHdrY - 18 - 4   -- first aura button below CO/NC headers
-        MakeSpecBox(LichbornePaladinMenu, coX, specBoxY,  aurasHdrW, "Auras")
-        MakeSpecBox(LichbornePaladinMenu, coX, coNcHdrY, EXT_ICON_SIZE, "CO")
-        MakeSpecBox(LichbornePaladinMenu, ncX, coNcHdrY, EXT_ICON_SIZE, "NC")
+        MakeSpecBox(LichbornePaladinMenu, coX, specBoxY,  aurasHdrW, PBM_L["Auras"])
+        MakeSpecBox(LichbornePaladinMenu, coX, coNcHdrY, EXT_ICON_SIZE, PBM_L["CO"])
+        MakeSpecBox(LichbornePaladinMenu, ncX, coNcHdrY, EXT_ICON_SIZE, PBM_L["NC"])
 
         local tHeal = MakeTreeBtn(col1X + singleOff, specIconY, "Interface\\Icons\\Spell_Holy_HolyBolt")
         local tTank = MakeTreeBtn(col2X + singleOff, specIconY, "Interface\\Icons\\Ability_Paladin_ShieldoftheTemplar")
@@ -160,14 +160,14 @@ function PBM.OpenPaladinMenu(row)
         local tNcShadow = MakeTreeBtn(ncX, coRow(7), "Interface\\Icons\\Spell_Shadow_SealOfKings")
 
         -- ── DPS/Off-Healer section (split headers) ───────────────────
-        MakeSpecBox(LichbornePaladinMenu, healerDpsHdrX, dohHdrY, dohW, "Heal DPS")
-        MakeSpecBox(LichbornePaladinMenu, offHealHdrX,   dohHdrY, dohW, "Off-Heal")
+        MakeSpecBox(LichbornePaladinMenu, healerDpsHdrX, dohHdrY, dohW, PBM_L["Heal DPS"])
+        MakeSpecBox(LichbornePaladinMenu, offHealHdrX,   dohHdrY, dohW, PBM_L["Off-Heal"])
 
         local tHealerDps = MakeTreeBtn(healerDpsBtnX, dohIconY, "Interface\\Icons\\INV_Alchemy_Elixir_02")
         local tOffHeal   = MakeTreeBtn(offHealBtnX,   dohIconY, "Interface\\Icons\\Spell_Holy_FlashHeal")
 
         -- ── Blessings section ──────────────────────────────────────
-        MakeSpecBox(LichbornePaladinMenu, blessHdrX, blessHdrY, blessW, "Blessings")
+        MakeSpecBox(LichbornePaladinMenu, blessHdrX, blessHdrY, blessW, PBM_L["Blessings"])
 
         local tBstats  = MakeTreeBtn(blessHdrX,                               blessIconY, "Interface\\Icons\\Spell_Magic_MageArmor")
         local tBhealth = MakeTreeBtn(blessHdrX +   EXT_ICON_SIZE + BTN_GAP,   blessIconY, "Interface\\Icons\\Spell_Holy_HealingAura")
@@ -175,7 +175,7 @@ function PBM.OpenPaladinMenu(row)
         local tBdps    = MakeTreeBtn(blessHdrX + 3*(EXT_ICON_SIZE + BTN_GAP), blessIconY, "Interface\\Icons\\INV_Hammer_01")
 
         -- ── Assist section ─────────────────────────────────────────
-        MakeSpecBox(LichbornePaladinMenu, assistHdrX, assistHdrY, assistW, "Assist")
+        MakeSpecBox(LichbornePaladinMenu, assistHdrX, assistHdrY, assistW, PBM_L["Assist"])
 
         local tTankAssist = MakeTreeBtn(assistHdrX,                               assistIconY, "Interface\\Icons\\inv_shield_02")
         local tDpsAssist  = MakeTreeBtn(assistHdrX +   EXT_ICON_SIZE + BTN_GAP,   assistIconY, "Interface\\Icons\\Ability_Warrior_Challange")
@@ -195,174 +195,174 @@ function PBM.OpenPaladinMenu(row)
         local function TL() GameTooltip:Hide() end
 
         tHeal:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Heal|r |cff999999- |r|cffF58CBAheal|r |cffee4433CO|r",
-            "|cffffcc00Holy healer|r")
+            "|cffffcc00" .. PBM_L["Heal"] .. "|r |cff999999- |r|cffF58CBAheal|r |cffee4433CO|r",
+            "|cffffcc00" .. PBM_L["Holy healer"] .. "|r")
         end); tHeal:SetScript("OnLeave", TL)
 
         tHealerDps:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Heal DPS|r |cff999999- |r|cffF58CBAhealer dps|r |cffee4433CO|r",
-            "|cffffcc00Holy healer that DPS fills|r",
-            "Allows the healer to deal damage when healing is not needed.")
+            "|cffffcc00" .. PBM_L["Heal DPS"] .. "|r |cff999999- |r|cffF58CBAhealer dps|r |cffee4433CO|r",
+            "|cffffcc00" .. PBM_L["Holy healer that DPS fills"] .. "|r",
+            PBM_L["Allows the healer to deal damage when healing is not needed."])
         end); tHealerDps:SetScript("OnLeave", TL)
 
         tOffHeal:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Off-Heal|r |cff999999- |r|cffF58CBAoffheal|r |cffee4433CO|r",
-            "|cffffcc00Retribution DPS with emergency heals|r",
-            "Switches to |cffF58CBAFlash of Light|r when party members drop low.")
+            "|cffffcc00" .. PBM_L["Off-Heal"] .. "|r |cff999999- |r|cffF58CBAoffheal|r |cffee4433CO|r",
+            "|cffffcc00" .. PBM_L["Retribution DPS with emergency heals"] .. "|r",
+            PBM_L["Switches to |cffF58CBAFlash of Light|r when party members drop low."])
         end); tOffHeal:SetScript("OnLeave", TL)
 
         tTank:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Tank|r |cff999999- |r|cffF58CBAtank|r |cffee4433CO|r",
-            "|cffffcc00Protection tank|r")
+            "|cffffcc00" .. PBM_L["Tank"] .. "|r |cff999999- |r|cffF58CBAtank|r |cffee4433CO|r",
+            "|cffffcc00" .. PBM_L["Protection tank"] .. "|r")
         end); tTank:SetScript("OnLeave", TL)
 
         tTankAssist:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Tank Assist|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r",
-            "|cffffcc00Assists the main tank|r",
-            "Focuses attacks on the tank's target.")
+            "|cffffcc00" .. PBM_L["Tank Assist"] .. "|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r",
+            "|cffffcc00" .. PBM_L["Assists the main tank"] .. "|r",
+            PBM_L["Focuses attacks on the tank's target."])
         end); tTankAssist:SetScript("OnLeave", TL)
 
         tDps:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Retribution|r |cff999999- |r|cffF58CBAdps|r |cffee4433CO|r",
-            "|cffffcc00Retribution DPS|r")
+            "|cffffcc00" .. PBM_L["Retribution"] .. "|r |cff999999- |r|cffF58CBAdps|r |cffee4433CO|r",
+            "|cffffcc00" .. PBM_L["Retribution DPS"] .. "|r")
         end); tDps:SetScript("OnLeave", TL)
 
         tDpsAssist:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00DPS Assist|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r",
-            "|cffffcc00Assists the DPS group|r",
-            "Focuses attacks on the DPS leader's target.")
+            "|cffffcc00" .. PBM_L["DPS Assist"] .. "|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r",
+            "|cffffcc00" .. PBM_L["Assists the DPS group"] .. "|r",
+            PBM_L["Focuses attacks on the DPS leader's target."])
         end); tDpsAssist:SetScript("OnLeave", TL)
 
         tDpsAoe:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00DPS AoE|r |cff999999- |r|cffff8000dps aoe|r |cffffcc00CO|r",
-            "|cffffcc00Cross-role AoE mode|r")
+            "|cffffcc00" .. PBM_L["DPS AoE"] .. "|r |cff999999- |r|cffff8000dps aoe|r |cffffcc00CO|r",
+            "|cffffcc00" .. PBM_L["Cross-role AoE mode"] .. "|r")
         end); tDpsAoe:SetScript("OnLeave", TL)
 
         -- CO aura tooltips
         tCoSpeed:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Crusader Aura|r |cff999999- |r|cffffff00bspeed|r |cffff8000CO|r",
-            "|cffffcc00Movement speed aura|r",
-            "Increases mounted speed for all",
-            "party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Crusader Aura"] .. "|r |cff999999- |r|cffffff00bspeed|r |cffff8000CO|r",
+            "|cffffcc00" .. PBM_L["Movement speed aura"] .. "|r",
+            PBM_L["Increases mounted speed for all"],
+            PBM_L["party members within 30 yards."])
         end); tCoSpeed:SetScript("OnLeave", TL)
 
         tCoArmor:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Devotion Aura|r |cff999999- |r|cffffff00barmor|r |cffff8000CO|r",
-            "|cffffcc00Armor aura|r",
-            "Increases |cffffcc00armor|r for all party",
-            "members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Devotion Aura"] .. "|r |cff999999- |r|cffffff00barmor|r |cffff8000CO|r",
+            "|cffffcc00" .. PBM_L["Armor aura"] .. "|r",
+            PBM_L["Increases |cffffcc00armor|r for all party"],
+            PBM_L["members within 30 yards."])
         end); tCoArmor:SetScript("OnLeave", TL)
 
         tCoCast:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Concentration Aura|r |cff999999- |r|cffffff00bcast|r |cffff8000CO|r",
-            "|cffffcc00Pushback resistance aura|r",
-            "Reduces spell pushback by 35% for",
-            "all party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Concentration Aura"] .. "|r |cff999999- |r|cffffff00bcast|r |cffff8000CO|r",
+            "|cffffcc00" .. PBM_L["Pushback resistance aura"] .. "|r",
+            PBM_L["Reduces spell pushback by 35% for"],
+            PBM_L["party members within 30 yards."])
         end); tCoCast:SetScript("OnLeave", TL)
 
         tCoBaoe:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Retribution Aura|r |cff999999- |r|cffffff00baoe|r |cffff8000CO|r",
-            "|cffffcc00Holy retaliation aura|r",
-            "Deals |cffffcc00Holy|r damage to attackers.")
+            "|cffffcc00" .. PBM_L["Retribution Aura"] .. "|r |cff999999- |r|cffffff00baoe|r |cffff8000CO|r",
+            "|cffffcc00" .. PBM_L["Holy retaliation aura"] .. "|r",
+            PBM_L["Deals |cffffcc00Holy|r damage to attackers."])
         end); tCoBaoe:SetScript("OnLeave", TL)
 
         tCoFire:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Fire Resistance Aura|r |cff999999- |r|cffffff00rfire|r |cffff8000CO|r",
-            "|cffffcc00Fire resistance aura|r",
-            "Increases |cffFF4444Fire resistance|r for all",
-            "party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Fire Resistance Aura"] .. "|r |cff999999- |r|cffffff00rfire|r |cffff8000CO|r",
+            "|cffffcc00" .. PBM_L["Fire resistance aura"] .. "|r",
+            PBM_L["Increases |cffFF4444Fire resistance|r for all"],
+            PBM_L["party members within 30 yards."])
         end); tCoFire:SetScript("OnLeave", TL)
 
         tCoFrost:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Frost Resistance Aura|r |cff999999- |r|cffffff00rfrost|r |cffff8000CO|r",
-            "|cffffcc00Frost resistance aura|r",
-            "Increases |cff3A8FC4Frost resistance|r for all",
-            "party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Frost Resistance Aura"] .. "|r |cff999999- |r|cffffff00rfrost|r |cffff8000CO|r",
+            "|cffffcc00" .. PBM_L["Frost resistance aura"] .. "|r",
+            PBM_L["Increases |cff3A8FC4Frost resistance|r for all"],
+            PBM_L["party members within 30 yards."])
         end); tCoFrost:SetScript("OnLeave", TL)
 
         tCoShadow:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Shadow Resistance Aura|r |cff999999- |r|cffffff00rshadow|r |cffff8000CO|r",
-            "|cffffcc00Shadow resistance aura|r",
-            "Increases |cff9966CCShadow resistance|r for all",
-            "party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Shadow Resistance Aura"] .. "|r |cff999999- |r|cffffff00rshadow|r |cffff8000CO|r",
+            "|cffffcc00" .. PBM_L["Shadow resistance aura"] .. "|r",
+            PBM_L["Increases |cff9966CCShadow resistance|r for all"],
+            PBM_L["party members within 30 yards."])
         end); tCoShadow:SetScript("OnLeave", TL)
 
         -- NC aura tooltips
         tNcSpeed:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Crusader Aura|r |cff999999- |r|cffffff00bspeed|r |cffff8000NC|r",
-            "|cffffcc00Movement speed aura|r",
-            "Increases mounted speed for all",
-            "party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Crusader Aura"] .. "|r |cff999999- |r|cffffff00bspeed|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Movement speed aura"] .. "|r",
+            PBM_L["Increases mounted speed for all"],
+            PBM_L["party members within 30 yards."])
         end); tNcSpeed:SetScript("OnLeave", TL)
 
         tNcArmor:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Devotion Aura|r |cff999999- |r|cffffff00barmor|r |cffff8000NC|r",
-            "|cffffcc00Armor aura|r",
-            "Increases |cffffcc00armor|r for all party",
-            "members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Devotion Aura"] .. "|r |cff999999- |r|cffffff00barmor|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Armor aura"] .. "|r",
+            PBM_L["Increases |cffffcc00armor|r for all party"],
+            PBM_L["members within 30 yards."])
         end); tNcArmor:SetScript("OnLeave", TL)
 
         tNcCast:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Concentration Aura|r |cff999999- |r|cffffff00bcast|r |cffff8000NC|r",
-            "|cffffcc00Pushback resistance aura|r",
-            "Reduces spell pushback by 35% for",
-            "all party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Concentration Aura"] .. "|r |cff999999- |r|cffffff00bcast|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Pushback resistance aura"] .. "|r",
+            PBM_L["Reduces spell pushback by 35% for"],
+            PBM_L["party members within 30 yards."])
         end); tNcCast:SetScript("OnLeave", TL)
 
         tNcBaoe:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Retribution Aura|r |cff999999- |r|cffffff00baoe|r |cffff8000NC|r",
-            "|cffffcc00Holy retaliation aura|r",
-            "Deals |cffffcc00Holy|r damage to attackers.")
+            "|cffffcc00" .. PBM_L["Retribution Aura"] .. "|r |cff999999- |r|cffffff00baoe|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Holy retaliation aura"] .. "|r",
+            PBM_L["Deals |cffffcc00Holy|r damage to attackers."])
         end); tNcBaoe:SetScript("OnLeave", TL)
 
         tNcFire:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Fire Resistance Aura|r |cff999999- |r|cffffff00rfire|r |cffff8000NC|r",
-            "|cffffcc00Fire resistance aura|r",
-            "Increases |cffFF4444Fire resistance|r for all",
-            "party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Fire Resistance Aura"] .. "|r |cff999999- |r|cffffff00rfire|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Fire resistance aura"] .. "|r",
+            PBM_L["Increases |cffFF4444Fire resistance|r for all"],
+            PBM_L["party members within 30 yards."])
         end); tNcFire:SetScript("OnLeave", TL)
 
         tNcFrost:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Frost Resistance Aura|r |cff999999- |r|cffffff00rfrost|r |cffff8000NC|r",
-            "|cffffcc00Frost resistance aura|r",
-            "Increases |cff3A8FC4Frost resistance|r for all",
-            "party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Frost Resistance Aura"] .. "|r |cff999999- |r|cffffff00rfrost|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Frost resistance aura"] .. "|r",
+            PBM_L["Increases |cff3A8FC4Frost resistance|r for all"],
+            PBM_L["party members within 30 yards."])
         end); tNcFrost:SetScript("OnLeave", TL)
 
         tNcShadow:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Shadow Resistance Aura|r |cff999999- |r|cffffff00rshadow|r |cffff8000NC|r",
-            "|cffffcc00Shadow resistance aura|r",
-            "Increases |cff9966CCShadow resistance|r for all",
-            "party members within 30 yards.")
+            "|cffffcc00" .. PBM_L["Shadow Resistance Aura"] .. "|r |cff999999- |r|cffffff00rshadow|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Shadow resistance aura"] .. "|r",
+            PBM_L["Increases |cff9966CCShadow resistance|r for all"],
+            PBM_L["party members within 30 yards."])
         end); tNcShadow:SetScript("OnLeave", TL)
 
         -- Blessing tooltips
         tBstats:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Kings|r |cff999999- |r|cffffff00bkings|r |cffff8000NC|r",
-            "|cffffcc00Blessing of Kings|r",
-            "Increases all |cffFF9900stats|r by 10% for all",
-            "party members.")
+            "|cffffcc00" .. PBM_L["Kings"] .. "|r |cff999999- |r|cffffff00bkings|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Blessing of Kings"] .. "|r",
+            PBM_L["Increases all |cffFF9900stats|r by 10% for all"],
+            PBM_L["party members."])
         end); tBstats:SetScript("OnLeave", TL)
 
         tBhealth:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Sanctuary|r |cff999999- |r|cffffff00bsanc|r |cffff8000NC|r",
-            "|cffffcc00Blessing of Sanctuary|r",
-            "Damage reduction + mana on block.",
-            "Applies to all party members.")
+            "|cffffcc00" .. PBM_L["Sanctuary"] .. "|r |cff999999- |r|cffffff00bsanc|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Blessing of Sanctuary"] .. "|r",
+            PBM_L["Damage reduction + mana on block."],
+            PBM_L["Applies to all party members."])
         end); tBhealth:SetScript("OnLeave", TL)
 
         tBmana:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Wisdom|r |cff999999- |r|cffffff00bwisdom|r |cffff8000NC|r",
-            "|cffffcc00Blessing of Wisdom|r",
-            "Increases |cff3A8FC4mana regeneration|r for all",
-            "party members.")
+            "|cffffcc00" .. PBM_L["Wisdom"] .. "|r |cff999999- |r|cffffff00bwisdom|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Blessing of Wisdom"] .. "|r",
+            PBM_L["Increases |cff3A8FC4mana regeneration|r for all"],
+            PBM_L["party members."])
         end); tBmana:SetScript("OnLeave", TL)
 
         tBdps:SetScript("OnEnter", function(s) TT(s,
-            "|cffffcc00Might|r |cff999999- |r|cffffff00bmight|r |cffff8000NC|r",
-            "|cffffcc00Blessing of Might|r",
-            "Increases |cffFF9900attack power|r for all",
-            "party members.")
+            "|cffffcc00" .. PBM_L["Might"] .. "|r |cff999999- |r|cffffff00bmight|r |cffff8000NC|r",
+            "|cffffcc00" .. PBM_L["Blessing of Might"] .. "|r",
+            PBM_L["Increases |cffFF9900attack power|r for all"],
+            PBM_L["party members."])
         end); tBdps:SetScript("OnLeave", TL)
 
         -- ── Toggle wire block ────────────────────────────────────────

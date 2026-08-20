@@ -25,11 +25,11 @@ local BD_CELL = {
 local IP_R, IP_G, IP_B = 0.78, 0.61, 0.23   -- gold (matches LevelSync)
 
 local BOTTOM_TABS = {
-    { id="Playerbots",           label="Playerbots",  r=GOLD_R, g=GOLD_G, b=GOLD_B },
-    { id="IndividualProgression",label="Ind. Prog.",  r=GOLD_R, g=GOLD_G, b=GOLD_B },
-    { id="LevelSync",            label="LevelSync",   r=GOLD_R, g=GOLD_G, b=GOLD_B },
-    { id="Notes",                label="Notes",       r=GOLD_R, g=GOLD_G, b=GOLD_B },
-    { id="Group",                label="Group",       r=GOLD_R, g=GOLD_G, b=GOLD_B },
+    { id="Playerbots",           label=PBM_L["Playerbots"],  r=GOLD_R, g=GOLD_G, b=GOLD_B },
+    { id="IndividualProgression",label=PBM_L["Ind. Prog."],  r=GOLD_R, g=GOLD_G, b=GOLD_B },
+    { id="LevelSync",            label=PBM_L["LevelSync"],   r=GOLD_R, g=GOLD_G, b=GOLD_B },
+    { id="Notes",                label=PBM_L["Notes"],       r=GOLD_R, g=GOLD_G, b=GOLD_B },
+    { id="Group",                label=PBM_L["Group"],       r=GOLD_R, g=GOLD_G, b=GOLD_B },
 }
 
 -- ── Tab button layout (title bar row, right of Clear buttons) ─
@@ -272,23 +272,23 @@ function PBM.BuildBottomTabs(parent, fl)
     }
 
     -- ── Playerbots panel ─────────────────────────────────────
-    local pbPanel = MakeContentFrame("PBMTabPanel_Playerbots", parent, fl, "Playerbots", false, GOLD_R, GOLD_G, GOLD_B)
+    local pbPanel = MakeContentFrame("PBMTabPanel_Playerbots", parent, fl, PBM_L["Playerbots"], false, GOLD_R, GOLD_G, GOLD_B)
     PBM.State.bottomTabPanels["Playerbots"] = pbPanel
     PBM.BuildPlayerbotsPanel(pbPanel, ctx)
 
     -- ── Individual Progression panel (full height, corrected width) ──
     local ipPanel = MakeContentFrame("PBMTabPanel_IndividualProgression", parent, fl,
-                                     "Individual Progression", true, GOLD_R, GOLD_G, GOLD_B)
+                                     PBM_L["Individual Progression"], true, GOLD_R, GOLD_G, GOLD_B)
     PBM.State.bottomTabPanels["IndividualProgression"] = ipPanel
     PBM.BuildIPProgressionPanel(ipPanel, ctx)
 
     -- ── LevelSync panel (full height, corrected width) ───────────
-    local lsPanel = MakeContentFrame("PBMTabPanel_LevelSync", parent, fl, "LevelSync", true, GOLD_R, GOLD_G, GOLD_B)
+    local lsPanel = MakeContentFrame("PBMTabPanel_LevelSync", parent, fl, PBM_L["LevelSync"], true, GOLD_R, GOLD_G, GOLD_B)
     PBM.State.bottomTabPanels["LevelSync"] = lsPanel
     PBM.BuildLevelSyncPanel(lsPanel, ctx)
 
     -- ── Notes panel (gold header) ─────────────────────────────
-    local notesPanel = MakeContentFrame("PBMTabPanel_Notes", parent, fl, "Notes", false, GOLD_R, GOLD_G, GOLD_B)
+    local notesPanel = MakeContentFrame("PBMTabPanel_Notes", parent, fl, PBM_L["Notes"], false, GOLD_R, GOLD_G, GOLD_B)
     PBM.State.bottomTabPanels["Notes"] = notesPanel
     PBM.BuildNotesPanel(notesPanel, ctx)
 

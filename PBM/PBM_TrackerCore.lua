@@ -127,7 +127,7 @@ local function OnFirstShow()
         PBM.State.classSortHdrs[key] = {lbl = lbl, fs = fs}
         btn:SetScript("OnEnter", function()
             GameTooltip:SetOwner(btn, "ANCHOR_BOTTOM")
-            GameTooltip:AddLine("Click to sort", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Click to sort"], 1, 1, 1)
             GameTooltip:Show()
         end)
         btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -153,14 +153,14 @@ local function OnFirstShow()
     specHdr:SetPoint("LEFT", hf, "LEFT", PBM.SPEC_OFF + 1, 0)
     specHdr:SetSize(PBM.COL_SPEC_W - 2, 18)
     specHdr:SetTexture("Interface\\Icons\\Ability_Rogue_Deadliness")
-    SH("Spec", PBM.SPEC_OFF - 4, PBM.COL_SPEC_W + 12, "spec", false)
-    SH("Name", PBM.NAME_OFF - 4, PBM.COL_NAME_W - 40, "name", false)
-    SH("iLvL", PBM.GS_OFF+2,    PBM.COL_GS_W-4,       "ilvl", true)
-    SH("GS",   PBM.REALGS_OFF+2, PBM.COL_GS_W-4,      "gs",   true)
+    SH(PBM_L["Spec"], PBM.SPEC_OFF - 4, PBM.COL_SPEC_W + 12, "spec", false)
+    SH(PBM_L["Name"], PBM.NAME_OFF - 4, PBM.COL_NAME_W - 40, "name", false)
+    SH(PBM_L["iLvL"], PBM.GS_OFF+2,    PBM.COL_GS_W-4,       "ilvl", true)
+    SH(PBM_L["GS"],   PBM.REALGS_OFF+2, PBM.COL_GS_W-4,      "gs",   true)
     local needsProfHdrFs = hf:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     needsProfHdrFs:SetPoint("LEFT", hf, "LEFT", PBM.NEEDS_OFF+2, 0)
     needsProfHdrFs:SetWidth(PBM.COL_NEEDS_W-4); needsProfHdrFs:SetJustifyH("CENTER")
-    needsProfHdrFs:SetText("|cffd4af37Prof|r")
+    needsProfHdrFs:SetText("|cffd4af37"..PBM_L["Prof"].."|r")
     PBM.State.needsProfHdrLabel = needsProfHdrFs
     for g, a in ipairs(PBM.SLOT_ABBR) do SH(a, PBM.GEAR_OFF+(g-1)*PBM.COL_GEAR_W, PBM.COL_GEAR_W, "gear_"..g, true) end
 
@@ -199,7 +199,7 @@ local function OnFirstShow()
     avgbg:SetAllPoints(avgFrame); avgbg:SetTexture(0.05, 0.07, 0.13, 1)
     local avgTitle = avgFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     avgTitle:SetPoint("LEFT", avgFrame, "LEFT", 4, 0)
-    avgTitle:SetText("|cffC69B3AAvg iLvL:|r"); avgTitle:SetWidth(52)
+    avgTitle:SetText("|cffC69B3A"..PBM_L["Avg iLvL:"].."|r"); avgTitle:SetWidth(52)
     LichborneAvgSwatches = {}
     -- Roster block is 130px wide, 4px gap, label is 56px: swatches fill 1086-56-4-130 = 896px for 10 classes
     local rosterBlockW = 130
@@ -225,13 +225,13 @@ local function OnFirstShow()
             GameTooltip:SetOwner(sw, "ANCHOR_TOP")
             local avg = PBM.GetClassAvgIlvl(cls)
             GameTooltip:AddLine(PBM.TAB_LABELS[cls], c.r, c.g, c.b)
-            GameTooltip:AddLine("Average item level of all tracked "..PBM.TAB_LABELS[cls].."s.", 1,1,1)
+            GameTooltip:AddLine(string.format(PBM_L["Average item level of all tracked %ss."], PBM.TAB_LABELS[cls]), 1,1,1)
             if avg > 0 then
-                GameTooltip:AddLine("Current: |cffd4af37"..avg.."|r", 1,1,1)
+                GameTooltip:AddLine(string.format(PBM_L["Current: |cffd4af37%s|r"], tostring(avg)), 1,1,1)
             else
-                GameTooltip:AddLine("No gear data yet.", 0.6,0.6,0.6)
+                GameTooltip:AddLine(PBM_L["No gear data yet."], 0.6,0.6,0.6)
             end
-            GameTooltip:AddLine("Click to switch to this tab.", 0.5,0.5,0.5)
+            GameTooltip:AddLine(PBM_L["Click to switch to this tab."], 0.5,0.5,0.5)
             GameTooltip:Show()
         end)
         sw:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -259,14 +259,14 @@ local function OnFirstShow()
     local rosterIlvlLbl = rosterIlvlBlock:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     rosterIlvlLbl:SetAllPoints(rosterIlvlBlock)
     rosterIlvlLbl:SetJustifyH("CENTER"); rosterIlvlLbl:SetJustifyV("MIDDLE")
-    rosterIlvlLbl:SetText("|cffC69B3ARoster iLvL:|r |cff555555--|r")
+    rosterIlvlLbl:SetText("|cffC69B3A"..PBM_L["Roster iLvL:"].."|r |cff555555--|r")
     PBM.State.LichborneRosterIlvlLabel = rosterIlvlLbl
     rosterIlvlBlock:EnableMouse(true)
     rosterIlvlBlock:SetScript("OnEnter", function()
         GameTooltip:SetOwner(rosterIlvlBlock, "ANCHOR_TOP")
-        GameTooltip:AddLine("Roster Avg iLvL", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Average item level across your", 1,1,1)
-        GameTooltip:AddLine("entire tracked roster.", 1,1,1)
+        GameTooltip:AddLine(PBM_L["Roster Avg iLvL"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Average item level across your"], 1,1,1)
+        GameTooltip:AddLine(PBM_L["entire tracked roster."], 1,1,1)
         GameTooltip:Show()
     end)
     rosterIlvlBlock:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -275,17 +275,17 @@ local function OnFirstShow()
     local filtersLbl = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     filtersLbl:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 497, 152)
     filtersLbl:SetJustifyH("LEFT")
-    filtersLbl:SetText("|cffC69B3AFilters:|r")
+    filtersLbl:SetText("|cffC69B3A"..PBM_L["Filters:"].."|r")
 
     -- ── Info/Help label (between last filter and help icons) ──────
     local infoHelpLbl = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     infoHelpLbl:SetJustifyH("LEFT")
-    infoHelpLbl:SetText("|cffC69B3AHelp:|r")
+    infoHelpLbl:SetText("|cffC69B3A"..PBM_L["Help:"].."|r")
 
     -- ── Admin label (between overview help icon and import button) ─
     local adminLbl = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     adminLbl:SetJustifyH("LEFT")
-    adminLbl:SetText("|cffC69B3AMenu:|r")
+    adminLbl:SetText("|cffC69B3A"..PBM_L["Menu:"].."|r")
 
     -- ── Add Target button ──────────────────────────────────────
     local addBtn = CreateFrame("Button", "LichborneAddTargetBtn", f)
@@ -303,15 +303,15 @@ local function OnFirstShow()
     local addBtnLabel = addBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     addBtnLabel:SetAllPoints(addBtn)
     addBtnLabel:SetJustifyH("CENTER"); addBtnLabel:SetJustifyV("MIDDLE")
-    addBtnLabel:SetText("|cffd4af37+ Add Target|r")
+    addBtnLabel:SetText("|cffd4af37"..PBM_L["+ Add Target"].."|r")
     addBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
 
     -- LichborneAddStatus is created inside outputBox after it is built (see below)
 
     addBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(addBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("+ Add Target", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Adds target to tracker.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["+ Add Target"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Adds target to tracker."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     addBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -320,14 +320,14 @@ local function OnFirstShow()
     -- Returns name, isNew on success; nil on invalid target.
     local function AddTargetToTracker()
         if not UnitExists("target") or not UnitIsPlayer("target") then
-            LichborneAddStatus:SetText("|cffff4444No player targeted.|r")
+            LichborneAddStatus:SetText("|cffff4444"..PBM_L["No player targeted."].."|r")
             return nil
         end
         local targetName = UnitName("target")
         local _, targetClass = UnitClass("target")
         local cls = targetClass and PBM.CLASS_TOKEN_MAP[targetClass]
         if not cls then
-            LichborneAddStatus:SetText("|cffff4444Unknown class: "..(targetClass or "nil").."|r")
+            LichborneAddStatus:SetText("|cffff4444"..string.format(PBM_L["Unknown class: %s"], targetClass or "nil").."|r")
             return nil
         end
         local c = PBM.CLASS_COLORS[cls]
@@ -354,7 +354,7 @@ local function OnFirstShow()
         end
         LichborneTrackerDB.rows[slot].name = targetName
         LichborneTrackerDB.rows[slot].level = UnitLevel("target")
-        LichborneOutput("|cffC69B3APBM:|r Added "..hex..targetName.."|r ("..cls..")", 1, 0.85, 0)
+        LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Added %s|r (%s)"], hex..targetName, cls), 1, 0.85, 0)
         if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
         if PBM.State.rowFrames and #PBM.State.rowFrames > 0 then PBM.RefreshRows() end
         return targetName, true
@@ -368,9 +368,9 @@ local function OnFirstShow()
         local c = cls and PBM.CLASS_COLORS[cls]
         local hex = c and string.format("|cff%02x%02x%02x", math.floor(c.r*255), math.floor(c.g*255), math.floor(c.b*255)) or ""
         if isNew then
-            LichborneAddStatus:SetText(hex..name.."|r added to Overview tab.")
+            LichborneAddStatus:SetText(string.format(PBM_L["%s|r added to Overview tab."], hex..name))
         else
-            LichborneAddStatus:SetText(hex..name.."|r already in tracker. Level updated.")
+            LichborneAddStatus:SetText(string.format(PBM_L["%s|r already in tracker. Level updated."], hex..name))
         end
     end)
 
@@ -392,12 +392,12 @@ local function OnFirstShow()
     addGroupBtn:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
     local addGroupLbl = addGroupBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     addGroupLbl:SetAllPoints(addGroupBtn); addGroupLbl:SetJustifyH("CENTER"); addGroupLbl:SetJustifyV("MIDDLE")
-    addGroupLbl:SetText("|cffd4af37+ Add Group|r")
+    addGroupLbl:SetText("|cffd4af37"..PBM_L["+ Add Group"].."|r")
     addGroupBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     addGroupBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(addGroupBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("+ Add Group", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Adds group to tracker.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["+ Add Group"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Adds group to tracker."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     addGroupBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -405,7 +405,7 @@ local function OnFirstShow()
     addGroupBtn:SetScript("OnClick", function()
         if GetNumRaidMembers() == 0 and GetNumPartyMembers() == 0 then
             if LichborneAddStatus then
-                LichborneAddStatus:SetText("|cffff4444Not in a group, or no other members found.|r")
+                LichborneAddStatus:SetText("|cffff4444"..PBM_L["Not in a group, or no other members found."].."|r")
             end
             return
         end
@@ -413,10 +413,10 @@ local function OnFirstShow()
         AddGroupMembers(function(added, skipped)
             SetScanActive(false)
             if LichborneAddStatus then
-                local lvlNote = skipped > 0 and " Levels updated." or ""
-                LichborneAddStatus:SetText("|cff44ff44Added "..added.." new, skipped "..skipped.." duplicates."..lvlNote.."|r")
+                local lvlNote = skipped > 0 and " "..PBM_L["Levels updated."] or ""
+                LichborneAddStatus:SetText("|cff44ff44"..string.format(PBM_L["Added %d new, skipped %d duplicates.%s"], added, skipped, lvlNote).."|r")
             end
-            LichborneOutput("|cffC69B3APBM:|r Group scan complete. Added: "..added..", Skipped: "..skipped..(skipped > 0 and ". Levels updated." or ""), 1, 0.85, 0)
+            LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Group scan complete. Added: %d, Skipped: %d%s"], added, skipped, (skipped > 0 and PBM_L[". Levels updated."] or "")), 1, 0.85, 0)
         end)
     end)
 
@@ -508,15 +508,15 @@ local function OnFirstShow()
     end
 
     -- ── Update Target GS (row y=78, left) ────────────────────
-    local gsBtn = MakeTrackerBtn("LichborneUpdateGSBtn", 15, 110, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37+ Add Target Gear|r")
+    local gsBtn = MakeTrackerBtn("LichborneUpdateGSBtn", 15, 110, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37"..PBM_L["+ Add Target Gear"].."|r")
     gsBtn:SetScript("OnEnter", function()
-        GameTooltip:SetOwner(gsBtn,"ANCHOR_TOP"); GameTooltip:AddLine("+ Add Target Gear",0.78,0.61,0.23)
-        GameTooltip:AddLine("Adds target's gear.",0.8,0.8,0.8)
+        GameTooltip:SetOwner(gsBtn,"ANCHOR_TOP"); GameTooltip:AddLine(PBM_L["+ Add Target Gear"],0.78,0.61,0.23)
+        GameTooltip:AddLine(PBM_L["Adds target's gear."],0.8,0.8,0.8)
         GameTooltip:Show()
     end)
     gsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
     gsBtn:SetScript("OnClick", function()
-        if not UnitExists("target") or not UnitIsPlayer("target") then LichborneAddStatus:SetText("|cffff4444No player targeted.|r"); return end
+        if not UnitExists("target") or not UnitIsPlayer("target") then LichborneAddStatus:SetText("|cffff4444"..PBM_L["No player targeted."].."|r"); return end
         local targetName = UnitName("target")
         local _, targetClassGS = UnitClass("target")
         local clsGS = targetClassGS and PBM.CLASS_TOKEN_MAP[targetClassGS]
@@ -526,7 +526,7 @@ local function OnFirstShow()
             if row.name and row.name:lower() == targetName:lower() then foundDi = i; break end
         end
         if not foundDi then
-            if not clsGS then LichborneAddStatus:SetText("|cffff4444Unknown class for "..targetName.."|r"); return end
+            if not clsGS then LichborneAddStatus:SetText("|cffff4444"..string.format(PBM_L["Unknown class for %s"], targetName).."|r"); return end
             PBM.EnsureClass(clsGS)
             local idxs = PBM.GetAllClassRows(clsGS)
             for _, di in ipairs(idxs) do
@@ -541,12 +541,12 @@ local function OnFirstShow()
             LichborneTrackerDB.rows[foundDi].level = UnitLevel("target")
             if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
             local cA = PBM.CLASS_COLORS[clsGS]; local hA = cA and string.format("|cff%02x%02x%02x",math.floor(cA.r*255),math.floor(cA.g*255),math.floor(cA.b*255)) or "|cffffffff"
-            LichborneOutput("|cffC69B3APBM:|r Added "..hA..targetName.."|r to tracker.", 1, 0.85, 0)
+            LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Added %s|r to tracker."], hA..targetName), 1, 0.85, 0)
         end
         local rowData = LichborneTrackerDB.rows[foundDi]
         local c = PBM.CLASS_COLORS[rowData.cls or ""]; local hex = c and string.format("|cff%02x%02x%02x",math.floor(c.r*255),math.floor(c.g*255),math.floor(c.b*255)) or "|cffffffff"
-        LichborneAddStatus:SetText("Updating Gear for "..hex..targetName.."|r...")
-        LichborneOutput("|cffC69B3APBM:|r Updating Gear for "..hex..targetName.."|r...", 1, 0.85, 0)
+        LichborneAddStatus:SetText(string.format(PBM_L["Updating Gear for %s|r..."], hex..targetName))
+        LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Updating Gear for %s|r..."], hex..targetName), 1, 0.85, 0)
         local gsDi = foundDi
         -- Lock all buttons (including Stop and invite) during single-target scan
         SetScanActive(true)
@@ -568,8 +568,8 @@ local function OnFirstShow()
                 ClearInspectPlayer()
                 SetScanActive(false)
                 if stopBtn then stopBtn:Enable(); stopBtn:SetAlpha(1.0) end
-                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444GS scan timed out.|r") end
-                LichborneOutput("|cffC69B3APBM:|r |cffff4444Target GS scan timed out.|r", 1, 0.85, 0)
+                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444"..PBM_L["GS scan timed out."].."|r") end
+                LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r |cffff4444"..PBM_L["Target GS scan timed out."].."|r", 1, 0.85, 0)
                 return
             end
             if gsPhase == "delay" then
@@ -592,16 +592,16 @@ local function OnFirstShow()
     end)
 
     -- ── Update Target Spec (row y=78, right) ──────────────────
-    local tsBtn = MakeTrackerBtn("LichborneUpdateTargetSpecBtn", 15, 76, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37+ Add Target Spec|r")
+    local tsBtn = MakeTrackerBtn("LichborneUpdateTargetSpecBtn", 15, 76, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37"..PBM_L["+ Add Target Spec"].."|r")
     tsBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(tsBtn,"ANCHOR_TOP")
-        GameTooltip:AddLine("+ Add Target Spec",0.78,0.61,0.23)
-        GameTooltip:AddLine("Adds targets spec.",0.8,0.8,0.8)
+        GameTooltip:AddLine(PBM_L["+ Add Target Spec"],0.78,0.61,0.23)
+        GameTooltip:AddLine(PBM_L["Adds targets spec."],0.8,0.8,0.8)
         GameTooltip:Show()
     end)
     tsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
     tsBtn:SetScript("OnClick", function()
-        if not UnitExists("target") or not UnitIsPlayer("target") then LichborneAddStatus:SetText("|cffff4444No player targeted.|r"); return end
+        if not UnitExists("target") or not UnitIsPlayer("target") then LichborneAddStatus:SetText("|cffff4444"..PBM_L["No player targeted."].."|r"); return end
         local targetName = UnitName("target")
         local _, targetClassSP = UnitClass("target")
         local clsSP = targetClassSP and PBM.CLASS_TOKEN_MAP[targetClassSP]
@@ -611,7 +611,7 @@ local function OnFirstShow()
             if row.name and row.name:lower() == targetName:lower() then foundDi = i; break end
         end
         if not foundDi then
-            if not clsSP then LichborneAddStatus:SetText("|cffff4444Unknown class for "..targetName.."|r"); return end
+            if not clsSP then LichborneAddStatus:SetText("|cffff4444"..string.format(PBM_L["Unknown class for %s"], targetName).."|r"); return end
             PBM.EnsureClass(clsSP)
             local idxs = PBM.GetAllClassRows(clsSP)
             for _, di in ipairs(idxs) do
@@ -626,12 +626,12 @@ local function OnFirstShow()
             LichborneTrackerDB.rows[foundDi].level = UnitLevel("target")
             if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
             local cA = PBM.CLASS_COLORS[clsSP]; local hA = cA and string.format("|cff%02x%02x%02x",math.floor(cA.r*255),math.floor(cA.g*255),math.floor(cA.b*255)) or "|cffffffff"
-            LichborneOutput("|cffC69B3APBM:|r Added "..hA..targetName.."|r to tracker.", 1, 0.85, 0)
+            LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Added %s|r to tracker."], hA..targetName), 1, 0.85, 0)
         end
         local rowData = LichborneTrackerDB.rows[foundDi]
         local c = PBM.CLASS_COLORS[rowData.cls or ""]; local hex = c and string.format("|cff%02x%02x%02x",math.floor(c.r*255),math.floor(c.g*255),math.floor(c.b*255)) or "|cffffffff"
-        LichborneAddStatus:SetText("Adding Specialization for "..hex..targetName.."|r...")
-        LichborneOutput("|cffC69B3APBM:|r Adding Specialization for "..hex..targetName.."|r...", 1, 0.85, 0)
+        LichborneAddStatus:SetText(string.format(PBM_L["Adding Specialization for %s|r..."], hex..targetName))
+        LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Adding Specialization for %s|r..."], hex..targetName), 1, 0.85, 0)
         local spDi = foundDi
         -- Lock all buttons (including Stop and invite) during single-target scan
         SetScanActive(true)
@@ -653,8 +653,8 @@ local function OnFirstShow()
                 ClearInspectPlayer()
                 SetScanActive(false)
                 if stopBtn then stopBtn:Enable(); stopBtn:SetAlpha(1.0) end
-                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444Specialization scan timed out.|r") end
-                LichborneOutput("|cffC69B3APBM:|r |cffff4444Target Specialization scan timed out.|r", 1, 0.85, 0)
+                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444"..PBM_L["Specialization scan timed out."].."|r") end
+                LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r |cffff4444"..PBM_L["Target Specialization scan timed out."].."|r", 1, 0.85, 0)
                 return
             end
             if spPhase == "delay" then
@@ -699,21 +699,21 @@ local function OnFirstShow()
             else stopInv:Enable(); stopInv:SetAlpha(1.0) end
         end
     end
-    local uggsBtn = MakeTrackerBtn("LichborneUpdateGroupGSBtn", 175, 110, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37+ Add Group Gear|r")
+    local uggsBtn = MakeTrackerBtn("LichborneUpdateGroupGSBtn", 175, 110, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37"..PBM_L["+ Add Group Gear"].."|r")
     uggsBtn:SetScript("OnEnter", function()
-        GameTooltip:SetOwner(uggsBtn,"ANCHOR_TOP"); GameTooltip:AddLine("+ Add Group Gear",0.78,0.61,0.23)
-        GameTooltip:AddLine("Adds members gear.",0.8,0.8,0.8)
+        GameTooltip:SetOwner(uggsBtn,"ANCHOR_TOP"); GameTooltip:AddLine(PBM_L["+ Add Group Gear"],0.78,0.61,0.23)
+        GameTooltip:AddLine(PBM_L["Adds members gear."],0.8,0.8,0.8)
         GameTooltip:Show()
     end)
     uggsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
     uggsBtn:SetScript("OnClick", function()
         local playerName = UnitName("player")
         if GetNumRaidMembers() == 0 and GetNumPartyMembers() == 0 then
-            LichborneAddStatus:SetText("|cffff4444Not in a group.|r"); return
+            LichborneAddStatus:SetText("|cffff4444"..PBM_L["Not in a group."].."|r"); return
         end
         SetScanActive(true)
         PBM.State.LichborneGroupScanActive = true
-        LichborneAddStatus:SetText("Adding group members first...")
+        LichborneAddStatus:SetText(PBM_L["Adding group members first..."])
         AddGroupMembers(function(added, skipped)
             if not PBM.State.LichborneGroupScanActive then SetScanActive(false); return end
             -- Now build unit list and run GS scan
@@ -724,10 +724,11 @@ local function OnFirstShow()
             elseif GetNumPartyMembers() > 0 then
                 for i = 1, GetNumPartyMembers() do local unit="party"..i; if UnitExists(unit) then units[#units+1]=unit end end
             end
-            if #units == 0 then SetScanActive(false); LichborneAddStatus:SetText("|cffff4444No group members found.|r"); return end
+            if #units == 0 then SetScanActive(false); LichborneAddStatus:SetText("|cffff4444"..PBM_L["No group members found."].."|r"); return end
             local totalTime = math.ceil(#units*2.5)
-            LichborneAddStatus:SetText("|cffff9900Added "..added.." new, skipped "..skipped.." duplicates"..(skipped > 0 and ". Levels updated." or ".").."\nInspecting "..#units.." players (~"..totalTime.."s)...|r")
-            LichborneOutput("|cffC69B3APBM:|r Group synced (+"..added..", skipped "..skipped..(skipped > 0 and ". Levels updated." or "")..").\nStarting GS scan for "..#units.." players.", 1, 0.85, 0)
+            local lvlNote = skipped > 0 and PBM_L[". Levels updated."] or "."
+            LichborneAddStatus:SetText("|cffff9900"..string.format(PBM_L["Added %d new, skipped %d duplicates%s\nInspecting %d players (~%ds)..."], added, skipped, lvlNote, #units, totalTime).."|r")
+            LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Group synced (+%d, skipped %d%s).\nStarting GS scan for %d players."], added, skipped, (skipped > 0 and PBM_L[". Levels updated."] or ""), #units), 1, 0.85, 0)
             local scanGsStartTime = GetTime()  -- PBM.DBG: group scan timing
             local idx,elapsed,inspecting = 1,0,false
             local gFrame = CreateFrame("Frame")
@@ -747,8 +748,8 @@ local function OnFirstShow()
                     gFrame:SetScript("OnUpdate",nil)
                     PBM.State.LichborneGroupScanActive = false
                     SetScanActive(false)
-                    LichborneAddStatus:SetText("|cff44ff44Group GS update complete!|r")
-                    LichborneOutput("|cffC69B3APBM:|r |cff44ff44Group GS update complete.|r", 1, 0.85, 0)
+                    LichborneAddStatus:SetText("|cff44ff44"..PBM_L["Group GS update complete!"].."|r")
+                    LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r |cff44ff44"..PBM_L["Group GS update complete."].."|r", 1, 0.85, 0)
                     PBM.DBG("|cff44ff44Group GS scan done|r - "..#units.." units, elapsed |cffffff88"..string.format("%.1f", GetTime()-scanGsStartTime).."s|r")
                     PBM.RefreshRows(); return
                 end
@@ -757,8 +758,8 @@ local function OnFirstShow()
                 if not targetName then PBM.DBG("|cffff4444[NIL]|r UnitName("..unit..") returned nil - skipping"); idx=idx+1; return end
                 local foundDi = nil
                 for i, row in ipairs(LichborneTrackerDB.rows) do if row.name and row.name:lower()==targetName:lower() then foundDi=i; break end end
-                if not foundDi then LichborneOutput("|cffC69B3APBM:|r Skipping "..tostring(targetName).." (not tracked)",1,0.6,0.3); idx=idx+1; return end
-                LichborneAddStatus:SetText("Updating Gear for |cffffff88"..tostring(targetName).."|r... ("..(idx).."/"..#units..")")
+                if not foundDi then LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Skipping %s (not tracked)"], tostring(targetName)),1,0.6,0.3); idx=idx+1; return end
+                LichborneAddStatus:SetText(string.format(PBM_L["Updating Gear for |cffffff88%s|r... (%d/%d)"], tostring(targetName), idx, #units))
                 PBM.State.LichborneInspectTarget = foundDi; PBM.State.LichborneInspectUnit = unit
                 PBM.DBG("InspectUnit("..unit..") -> group GS for |cffffff88"..tostring(targetName).."|r ("..idx.."/"..#units..") UnitExists=|cffffff88"..tostring(UnitExists(unit)).."|r InRange=|cffffff88"..tostring(CheckInteractDistance(unit,1)).."|r")
                 InspectUnit(unit); PBM.State.LichborneInspectGUID = UnitGUID(unit); if not PBM.State.LichborneInspectGUID then PBM.DBG("|cffff4444[NIL]|r UnitGUID("..unit..")=nil â€” GUID capture skipped") end; PBM.State.inspectWait=0; idx=idx+1; inspecting=true; elapsed=0
@@ -767,21 +768,21 @@ local function OnFirstShow()
     end)
 
     -- ── Update Group Spec (row y=44, right) ───────────────────
-    local ugsBtn = MakeTrackerBtn("LichborneUpdateGroupSpecBtn", 175, 76, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37+ Add Group Spec|r")
+    local ugsBtn = MakeTrackerBtn("LichborneUpdateGroupSpecBtn", 175, 76, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37"..PBM_L["+ Add Group Spec"].."|r")
     ugsBtn:SetScript("OnEnter", function()
-        GameTooltip:SetOwner(ugsBtn,"ANCHOR_TOP"); GameTooltip:AddLine("+ Add Group Spec",0.78,0.61,0.23)
-        GameTooltip:AddLine("Adds members spec.",0.8,0.8,0.8)
+        GameTooltip:SetOwner(ugsBtn,"ANCHOR_TOP"); GameTooltip:AddLine(PBM_L["+ Add Group Spec"],0.78,0.61,0.23)
+        GameTooltip:AddLine(PBM_L["Adds members spec."],0.8,0.8,0.8)
         GameTooltip:Show()
     end)
     ugsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
     ugsBtn:SetScript("OnClick", function()
         local playerName = UnitName("player")
         if GetNumRaidMembers() == 0 and GetNumPartyMembers() == 0 then
-            LichborneAddStatus:SetText("|cffff4444Not in a group.|r"); return
+            LichborneAddStatus:SetText("|cffff4444"..PBM_L["Not in a group."].."|r"); return
         end
         SetScanActive(true)
         PBM.State.LichborneGroupScanActive = true
-        LichborneAddStatus:SetText("Adding group members first...")
+        LichborneAddStatus:SetText(PBM_L["Adding group members first..."])
         AddGroupMembers(function(added, skipped)
             if not PBM.State.LichborneGroupScanActive then SetScanActive(false); return end
             -- Now build unit list and run Spec scan
@@ -792,10 +793,11 @@ local function OnFirstShow()
             elseif GetNumPartyMembers() > 0 then
                 for i = 1, GetNumPartyMembers() do local unit="party"..i; if UnitExists(unit) then units[#units+1]=unit end end
             end
-            if #units == 0 then SetScanActive(false); LichborneAddStatus:SetText("|cffff4444No group members found.|r"); return end
+            if #units == 0 then SetScanActive(false); LichborneAddStatus:SetText("|cffff4444"..PBM_L["No group members found."].."|r"); return end
             local totalTime = math.ceil(#units*3)
-            LichborneAddStatus:SetText("|cffff9900Added "..added.." new, skipped "..skipped.." duplicates"..(skipped > 0 and ". Levels updated." or ".").."\nReading Specialization for "..#units.." players (~"..totalTime.."s)...|r")
-            LichborneOutput("|cffC69B3APBM:|r Group synced (+"..added..", skipped "..skipped..(skipped > 0 and ". Levels updated." or "")..").\nStarting Specialization scan for "..#units.." players.", 1, 0.85, 0)
+            local lvlNote = skipped > 0 and PBM_L[". Levels updated."] or "."
+            LichborneAddStatus:SetText("|cffff9900"..string.format(PBM_L["Added %d new, skipped %d duplicates%s\nReading Specialization for %d players (~%ds)..."], added, skipped, lvlNote, #units, totalTime).."|r")
+            LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Group synced (+%d, skipped %d%s).\nStarting Specialization scan for %d players."], added, skipped, (skipped > 0 and PBM_L[". Levels updated."] or ""), #units), 1, 0.85, 0)
             local scanSpecStartTime = GetTime()  -- PBM.DBG: group scan timing
             local idx,elapsed,inspecting = 1,0,false
             local sFrame = CreateFrame("Frame")
@@ -816,8 +818,8 @@ local function OnFirstShow()
                     sFrame:SetScript("OnUpdate",nil)
                     PBM.State.LichborneGroupScanActive = false
                     SetScanActive(false)
-                    LichborneAddStatus:SetText("|cff44ff44Group Specialization update complete!|r")
-                    LichborneOutput("|cffC69B3APBM:|r |cff44ff44Group Specialization update complete.|r", 1, 0.85, 0)
+                    LichborneAddStatus:SetText("|cff44ff44"..PBM_L["Group Specialization update complete!"].."|r")
+                    LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r |cff44ff44"..PBM_L["Group Specialization update complete."].."|r", 1, 0.85, 0)
                     PBM.DBG("|cff44ff44Group Spec scan done|r - "..#units.." units, elapsed |cffffff88"..string.format("%.1f", GetTime()-scanSpecStartTime).."s|r")
                     PBM.RefreshRows(); if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end; return
                 end
@@ -826,8 +828,8 @@ local function OnFirstShow()
                 if not targetName then PBM.DBG("|cffff4444[NIL]|r UnitName("..unit..") returned nil - skipping"); idx=idx+1; return end
                 local foundDi = nil
                 for i, row in ipairs(LichborneTrackerDB.rows) do if row.name and row.name:lower()==targetName:lower() then foundDi=i; break end end
-                if not foundDi then LichborneOutput("|cffC69B3APBM:|r Skipping "..tostring(targetName).." (not tracked)",1,0.6,0.3); idx=idx+1; return end
-                LichborneAddStatus:SetText("Reading Specialization |cffffff88"..tostring(targetName).."|r... ("..(idx).."/"..#units..")")
+                if not foundDi then LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r "..string.format(PBM_L["Skipping %s (not tracked)"], tostring(targetName)),1,0.6,0.3); idx=idx+1; return end
+                LichborneAddStatus:SetText(string.format(PBM_L["Reading Specialization |cffffff88%s|r... (%d/%d)"], tostring(targetName), idx, #units))
                 PBM.State.LichborneSpecTarget = foundDi; PBM.State.LichborneInspectUnit = unit
                 if LichborneTrackerDB.rows[foundDi] then LichborneTrackerDB.rows[foundDi].spec="" end
                 PBM.DBG("InspectUnit("..unit..") -> group Spec for |cffffff88"..tostring(targetName).."|r ("..idx.."/"..#units..") UnitExists=|cffffff88"..tostring(UnitExists(unit)).."|r InRange=|cffffff88"..tostring(CheckInteractDistance(unit,1)).."|r")
@@ -837,12 +839,12 @@ local function OnFirstShow()
     end)
 
     -- ── Stop Inspect button (below Get Group Spec) ────────────
-    local stopInspectBtn = MakeTrackerBtn("LichborneStopInspectBtn", 15, 8, 155, 29, 0.90, 0.20, 0.20, "|cffd4af37Stop Scan|r")
+    local stopInspectBtn = MakeTrackerBtn("LichborneStopInspectBtn", 15, 8, 155, 29, 0.90, 0.20, 0.20, PBM_L["|cffd4af37Stop Scan|r"])
     stopInspectBtn:SetBackdropColor(0.90*0.30, 0.20*0.30, 0.20*0.30, 1)
     stopInspectBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(stopInspectBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Stop Scan", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Cancels the running Gear or Spec scan.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["Stop Scan"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Cancels the running Gear or Spec scan."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     stopInspectBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -856,8 +858,8 @@ local function OnFirstShow()
         PBM.State.LichborneGroupScanActive = false
         PBM.State.ipQueryActive = false
         SetScanActive(false)
-        LichborneAddStatus:SetText("|cffff4444Scan stopped.|r")
-        LichborneOutput("|cffC69B3APBM:|r |cffff4444Scan stopped.|r", 1, 0.85, 0)
+        LichborneAddStatus:SetText(PBM_L["|cffff4444Scan stopped.|r"])
+        LichborneOutput(PBM_L["|cffC69B3APBM:|r |cffff4444Scan stopped.|r"], 1, 0.85, 0)
     end)
 
     -- Row y=10: Add Target / Add Group (existing buttons stay here)
@@ -871,7 +873,7 @@ local function OnFirstShow()
     clsbg:SetAllPoints(clsFrame); clsbg:SetTexture(0.05, 0.07, 0.13, 1)
     local clsTitle = clsFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     clsTitle:SetPoint("LEFT", clsFrame, "LEFT", 4, 0)
-    clsTitle:SetText("|cffC69B3AAvg GS:|r"); clsTitle:SetWidth(52)
+    clsTitle:SetText(PBM_L["|cffC69B3AAvg GS:|r"]); clsTitle:SetWidth(52)
     LichborneCountLabels = {}
     local cRosterBlockW = 130
     local cswTotalW = 1086 - 56 - 4 - cRosterBlockW
@@ -897,13 +899,13 @@ local function OnFirstShow()
             GameTooltip:SetOwner(csw, "ANCHOR_TOP")
             local gs = PBM.GetClassAvgGS(cls)
             GameTooltip:AddLine(PBM.TAB_LABELS[cls], c.r, c.g, c.b)
-            GameTooltip:AddLine("Average gear score of all tracked "..PBM.TAB_LABELS[cls].."s.", 1,1,1)
+            GameTooltip:AddLine(string.format(PBM_L["Average gear score of all tracked %ss."], PBM.TAB_LABELS[cls]), 1,1,1)
             if gs > 0 then
-                GameTooltip:AddLine("Current: |cffd4af37"..gs.."|r", 1,1,1)
+                GameTooltip:AddLine(string.format(PBM_L["Current: |cffd4af37%d|r"], gs), 1,1,1)
             else
-                GameTooltip:AddLine("No gear data yet.", 0.6,0.6,0.6)
+                GameTooltip:AddLine(PBM_L["No gear data yet."], 0.6,0.6,0.6)
             end
-            GameTooltip:AddLine("Click to switch to this tab.", 0.5,0.5,0.5)
+            GameTooltip:AddLine(PBM_L["Click to switch to this tab."], 0.5,0.5,0.5)
             GameTooltip:Show()
         end)
         csw:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -930,14 +932,14 @@ local function OnFirstShow()
     local rosterGsLbl = rosterGsBlock:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     rosterGsLbl:SetAllPoints(rosterGsBlock)
     rosterGsLbl:SetJustifyH("CENTER"); rosterGsLbl:SetJustifyV("MIDDLE")
-    rosterGsLbl:SetText("|cffC69B3ARoster GS:|r |cff555555--|r")
+    rosterGsLbl:SetText(PBM_L["|cffC69B3ARoster GS:|r |cff555555--|r"])
     PBM.State.LichborneRosterGsLabel = rosterGsLbl
     rosterGsBlock:EnableMouse(true)
     rosterGsBlock:SetScript("OnEnter", function()
         GameTooltip:SetOwner(rosterGsBlock, "ANCHOR_TOP")
-        GameTooltip:AddLine("Roster Avg GS", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Average gear score across your", 1,1,1)
-        GameTooltip:AddLine("entire tracked roster.", 1,1,1)
+        GameTooltip:AddLine(PBM_L["Roster Avg GS"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Average gear score across your"], 1,1,1)
+        GameTooltip:AddLine(PBM_L["entire tracked roster."], 1,1,1)
         GameTooltip:Show()
     end)
     rosterGsBlock:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -977,23 +979,23 @@ local function OnFirstShow()
         return btn
     end
 
-    local maintBtn = MakeSimpleBtn("LichborneMaintBtn", "|cffd4af37+ Full Group Scan|r",
+    local maintBtn = MakeSimpleBtn("LichborneMaintBtn", PBM_L["|cffd4af37+ Full Group Scan|r"],
         0.2, 0.5, 0.9, 175, 8,
         155, {
-            {"Full Group Scan",0.78,0.61,0.23},
-            {"Long scan is used for first time setup",0.8,0.8,0.8},
-            {"or reconfiguration of raid. Performs",0.8,0.8,0.8},
-            {"gear and spec scan. Allow 6s per",0.8,0.8,0.8},
-            {"character.",0.8,0.8,0.8},
+            {PBM_L["Full Group Scan"],0.78,0.61,0.23},
+            {PBM_L["Long scan is used for first time setup"],0.8,0.8,0.8},
+            {PBM_L["or reconfiguration of raid. Performs"],0.8,0.8,0.8},
+            {PBM_L["gear and spec scan. Allow 6s per"],0.8,0.8,0.8},
+            {PBM_L["character."],0.8,0.8,0.8},
         })
     maintBtn:SetScript("OnClick", function()
         local playerName = UnitName("player")
         if GetNumRaidMembers() == 0 and GetNumPartyMembers() == 0 then
-            LichborneAddStatus:SetText("|cffff4444Not in a group.|r"); return
+            LichborneAddStatus:SetText(PBM_L["|cffff4444Not in a group.|r"]); return
         end
         SetScanActive(true)
         PBM.State.LichborneGroupScanActive = true
-        LichborneAddStatus:SetText("Adding group members...")
+        LichborneAddStatus:SetText(PBM_L["Adding group members..."])
         AddGroupMembers(function(added, skipped)
             -- Abort if Stop Scan was pressed during the add phase
             if not PBM.State.LichborneGroupScanActive then return end
@@ -1015,13 +1017,13 @@ local function OnFirstShow()
             end
             if #units == 0 then
                 SetScanActive(false)
-                LichborneAddStatus:SetText("|cffff4444No group members found.|r")
+                LichborneAddStatus:SetText(PBM_L["|cffff4444No group members found.|r"])
                 return
             end
             -- ── Phase 2: GS scan ──────────────────────────────────────────
             local totalTime = math.ceil(#units * 6)
-            LichborneAddStatus:SetText("|cffff9900Added "..added.." new, skipped "..skipped.." duplicates"..(skipped > 0 and ". Levels updated." or ".").."\nFull scan: "..#units.." players (~"..totalTime.."s)...|r")
-            LichborneOutput("|cffC69B3APBM:|r Full Group Scan started (+"..added..", skipped "..skipped..(skipped > 0 and ". Levels updated." or "")..").\nGS phase: "..#units.." players.", 1, 0.85, 0)
+            LichborneAddStatus:SetText(string.format(PBM_L["|cffff9900Added %d new, skipped %d duplicates%s\nFull scan: %d players (~%ds)...|r"], added, skipped, (skipped > 0 and PBM_L[". Levels updated."] or "."), #units, totalTime))
+            LichborneOutput(string.format(PBM_L["|cffC69B3APBM:|r Full Group Scan started (+%d, skipped %d%s).\nGS phase: %d players."], added, skipped, (skipped > 0 and PBM_L[". Levels updated."] or ""), #units), 1, 0.85, 0)
             local scanStartTime = GetTime()
             local idx, elapsed, inspecting = 1, 0, false
             local gFrame = CreateFrame("Frame")
@@ -1041,8 +1043,8 @@ local function OnFirstShow()
                     gFrame:SetScript("OnUpdate", nil)
                     PBM.DBG("|cff44ff44FullScan GS phase done|r — elapsed |cffffff88"..string.format("%.1f", GetTime()-scanStartTime).."s|r")
                     -- ── Phase 3: Spec scan ────────────────────────────────
-                    LichborneAddStatus:SetText("|cffff9900GS done. Starting Specialization scan ("..#units.." players)...|r")
-                    LichborneOutput("|cffC69B3APBM:|r GS phase complete. Starting Specialization phase.", 1, 0.85, 0)
+                    LichborneAddStatus:SetText(string.format(PBM_L["|cffff9900GS done. Starting Specialization scan (%d players)...|r"], #units))
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r GS phase complete. Starting Specialization phase."], 1, 0.85, 0)
                     local sIdx, sElapsed, sInspecting = 1, 0, false
                     local sFrame = CreateFrame("Frame")
                     activeInspectFrame = sFrame
@@ -1061,8 +1063,8 @@ local function OnFirstShow()
                             sFrame:SetScript("OnUpdate", nil)
                             PBM.State.LichborneGroupScanActive = false
                             SetScanActive(false)
-                            LichborneAddStatus:SetText("|cff44ff44Full Group Scan complete!|r")
-                            LichborneOutput("|cffC69B3APBM:|r |cff44ff44Full Group Scan complete.|r", 1, 0.85, 0)
+                            LichborneAddStatus:SetText(PBM_L["|cff44ff44Full Group Scan complete!|r"])
+                            LichborneOutput(PBM_L["|cffC69B3APBM:|r |cff44ff44Full Group Scan complete.|r"], 1, 0.85, 0)
                             PBM.DBG("|cff44ff44FullScan complete|r — total elapsed |cffffff88"..string.format("%.1f", GetTime()-scanStartTime).."s|r")
                             PBM.RefreshRows(); if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
                             -- Trigger group strategies query for all scanned members
@@ -1078,7 +1080,7 @@ local function OnFirstShow()
                                 end
                             end
                             if strCount > 0 then
-                                LichborneAddStatus:SetText("|cff44ff44Full Group Scan complete!|r |cffd4af37Fetching strategies: "..strCount.." members...|r")
+                                LichborneAddStatus:SetText(string.format(PBM_L["|cff44ff44Full Group Scan complete!|r |cffd4af37Fetching strategies: %d members...|r"], strCount))
                             end
                             return
                         end
@@ -1090,10 +1092,10 @@ local function OnFirstShow()
                             if row.name and row.name:lower() == targetName:lower() then foundDi = i; break end
                         end
                         if not foundDi then
-                            LichborneOutput("|cffC69B3APBM:|r Skipping "..tostring(targetName).." (not tracked)", 1, 0.6, 0.3)
+                            LichborneOutput(string.format(PBM_L["|cffC69B3APBM:|r Skipping %s (not tracked)"], tostring(targetName)), 1, 0.6, 0.3)
                             sIdx = sIdx + 1; return
                         end
-                        LichborneAddStatus:SetText("Specialization scan |cffffff88"..tostring(targetName).."|r... ("..sIdx.."/"..#units..")")
+                        LichborneAddStatus:SetText(string.format(PBM_L["Specialization scan |cffffff88%s|r... (%d/%d)"], tostring(targetName), sIdx, #units))
                         PBM.State.LichborneSpecTarget = foundDi; PBM.State.LichborneInspectUnit = unit
                         if LichborneTrackerDB.rows[foundDi] then LichborneTrackerDB.rows[foundDi].spec = "" end
                         PBM.DBG("InspectUnit("..unit..") -> FullScan Spec for |cffffff88"..tostring(targetName).."|r ("..sIdx.."/"..#units..")")
@@ -1109,10 +1111,10 @@ local function OnFirstShow()
                     if row.name and row.name:lower() == targetName:lower() then foundDi = i; break end
                 end
                 if not foundDi then
-                    LichborneOutput("|cffC69B3APBM:|r Skipping "..tostring(targetName).." (not tracked)", 1, 0.6, 0.3)
+                    LichborneOutput(string.format(PBM_L["|cffC69B3APBM:|r Skipping %s (not tracked)"], tostring(targetName)), 1, 0.6, 0.3)
                     idx = idx + 1; return
                 end
-                LichborneAddStatus:SetText("Updating Gear for |cffffff88"..tostring(targetName).."|r... ("..idx.."/"..#units..")")
+                LichborneAddStatus:SetText(string.format(PBM_L["Updating Gear for |cffffff88%s|r... (%d/%d)"], tostring(targetName), idx, #units))
                 PBM.State.LichborneInspectTarget = foundDi; PBM.State.LichborneInspectUnit = unit
                 PBM.DBG("InspectUnit("..unit..") -> FullScan GS for |cffffff88"..tostring(targetName).."|r ("..idx.."/"..#units..")")
                 InspectUnit(unit); PBM.State.LichborneInspectGUID = UnitGUID(unit); if not PBM.State.LichborneInspectGUID then PBM.DBG("|cffff4444[NIL]|r UnitGUID("..unit..")=nil — GUID capture skipped") end; PBM.State.inspectWait = 0; idx = idx + 1; inspecting = true; elapsed = 0
@@ -1120,14 +1122,14 @@ local function OnFirstShow()
         end)
     end)
 
-    local loginBtn = MakeSimpleBtn("LichborneLoginBtn", "|cffd4af37Log in All Bots|r",
+    local loginBtn = MakeSimpleBtn("LichborneLoginBtn", PBM_L["|cffd4af37Log in All Bots|r"],
         0.1, 0.6, 0.2, 335, 110,
-        155, {{"Log in All Bots",0.78,0.61,0.23},{".playerbots bot add *",0.8,0.8,0.8}})
+        155, {{PBM_L["Log in All Bots"],0.78,0.61,0.23},{PBM_L[".playerbots bot add *"],0.8,0.8,0.8}})
     loginBtn:SetScript("OnClick", function() SendChatMessage(".playerbots bot add *", "PARTY") end)
 
-    local logoutBtn = MakeSimpleBtn("LichborneLogoutBtn", "|cffd4af37Log Out All Bots|r",
+    local logoutBtn = MakeSimpleBtn("LichborneLogoutBtn", PBM_L["|cffd4af37Log Out All Bots|r"],
         0.90, 0.20, 0.20, 335, 76,
-        155, {{"Log Out All Bots",0.78,0.61,0.23},{".playerbots bot remove *",0.8,0.8,0.8}})
+        155, {{PBM_L["Log Out All Bots"],0.78,0.61,0.23},{PBM_L[".playerbots bot remove *"],0.8,0.8,0.8}})
     logoutBtn:SetScript("OnClick", function() SendChatMessage(".playerbots bot remove *", "PARTY") end)
 
     -- ── Remove Orphaned Bots button ────────────────────────────
@@ -1143,13 +1145,13 @@ local function OnFirstShow()
     orphanedBotsBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     local orphanedBotsLbl = orphanedBotsBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     orphanedBotsLbl:SetAllPoints(orphanedBotsBtn); orphanedBotsLbl:SetJustifyH("CENTER"); orphanedBotsLbl:SetJustifyV("MIDDLE")
-    orphanedBotsLbl:SetText("|cffd4af37Remove Orphaned Bots|r")
+    orphanedBotsLbl:SetText(PBM_L["|cffd4af37Remove Orphaned Bots|r"])
     orphanedBotsBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(orphanedBotsBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Remove Orphaned Bots", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Logs out all bots in your Overview tab", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("that are not currently in your", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("group or raid.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["Remove Orphaned Bots"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Logs out all bots in your Overview tab"], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["that are not currently in your"], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["group or raid."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     orphanedBotsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1195,12 +1197,12 @@ local function OnFirstShow()
             end
         end
         if #botNames == 0 then
-            LichborneOutput("|cffC69B3APBM:|r No orphaned bots found.", 1, 0.5, 0.5)
-            if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444No orphaned bots found.|r") end
+            LichborneOutput(PBM_L["|cffC69B3APBM:|r No orphaned bots found."], 1, 0.5, 0.5)
+            if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cffff4444No orphaned bots found.|r"]) end
             return
         end
-        LichborneOutput("|cffC69B3APBM:|r Logging out "..#botNames.." orphaned bots...", 1, 0.85, 0)
-        if LichborneAddStatus then LichborneAddStatus:SetText("|cffff9900Logging out "..#botNames.." orphaned bots...") end
+        LichborneOutput(string.format(PBM_L["|cffC69B3APBM:|r Logging out %d orphaned bots..."], #botNames), 1, 0.85, 0)
+        if LichborneAddStatus then LichborneAddStatus:SetText(string.format(PBM_L["|cffff9900Logging out %d orphaned bots..."], #botNames)) end
         SetScanActive(true)
         local stopBtn = _G["LichborneStopInspectBtn"]
         if stopBtn then stopBtn:Disable(); stopBtn:SetAlpha(0.35) end
@@ -1216,8 +1218,8 @@ local function OnFirstShow()
                 SetScanActive(false)
                 local stopBtn2 = _G["LichborneStopInspectBtn"]
                 if stopBtn2 then stopBtn2:Enable(); stopBtn2:SetAlpha(1.0) end
-                LichborneOutput("|cffC69B3APBM:|r |cff44ff44All "..#botNames.." orphaned bots logged out.|r", 1, 0.85, 0)
-                if LichborneAddStatus then LichborneAddStatus:SetText("|cff44ff44Orphaned bots logged out ("..#botNames..").|r") end
+                LichborneOutput(string.format(PBM_L["|cffC69B3APBM:|r |cff44ff44All %d orphaned bots logged out.|r"], #botNames), 1, 0.85, 0)
+                if LichborneAddStatus then LichborneAddStatus:SetText(string.format(PBM_L["|cff44ff44Orphaned bots logged out (%d).|r"], #botNames)) end
                 return
             end
             local bname = botNames[orphanIdx]
@@ -1237,14 +1239,14 @@ local function OnFirstShow()
     ipTiersBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     local ipTiersLbl = ipTiersBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     ipTiersLbl:SetAllPoints(ipTiersBtn); ipTiersLbl:SetJustifyH("CENTER"); ipTiersLbl:SetJustifyV("MIDDLE")
-    ipTiersLbl:SetText("|cffd4af37+ Add IP Tiers|r")
+    ipTiersLbl:SetText(PBM_L["|cffd4af37+ Add IP Tiers|r"])
     ipTiersBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(ipTiersBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("+ Add IP Tiers", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Adds Individual Progression Tiers.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("To display tiers, enable |cffd4af37Show IP Tiers|r in the filter bar.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("Tier is shown in the number column next to each character.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("Requires |cffFF8C00mod-Individual-Progression|r", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["+ Add IP Tiers"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Adds Individual Progression Tiers."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["To display tiers, enable |cffd4af37Show IP Tiers|r in the filter bar."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["Tier is shown in the number column next to each character."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["Requires |cffFF8C00mod-Individual-Progression|r"], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     ipTiersBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1273,7 +1275,7 @@ local function OnFirstShow()
 
     ipTiersBtn:SetScript("OnClick", function()
         SetScanActive(true)
-        LichborneAddStatus:SetText("Adding group members first...")
+        LichborneAddStatus:SetText(PBM_L["Adding group members first..."])
         AddGroupMembers(function(added, skipped)
             -- Always include self, then add group members (deduped)
             local selfName = UnitName("player")
@@ -1293,13 +1295,13 @@ local function OnFirstShow()
             end
             if #members == 0 then
                 SetScanActive(false)
-                if LichborneAddStatus then LichborneAddStatus:SetText("|cffff4444Could not determine any targets.|r") end
+                if LichborneAddStatus then LichborneAddStatus:SetText(PBM_L["|cffff4444Could not determine any targets.|r"]) end
                 return
             end
             if not LichborneTrackerDB.ipData then LichborneTrackerDB.ipData = {} end
             PBM.State.ipQueryActive = true
             if LichborneAddStatus then
-                LichborneAddStatus:SetText("|cffd4af37Added "..added.." new, skipped "..skipped..". Querying IP tiers...|r")
+                LichborneAddStatus:SetText(string.format(PBM_L["|cffd4af37Added %d new, skipped %d. Querying IP tiers...|r"], added, skipped))
             end
             local idx = 1
             local wait = 0
@@ -1314,14 +1316,14 @@ local function OnFirstShow()
                     PBM.State.ipQueryActive = false
                     SetScanActive(false)
                     if LichborneAddStatus then
-                        LichborneAddStatus:SetText("|cff44ff44IP Tier query complete ("..#members.." members).|r")
+                        LichborneAddStatus:SetText(string.format(PBM_L["|cff44ff44IP Tier query complete (%d members).|r"], #members))
                     end
                     return
                 end
                 local name = members[idx]
                 SendChatMessage(".ip get "..name, "SAY")
                 if LichborneAddStatus then
-                    LichborneAddStatus:SetText("|cffd4af37Querying IP: |r"..name.." ("..idx.."/"..#members..")")
+                    LichborneAddStatus:SetText(string.format(PBM_L["|cffd4af37Querying IP: |r%s (%d/%d)"], name, idx, #members))
                 end
                 idx = idx + 1
             end)
@@ -1338,11 +1340,11 @@ local function OnFirstShow()
     disbandBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     local disbandLbl = disbandBtn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     disbandLbl:SetAllPoints(disbandBtn); disbandLbl:SetJustifyH("CENTER"); disbandLbl:SetJustifyV("MIDDLE")
-    disbandLbl:SetText("|cffd4af37Disband Group|r")
+    disbandLbl:SetText(PBM_L["|cffd4af37Disband Group|r"])
     disbandBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(disbandBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Disband Group", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Removes all bots and leaves the group.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["Disband Group"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Removes all bots and leaves the group."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     disbandBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1350,9 +1352,9 @@ local function OnFirstShow()
     -- Confirmation dialog for Disband Group (standard WoW dialog)
     if not StaticPopupDialogs["PBM_DISBAND_GROUP"] then
         StaticPopupDialogs["PBM_DISBAND_GROUP"] = {
-            text = "Disband Group?\n\nRemoves all bots and leaves the group.\n|cffff4444This cannot be undone.|r",
-            button1 = "Yes, Disband",
-            button2 = "Cancel",
+            text = PBM_L["Disband Group?\n\nRemoves all bots and leaves the group.\n|cffff4444This cannot be undone.|r"],
+            button1 = PBM_L["Yes, Disband"],
+            button2 = PBM_L["Cancel"],
             OnAccept = function()
                 PBM.SetButtonsLocked(true)
                 local function lockExtra(locked)
@@ -1365,7 +1367,7 @@ local function OnFirstShow()
                     end
                 end
                 lockExtra(true)
-                LichborneOutput("|cffC69B3APBM:|r |cffd4af37Disbanding group...|r", 1, 0.85, 0)
+                LichborneOutput(PBM_L["|cffC69B3APBM:|r |cffd4af37Disbanding group...|r"], 1, 0.85, 0)
                 SendChatMessage(".playerbots bot remove *", "SAY")
                 local waited = 0
                 local disbFrame = CreateFrame("Frame")
@@ -1375,7 +1377,7 @@ local function OnFirstShow()
                     LeaveParty()
                     PBM.SetButtonsLocked(false)
                     lockExtra(false)
-                    LichborneOutput("|cffC69B3APBM:|r |cffd4af37Group disbanded.|r", 1, 0.85, 0)
+                    LichborneOutput(PBM_L["|cffC69B3APBM:|r |cffd4af37Group disbanded.|r"], 1, 0.85, 0)
                     disbFrame:SetScript("OnUpdate", nil)
                 end)
             end,
@@ -1426,12 +1428,12 @@ local function OnFirstShow()
     end
 
     -- ── Top-row strategy buttons + upcoming placeholder ──────────
-    local strTargetBtn = MakeTrackerBtn("LichborneTargetStrategiesBtn", 15, 42, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37+ Add Target Strategies|r")
+    local strTargetBtn = MakeTrackerBtn("LichborneTargetStrategiesBtn", 15, 42, 155, 29, 0.10, 0.40, 0.70, PBM_L["|cffd4af37+ Add Target Strategies|r"])
     strTargetBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(strTargetBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("+ Add Target Strategies", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Adds target to tracker, then uses", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("co / nc to acquire strategies.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["+ Add Target Strategies"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Adds target to tracker, then uses"], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["co / nc to acquire strategies."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     strTargetBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1440,21 +1442,21 @@ local function OnFirstShow()
         if not name then return end
         PBM.State.joinPending[name] = { step = 1 }
         PBM.SendToBot("co ?", name)
-        LichborneAddStatus:SetText("|cffd4af37Resyncing strategies: "..name.."...|r")
+        LichborneAddStatus:SetText(string.format(PBM_L["|cffd4af37Resyncing strategies: %s...|r"], name))
     end)
 
-    local strGroupBtn = MakeTrackerBtn("LichborneGroupStrategiesBtn", 175, 42, 155, 29, 0.10, 0.40, 0.70, "|cffd4af37+ Add Group Strategies|r")
+    local strGroupBtn = MakeTrackerBtn("LichborneGroupStrategiesBtn", 175, 42, 155, 29, 0.10, 0.40, 0.70, PBM_L["|cffd4af37+ Add Group Strategies|r"])
     strGroupBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(strGroupBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("+ Add Group Strategies", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Adds group to tracker, then uses", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("co / nc to acquire strategies.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["+ Add Group Strategies"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Adds group to tracker, then uses"], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["co / nc to acquire strategies."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     strGroupBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
     strGroupBtn:SetScript("OnClick", function()
         if GetNumRaidMembers() == 0 and GetNumPartyMembers() == 0 then
-            LichborneAddStatus:SetText("|cffff4444Not in a group.|r")
+            LichborneAddStatus:SetText(PBM_L["|cffff4444Not in a group.|r"])
             return
         end
         SetScanActive(true)
@@ -1475,7 +1477,7 @@ local function OnFirstShow()
             elseif GetNumPartyMembers() > 0 then
                 for i = 1, GetNumPartyMembers() do triggerMember("party"..i) end
             end
-            LichborneAddStatus:SetText("|cffd4af37Added "..added..", resyncing strategies: "..count.." members...|r")
+            LichborneAddStatus:SetText(string.format(PBM_L["|cffd4af37Added %d, resyncing strategies: %d members...|r"], added, count))
         end)
     end)
 
@@ -1492,8 +1494,8 @@ local function OnFirstShow()
     outputBox:EnableMouse(true)
     outputBox:SetScript("OnEnter", function()
         GameTooltip:SetOwner(outputBox, "ANCHOR_TOP")
-        GameTooltip:AddLine("Output Log", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Scroll up/down with the mouse wheel.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["Output Log"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Scroll up/down with the mouse wheel."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     outputBox:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1521,11 +1523,11 @@ local function OnFirstShow()
     dbgLbl:SetText("|cff888888DBG|r")
     dbgBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(dbgBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Debug Mode", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Debug Mode"], 0.78, 0.61, 0.23)
         if LichborneDebugMode then
-            GameTooltip:AddLine("Currently: |cff44ff44ON|r", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Currently: |cff44ff44ON|r"], 1, 1, 1)
         else
-            GameTooltip:AddLine("Currently: |cffff4444OFF|r", 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Currently: |cffff4444OFF|r"], 1, 1, 1)
         end
         GameTooltip:Show()
     end)
@@ -1536,12 +1538,12 @@ local function OnFirstShow()
             dbgLbl:SetText("|cff44ff44DBG|r")
             dbgBtn:SetBackdropColor(0.05, 0.20, 0.05, 1)
             dbgBtn:SetBackdropBorderColor(0.3, 0.9, 0.3, 0.9)
-            LichborneOutput("|cff44ff44[PBM.DBG] Debug mode ON — inspect logging active.|r")
+            LichborneOutput(PBM_L["|cff44ff44[PBM.DBG] Debug mode ON — inspect logging active.|r"])
         else
             dbgLbl:SetText("|cff888888DBG|r")
             dbgBtn:SetBackdropColor(0.10, 0.10, 0.10, 1)
             dbgBtn:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.8)
-            LichborneOutput("|cffaaaaaa[PBM.DBG] Debug mode OFF.|r")
+            LichborneOutput(PBM_L["|cffaaaaaa[PBM.DBG] Debug mode OFF.|r"])
         end
     end)
 
@@ -1562,11 +1564,11 @@ local function OnFirstShow()
     expLbl:SetText("|cffaaaaaa/\\|r")
     expBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(expBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Output Box Size", 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Output Box Size"], 0.78, 0.61, 0.23)
         if outputExpanded then
-            GameTooltip:AddLine("Click to collapse the output box.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Click to collapse the output box."], 0.8, 0.8, 0.8)
         else
-            GameTooltip:AddLine("Click to expand the output box upward.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Click to expand the output box upward."], 0.8, 0.8, 0.8)
         end
         GameTooltip:Show()
     end)
@@ -1609,23 +1611,23 @@ local function OnFirstShow()
     exportLbl:SetText("|cffd4af37>>|r")
     exportBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(exportBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Export Tracker Data", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Saves all tracker data to a text string.", 1, 1, 1)
-        GameTooltip:AddLine("Warning: Opening this window may", 1, 0.2, 0.2)
-        GameTooltip:AddLine("take several minutes.", 1, 0.2, 0.2)
-        GameTooltip:AddLine("Exports characters, raid rosters, and role data.", 1, 0.55, 0.0)
-        GameTooltip:AddLine("Gear data is excluded — a fresh scan is needed.", 1, 0.55, 0.0)
+        GameTooltip:AddLine(PBM_L["Export Tracker Data"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Saves all tracker data to a text string."], 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["Warning: Opening this window may"], 1, 0.2, 0.2)
+        GameTooltip:AddLine(PBM_L["take several minutes."], 1, 0.2, 0.2)
+        GameTooltip:AddLine(PBM_L["Exports characters, raid rosters, and role data."], 1, 0.55, 0.0)
+        GameTooltip:AddLine(PBM_L["Gear data is excluded — a fresh scan is needed."], 1, 0.55, 0.0)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("On Account A:", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("1. Click >> to open the export window.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("2. Click 'Select All' to highlight the text.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("3. Press Ctrl+C to copy.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["On Account A:"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["1. Click >> to open the export window."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["2. Click 'Select All' to highlight the text."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["3. Press Ctrl+C to copy."], 0.8, 0.8, 0.8)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("On Account B:", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("4. Log in and open Lichborne.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("5. Click << to open the import window.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("6. Click Select, press Ctrl+V to paste.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("7. Click Import to apply the data.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["On Account B:"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["4. Log in and open Lichborne."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["5. Click << to open the import window."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["6. Click Select, press Ctrl+V to paste."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["7. Click Import to apply the data."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     exportBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1644,19 +1646,19 @@ local function OnFirstShow()
     importLbl:SetText("|cffd4af37<<|r")
     importBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(importBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Import Tracker Data", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Loads tracker data from a copied export string.", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["Import Tracker Data"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Loads tracker data from a copied export string."], 1, 1, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("On Account A:", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("1. Click >> to open the export window.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("2. Click 'Select All' to highlight the text.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("3. Press Ctrl+C to copy.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["On Account A:"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["1. Click >> to open the export window."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["2. Click 'Select All' to highlight the text."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["3. Press Ctrl+C to copy."], 0.8, 0.8, 0.8)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("On Account B:", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("4. Log in and open Lichborne.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("5. Click << to open this import window.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("6. Click Select, press Ctrl+V to paste.", 0.8, 0.8, 0.8)
-        GameTooltip:AddLine("7. Click Import to apply the data.", 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["On Account B:"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["4. Log in and open Lichborne."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["5. Click << to open this import window."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["6. Click Select, press Ctrl+V to paste."], 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(PBM_L["7. Click Import to apply the data."], 0.8, 0.8, 0.8)
         GameTooltip:Show()
     end)
     importBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1676,7 +1678,7 @@ local function OnFirstShow()
 
     local expTitle = exportPopup:CreateFontString(nil,"OVERLAY","GameFontNormal")
     expTitle:SetPoint("TOP",exportPopup,"TOP",0,-12)
-    expTitle:SetText("|cffC69B3AExport Tracker Data|r")
+    expTitle:SetText("|cffC69B3A" .. PBM_L["Export Tracker Data"] .. "|r")
 
     -- Dark inset behind the EditBox (no border — direct fill)
     local expBoxBg = CreateFrame("Frame", nil, exportPopup)
@@ -1705,7 +1707,7 @@ local function OnFirstShow()
 
     local expSelectBtn = CreateFrame("Button",nil,exportPopup,"UIPanelButtonTemplate")
     expSelectBtn:SetSize(110,24); expSelectBtn:SetPoint("BOTTOMLEFT",exportPopup,"BOTTOMLEFT",8,10)
-    expSelectBtn:SetText("Select All")
+    expSelectBtn:SetText(PBM_L["Select All"])
     expSelectBtn:SetFrameLevel(exportPopup:GetFrameLevel() + 3)
     expSelectBtn:SetScript("OnClick", function()
         expEditBox:SetFocus()
@@ -1714,11 +1716,11 @@ local function OnFirstShow()
 
     local expHint = exportPopup:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     expHint:SetPoint("LEFT",expSelectBtn,"RIGHT",10,0)
-    expHint:SetText("|cffd4af37Push Select All then Ctrl+C to copy|r")
+    expHint:SetText("|cffd4af37" .. PBM_L["Push Select All then Ctrl+C to copy"] .. "|r")
 
     local expCloseBtn = CreateFrame("Button",nil,exportPopup,"UIPanelButtonTemplate")
     expCloseBtn:SetSize(100,24); expCloseBtn:SetPoint("BOTTOMRIGHT",exportPopup,"BOTTOMRIGHT",-8,10)
-    expCloseBtn:SetText("Close")
+    expCloseBtn:SetText(PBM_L["Close"])
     expCloseBtn:SetFrameLevel(exportPopup:GetFrameLevel() + 3)
     expCloseBtn:SetScript("OnClick", function() exportPopup:Hide() end)
 
@@ -1731,7 +1733,7 @@ local function OnFirstShow()
         expEditBox:SetFocus()
         expEditBox:HighlightText()
         exportPopup:Show()
-        LichborneOutput("|cffC69B3APBM:|r |cffd4af37Export ready — click Select All, then press Ctrl+C.|r")
+        LichborneOutput("|cffC69B3APBM:|r |cffd4af37" .. PBM_L["Export ready — click Select All, then press Ctrl+C."] .. "|r")
     end)
 
     -- ── Import popup ────────────────────────────────────────────
@@ -1749,12 +1751,12 @@ local function OnFirstShow()
 
     local impTitle = importPopup:CreateFontString(nil,"OVERLAY","GameFontNormal")
     impTitle:SetPoint("TOP",importPopup,"TOP",0,-12)
-    impTitle:SetText("|cffC69B3AImport Tracker Data|r")
+    impTitle:SetText("|cffC69B3A" .. PBM_L["Import Tracker Data"] .. "|r")
 
     local impWarn = importPopup:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     impWarn:SetPoint("TOP",impTitle,"BOTTOM",0,-4)
     impWarn:SetWidth(480); impWarn:SetJustifyH("CENTER")
-    impWarn:SetText("|cffff3333WARNING: Paste may take several minutes — do not close WoW!|r")
+    impWarn:SetText("|cffff3333" .. PBM_L["WARNING: Paste may take several minutes — do not close WoW!"] .. "|r")
 
     local impBoxBg = CreateFrame("Frame",nil,importPopup)
     impBoxBg:SetPoint("TOPLEFT",  importPopup, "TOPLEFT",   0, -46)
@@ -1789,14 +1791,14 @@ local function OnFirstShow()
     -- Normal bottom buttons
     local impPasteBtn = CreateFrame("Button",nil,importPopup,"UIPanelButtonTemplate")
     impPasteBtn:SetSize(100,24); impPasteBtn:SetPoint("BOTTOMLEFT",importPopup,"BOTTOMLEFT",8,10)
-    impPasteBtn:SetText("Select")
+    impPasteBtn:SetText(PBM_L["Select"])
     impPasteBtn:SetFrameLevel(importPopup:GetFrameLevel() + 3)
     impPasteBtn:SetScript("OnClick", function() impEditBox:SetFocus() end)
 
     local impHint = importPopup:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     impHint:SetPoint("CENTER",importPopup,"BOTTOM",0,22)
     impHint:SetWidth(500); impHint:SetJustifyH("CENTER")
-    impHint:SetText("|cffd4af37Click Select, press Ctrl+V to paste, then click Import.|r")
+    impHint:SetText("|cffd4af37" .. PBM_L["Click Select, press Ctrl+V to paste, then click Import."] .. "|r")
 
     -- X close button — top right corner
     local impCancelBtn = CreateFrame("Button",nil,importPopup)
@@ -1814,19 +1816,19 @@ local function OnFirstShow()
     -- Import button — bottom right
     local impDoBtn = CreateFrame("Button",nil,importPopup,"UIPanelButtonTemplate")
     impDoBtn:SetSize(100,24); impDoBtn:SetPoint("BOTTOMRIGHT",importPopup,"BOTTOMRIGHT",-8,10)
-    impDoBtn:SetText("Import")
+    impDoBtn:SetText(PBM_L["Import"])
     impDoBtn:SetFrameLevel(importPopup:GetFrameLevel() + 3)
 
     -- Inline confirm buttons — centered pair (150+10+110=270px, start at (520-270)/2=125)
     local impYesBtn = CreateFrame("Button",nil,importPopup,"UIPanelButtonTemplate")
     impYesBtn:SetSize(150,24); impYesBtn:SetPoint("BOTTOMLEFT",importPopup,"BOTTOMLEFT",125,10)
-    impYesBtn:SetText("Yes, Replace Data")
+    impYesBtn:SetText(PBM_L["Yes, Replace Data"])
     impYesBtn:SetFrameLevel(importPopup:GetFrameLevel() + 3)
     impYesBtn:Hide()
 
     local impNoBtn = CreateFrame("Button",nil,importPopup,"UIPanelButtonTemplate")
     impNoBtn:SetSize(110,24); impNoBtn:SetPoint("LEFT",impYesBtn,"RIGHT",10,0)
-    impNoBtn:SetText("No, Go Back")
+    impNoBtn:SetText(PBM_L["No, Go Back"])
     impNoBtn:SetFrameLevel(importPopup:GetFrameLevel() + 3)
     impNoBtn:Hide()
 
@@ -1842,7 +1844,7 @@ local function OnFirstShow()
         impYesBtn:Show(); impNoBtn:Show()
         impHint:Hide()
         impStatus:SetPoint("BOTTOM",importPopup,"BOTTOM",0,42)
-        impStatus:SetText("|cffC69B3AReplace ALL tracker data? This cannot be undone.|r")
+        impStatus:SetText("|cffC69B3A" .. PBM_L["Replace ALL tracker data? This cannot be undone."] .. "|r")
     end
 
     local pendingImport = nil
@@ -1874,14 +1876,14 @@ local function OnFirstShow()
         if LichborneRaidFrame then PBM.RefreshRaidRows() end
         if PBM.State.LichborneOverviewFrame  then PBM.RefreshOverviewRows()  end
         PBM.UpdateSummary()
-        LichborneOutput("|cffC69B3APBM:|r |cffd4af37Import complete — tracker data loaded.|r")
+        LichborneOutput("|cffC69B3APBM:|r |cffd4af37" .. PBM_L["Import complete — tracker data loaded."] .. "|r")
     end)
 
     impDoBtn:SetScript("OnClick", function()
         local raw = impEditBox:GetText()
         local result, err = PBM.LB_ImportDB(raw)
         if not result then
-            impStatus:SetText("|cffff4444Error: " .. (err or "unknown") .. "|r")
+            impStatus:SetText("|cffff4444" .. PBM_L["Error: "] .. (err or PBM_L["unknown"]) .. "|r")
             return
         end
         pendingImport = result
@@ -1915,27 +1917,27 @@ local function OnFirstShow()
     helpIcon:SetTexture("Interface\\Icons\\Inv_misc_book_08")
     helpBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(helpBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("SETTING UP YOUR TRACKER", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("For First Time Use", 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["SETTING UP YOUR TRACKER"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["For First Time Use"], 0.4, 0.8, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("1. Add your PlayerBots to the group.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("2. Click |cff4488FF+Full Group Scan|r to |cffC69B3Aadd bots,|r gear score", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   |cffC69B3A(GS)|r, |cffC69B3AiLvL|r, |cffC69B3Agear,|r |cffC69B3Aspecialization,|r and", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   |cffC69B3APlayerbot Strategies|r to the tracker.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   Allow 4-5 minutes for a complete scan.", 1, 0.55, 0.0)
+        GameTooltip:AddLine(PBM_L["1. Add your PlayerBots to the group."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["2. Click |cff4488FF+Full Group Scan|r to |cffC69B3Aadd bots,|r gear score"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   |cffC69B3A(GS)|r, |cffC69B3AiLvL|r, |cffC69B3Agear,|r |cffC69B3Aspecialization,|r and"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   |cffC69B3APlayerbot Strategies|r to the tracker."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   Allow 4-5 minutes for a complete scan."], 1, 0.55, 0.0)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("TIP: Use |cffC69B3A.playerbot bot addaccount <account>|r to", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     quickly add bots for first time set up.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3A+Add Target|r buttons are used for |cffC69B3ASingle|r scans.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3A+Add Group|r buttons are used for |cffC69B3AGroup|r scans.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3ARemove Orphaned Bots|r removes bots currently not", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     in your group. (.playerbot bot remove)", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3ADisband Group|r removes PlayerBots before", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     disbanding the group.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3AStop Scan|r stops the current scan.", 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Use |cffC69B3A.playerbot bot addaccount <account>|r to"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     quickly add bots for first time set up."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: |cffC69B3A+Add Target|r buttons are used for |cffC69B3ASingle|r scans."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: |cffC69B3A+Add Group|r buttons are used for |cffC69B3AGroup|r scans."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: |cffC69B3ARemove Orphaned Bots|r removes bots currently not"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     in your group. (.playerbot bot remove)"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: |cffC69B3ADisband Group|r removes PlayerBots before"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     disbanding the group."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: |cffC69B3AStop Scan|r stops the current scan."], 0.4, 0.8, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffC69B3ANote:|r All |cffC69B3AScans|r add characters to the tracker before", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     executing, to prevent corruption.", 0.4, 0.8, 1)
+        GameTooltip:AddLine("|cffC69B3A" .. PBM_L["Note:"] .. "|r " .. PBM_L["All |cffC69B3AScans|r add characters to the tracker before"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     executing, to prevent corruption."], 0.4, 0.8, 1)
         GameTooltip:Show()
     end)
     helpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1952,43 +1954,43 @@ local function OnFirstShow()
     raidHelpIcon:SetTexture("Interface\\Icons\\Inv_misc_book_06")
     raidHelpBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(raidHelpBtn, "ANCHOR_LEFT")
-        GameTooltip:AddLine("RAID TAB", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Allows you to plan raid configurations,", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("invite groups, and select roles for your", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("PlayerBot team.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["RAID TAB"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Allows you to plan raid configurations,"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["invite groups, and select roles for your"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["PlayerBot team."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("For Groups:", 0.27, 0.53, 1)
-        GameTooltip:AddLine("1. Select the |cff4488ffTO 5-Man Dungeons|r tab.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("2. Add characters via the Class or Overview tabs.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("3. Click |cff4488ffINVITE GROUP|r at the bottom of", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   the tracker to log in your PlayerBots.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["For Groups:"], 0.27, 0.53, 1)
+        GameTooltip:AddLine(PBM_L["1. Select the |cff4488ffTO 5-Man Dungeons|r tab."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["2. Add characters via the Class or Overview tabs."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["3. Click |cff4488ffINVITE GROUP|r at the bottom of"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   the tracker to log in your PlayerBots."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("For Raids:", 1, 0.4, 0)
-        GameTooltip:AddLine("1. Pick a Tier and Raid from the dropdowns", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   in the raid table header.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("2. Add characters via the Class or Overview tabs.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("3. Click |cffFF6600INVITE RAID|r at the bottom of", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   the tracker to log in your PlayerBots.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["For Raids:"], 1, 0.4, 0)
+        GameTooltip:AddLine(PBM_L["1. Pick a Tier and Raid from the dropdowns"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   in the raid table header."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["2. Add characters via the Class or Overview tabs."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["3. Click |cffFF6600INVITE RAID|r at the bottom of"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   the tracker to log in your PlayerBots."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3AInvite Group|r always invites your 5-Man team,", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     regardless of which raid tab is active.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3AInvite Raid|r always invites from the", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     currently selected raid.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: You can have multiple raid configurations", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     for each raid.  Use the dropdown menu located", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     in the header (|cffC69B3AA, B, C|r).", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Use |cffC69B3ACopy|r to duplicate your selected config", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     into another raid category (see header).", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Use |cffC69B3AClear|r (next to Copy) to reset your", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     current selected raid.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Raid configurations are saved after reloads.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     You must manually clear them.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Assign |cffC69B3ARoles|r (Tank, Healer, DPS)", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     by clicking the Roles Column.  Write", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     notes to help keep organized.", 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: |cffC69B3AInvite Group|r always invites your 5-Man team,"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     regardless of which raid tab is active."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: |cffC69B3AInvite Raid|r always invites from the"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     currently selected raid."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: You can have multiple raid configurations"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     for each raid.  Use the dropdown menu located"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     in the header (|cffC69B3AA, B, C|r)."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Use |cffC69B3ACopy|r to duplicate your selected config"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     into another raid category (see header)."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Use |cffC69B3AClear|r (next to Copy) to reset your"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     current selected raid."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Raid configurations are saved after reloads."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     You must manually clear them."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Assign |cffC69B3ARoles|r (Tank, Healer, DPS)"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     by clicking the Roles Column.  Write"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     notes to help keep organized."], 0.4, 0.8, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffC69B3ANote:|r All Raids have a unique table that work", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     |cffC69B3Aindependently|r of each other.", 0.4, 0.8, 1)
+        GameTooltip:AddLine("|cffC69B3A" .. PBM_L["Note:"] .. "|r " .. PBM_L["All Raids have a unique table that work"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     |cffC69B3Aindependently|r of each other."], 0.4, 0.8, 1)
         GameTooltip:Show()
     end)
     raidHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2004,33 +2006,33 @@ local function OnFirstShow()
     classHelpIcon:SetTexture("Interface\\Icons\\Inv_misc_book_01")
     classHelpBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(classHelpBtn, "ANCHOR_LEFT")
-        GameTooltip:AddLine("CLASS TABS", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Each class has its own dedicated tab.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["CLASS TABS"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Each class has its own dedicated tab."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("1. Scan to add gear score (|cffC69B3AGS|r), |cffC69B3AiLvL|r and gear.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("2. Hover on a gear slot to view the equipped item.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("3. The |cffC69B3AiLvL|r and |cffC69B3AGS|r is calculated after a scan", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   (not manual edits)", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("4. After a gear upgrade, it is suggested to use", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   |cff4488FF+Add Target Gear|r to update the row.  OR", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   |cff4488FF+Add Group Gear|r at the end of the raid.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   Gear only updates after a scan, not on equip.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["1. Scan to add gear score (|cffC69B3AGS|r), |cffC69B3AiLvL|r and gear."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["2. Hover on a gear slot to view the equipped item."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["3. The |cffC69B3AiLvL|r and |cffC69B3AGS|r is calculated after a scan"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   (not manual edits)"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["4. After a gear upgrade, it is suggested to use"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   |cff4488FF+Add Target Gear|r to update the row.  OR"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   |cff4488FF+Add Group Gear|r at the end of the raid."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   Gear only updates after a scan, not on equip."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("TIP: Click any column header to |cffC69B3ASort|r.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Use the |cffC69B3AProf|r cell to track a character's", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     profession, gear needs, or role.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: You can change the spec by clicking the icon.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Click |cff00cc00[+]|r on a PlayerBot row to add to the", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     |cffC69B3ARaid Tab|r.  Right-click |cffFF6600[+]|r to remove.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Click |cff00cc00[>]|r to invite PlayerBot to your", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     |cffC69B3AGroup|r.  Right-click |cff00cc00[>]|r to remove.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Use |cff66CCFFDelete Character|r |cffff3333[x]|r to remove", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     PlayerBots from your tracker.", 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Click any column header to |cffC69B3ASort|r."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Use the |cffC69B3AProf|r cell to track a character's"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     profession, gear needs, or role."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: You can change the spec by clicking the icon."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Click |cff00cc00[+]|r on a PlayerBot row to add to the"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     |cffC69B3ARaid Tab|r.  Right-click |cffFF6600[+]|r to remove."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Click |cff00cc00[>]|r to invite PlayerBot to your"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     |cffC69B3AGroup|r.  Right-click |cff00cc00[>]|r to remove."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Use |cff66CCFFDelete Character|r |cffff3333[x]|r to remove"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     PlayerBots from your tracker."], 0.4, 0.8, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffC69B3ANote:|r Some |cff00cc00<Random Enchantment>|r gear may", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     not display correctly.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("|cffC69B3ANote:|r Some items may display with a 0 Gear Score.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     Such as PvP gear.", 0.4, 0.8, 1)
+        GameTooltip:AddLine("|cffC69B3A" .. PBM_L["Note:"] .. "|r " .. PBM_L["Some |cff00cc00<Random Enchantment>|r gear may"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     not display correctly."], 0.4, 0.8, 1)
+        GameTooltip:AddLine("|cffC69B3A" .. PBM_L["Note:"] .. "|r " .. PBM_L["Some items may display with a 0 Gear Score."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     Such as PvP gear."], 0.4, 0.8, 1)
         GameTooltip:Show()
     end)
     classHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2047,28 +2049,28 @@ local function OnFirstShow()
     setupHelpIcon:SetTexture("Interface\\Icons\\inv_misc_book_11")
     setupHelpBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(setupHelpBtn, "ANCHOR_LEFT")
-        GameTooltip:AddLine("SETTING UP PLAYERBOTS", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("|cffd4af37Linking Accounts|r", 1, 1, 1)
-        GameTooltip:AddLine("Linking sets you as the |cffFF8C00owner|r of bots on other accounts.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("|cffff4444Requires:|r  AiPlayerbot.AllowTrustedAccountBots = 1", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["SETTING UP PLAYERBOTS"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine("|cffd4af37" .. PBM_L["Linking Accounts"] .. "|r", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["Linking sets you as the |cffFF8C00owner|r of bots on other accounts."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("|cffff4444" .. PBM_L["Requires:"] .. "|r  AiPlayerbot.AllowTrustedAccountBots = 1", 0.9, 0.9, 0.9)
         GameTooltip:AddLine("  |cff69CCF0.playerbots account setKey <key>|r", 1, 1, 1)
         GameTooltip:AddLine("  |cff69CCF0.playerbots account link <acct> <key>|r", 1, 1, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffFF8C00Altbots|r", 1, 1, 1)
-        GameTooltip:AddLine("Characters you create on your account (or a linked", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("account) that you log in as bots. You control them,", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("party with them, and they persist.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("They follow their own IP progression tier.", 1, 0.55, 0.0)
+        GameTooltip:AddLine("|cffFF8C00" .. PBM_L["Altbots"] .. "|r", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["Characters you create on your account (or a linked"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["account) that you log in as bots. You control them,"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["party with them, and they persist."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["They follow their own IP progression tier."], 1, 0.55, 0.0)
         GameTooltip:AddLine("  |cff69CCF0.playerbots bot add <name>|r", 1, 1, 1)
         GameTooltip:AddLine("  |cff69CCF0.playerbots bot addaccount <account>|r", 1, 1, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffFF8C00Rndbots|r", 1, 1, 1)
-        GameTooltip:AddLine("Server-generated bots that populate the world", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("automatically. No manual setup needed.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("They follow the group leader's IP tier.", 1, 0.55, 0.0)
+        GameTooltip:AddLine("|cffFF8C00" .. PBM_L["Rndbots"] .. "|r", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["Server-generated bots that populate the world"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["automatically. No manual setup needed."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["They follow the group leader's IP tier."], 1, 0.55, 0.0)
         GameTooltip:AddLine("  |cff69CCF0.playerbots bot addclass <class>|r", 1, 1, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffd4af37GitHub:|r  github.com/mod-playerbots/mod-playerbots", 0.6, 0.6, 0.6)
+        GameTooltip:AddLine("|cffd4af37" .. PBM_L["GitHub:"] .. "|r  github.com/mod-playerbots/mod-playerbots", 0.6, 0.6, 0.6)
         GameTooltip:Show()
     end)
     setupHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2085,21 +2087,21 @@ local function OnFirstShow()
     overviewHelpIcon:SetTexture("Interface\\Icons\\Inv_misc_book_05")
     overviewHelpBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(overviewHelpBtn, "ANCHOR_LEFT")
-        GameTooltip:AddLine("OVERVIEW TAB", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Provides an overview of all current PlayerBots", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("you have in your tracker.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["OVERVIEW TAB"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Provides an overview of all current PlayerBots"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["you have in your tracker."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("1. Click |cff00cc00[+]|r on a PlayerBot row to add to the", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   selected raid. (in |cffC69B3ARaid Tab|r)", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   Right-click |cffFF6600[+]|r to remove from raid.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("2. Click |cff00cc00[>]|r to invite a PlayerBot to your |cffC69B3AGroup|r.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   Right-click to remove from your |cffC69B3AGroup|r.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("3. If you have more than 60 characters, use the", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("   |cffC69B3APage|r dropdown in the header to view overflow.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["1. Click |cff00cc00[+]|r on a PlayerBot row to add to the"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   selected raid. (in |cffC69B3ARaid Tab|r)"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   Right-click |cffFF6600[+]|r to remove from raid."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["2. Click |cff00cc00[>]|r to invite a PlayerBot to your |cffC69B3AGroup|r."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   Right-click to remove from your |cffC69B3AGroup|r."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["3. If you have more than 60 characters, use the"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["   |cffC69B3APage|r dropdown in the header to view overflow."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("TIP: Click any column header to |cffC69B3ASort|r.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Use Delete Character |cffff3333[x]|r to remove", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     PlayerBots from your tracker.", 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Click any column header to |cffC69B3ASort|r."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Use Delete Character |cffff3333[x]|r to remove"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     PlayerBots from your tracker."], 0.4, 0.8, 1)
         GameTooltip:Show()
     end)
     overviewHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2115,34 +2117,34 @@ local function OnFirstShow()
     bookHelpIcon:SetTexture("Interface\\Icons\\inv_misc_book_07")
     bookHelpBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(bookHelpBtn, "ANCHOR_LEFT")
-        GameTooltip:AddLine("CLASS STRATEGIES", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Strategies control what your PlayerBots do in combat.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("Each bot can have its own unique strategy loadout.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["CLASS STRATEGIES"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Strategies control what your PlayerBots do in combat."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["Each bot can have its own unique strategy loadout."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("HOW TO OPEN THE STRATEGIES MENU", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("1. Go to any |cffC69B3AClass Tab|r (Warrior, Priest, etc.)", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("2. Click on a |cffC69B3Acharacter's name|r in the table.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("3. This opens that bot's |cffC69B3AStrategies Menu|r.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("4. Toggle individual strategies on/off from there.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["HOW TO OPEN THE STRATEGIES MENU"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["1. Go to any |cffC69B3AClass Tab|r (Warrior, Priest, etc.)"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["2. Click on a |cffC69B3Acharacter's name|r in the table."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["3. This opens that bot's |cffC69B3AStrategies Menu|r."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["4. Toggle individual strategies on/off from there."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("HOW STRATEGIES WORK", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Strategies are behavior modifiers — they tell the bot", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("which spells to cast, when to use cooldowns, how to", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("position, and what role to fill during combat.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("Strategies stack — multiple can be active at once.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["HOW STRATEGIES WORK"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Strategies are behavior modifiers — they tell the bot"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["which spells to cast, when to use cooldowns, how to"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["position, and what role to fill during combat."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["Strategies stack — multiple can be active at once."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("USING TEMPLATES  |cffC69B3A(Recommended)|r", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Instead of toggling strategies one by one, use", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("|cffC69B3ATemplates|r — pre-built strategy sets optimized", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("for each spec and role.", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("Templates are found in each |cffC69B3AClass Tab|r — click |cffC69B3A?|r", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("or the |cffC69B3ASpec icon|r in the top-left of the tab.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["USING TEMPLATES  |cffC69B3A(Recommended)|r"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Instead of toggling strategies one by one, use"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["|cffC69B3ATemplates|r — pre-built strategy sets optimized"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["for each spec and role."], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["Templates are found in each |cffC69B3AClass Tab|r — click |cffC69B3A?|r"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["or the |cffC69B3ASpec icon|r in the top-left of the tab."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("TIP: Always set strategies via a |cffC69B3ATemplate|r first,", 0.4, 0.8, 1)
-        GameTooltip:AddLine("     then fine-tune individual strategies if needed.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: Bots retain their strategies between sessions.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3ACO|r is Combat Strategies.", 0.4, 0.8, 1)
-        GameTooltip:AddLine("TIP: |cffC69B3ANC|r is Non-Combat Strategies.", 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Always set strategies via a |cffC69B3ATemplate|r first,"], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["     then fine-tune individual strategies if needed."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: Bots retain their strategies between sessions."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: |cffC69B3ACO|r is Combat Strategies."], 0.4, 0.8, 1)
+        GameTooltip:AddLine(PBM_L["TIP: |cffC69B3ANC|r is Non-Combat Strategies."], 0.4, 0.8, 1)
         GameTooltip:Show()
     end)
     bookHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2159,33 +2161,33 @@ local function OnFirstShow()
     levelSyncHelpIcon:SetTexture("Interface\\Icons\\inv_misc_groupneedmore")
     levelSyncHelpBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(levelSyncHelpBtn, "ANCHOR_LEFT")
-        GameTooltip:AddLine("LEVELSYNC", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("This was added for my personal server to give players", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("the ability to run a full raid without leveling 40+", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("characters. It is designed for |cffFF8C00large altbot setups|r.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["LEVELSYNC"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["This was added for my personal server to give players"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["the ability to run a full raid without leveling 40+"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["characters. It is designed for |cffFF8C00large altbot setups|r."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("LevelSync is a shortcut to set your characters'", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("IP levels and tiers automatically across accounts.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["LevelSync is a shortcut to set your characters'"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["IP levels and tiers automatically across accounts."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffff4444Level sync and IP sync are not recommended for all players.|r", 1, 1, 1)
-        GameTooltip:AddLine("|cffff4444Use at your own risk.  Double check entries before toggles.|r", 1, 1, 1)
+        GameTooltip:AddLine("|cffff4444" .. PBM_L["Level sync and IP sync are not recommended for all players."] .. "|r", 1, 1, 1)
+        GameTooltip:AddLine("|cffff4444" .. PBM_L["Use at your own risk.  Double check entries before toggles."] .. "|r", 1, 1, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffd4af37Toggle Only|r", 1, 1, 1)
-        GameTooltip:AddLine("LevelSync must first be enabled by the server, then", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("toggled by the player. It will not fire until both", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("conditions are met. Syncs do not run automatically", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("— you must enter the toggle command to fire each sync.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("|cffd4af37" .. PBM_L["Toggle Only"] .. "|r", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["LevelSync must first be enabled by the server, then"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["toggled by the player. It will not fire until both"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["conditions are met. Syncs do not run automatically"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["— you must enter the toggle command to fire each sync."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine("  |cff69CCF0.levelsync level on|r  /  |cff69CCF0.levelsync IP on|r", 1, 1, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffd4af37Pool Gold|r", 1, 1, 1)
-        GameTooltip:AddLine("Collects all gold from every member of your level", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("sync group and transfers it to the caller.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("|cffd4af37" .. PBM_L["Pool Gold"] .. "|r", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["Collects all gold from every member of your level"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["sync group and transfers it to the caller."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine("  |cff69CCF0.levelsync money|r", 1, 1, 1)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("To learn how to use LevelSync, see the", 0.9, 0.9, 0.9)
-        GameTooltip:AddLine("|cffd4af37LevelSync Tab|r in this addon.", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["To learn how to use LevelSync, see the"], 0.9, 0.9, 0.9)
+        GameTooltip:AddLine(PBM_L["|cffd4af37LevelSync Tab|r in this addon."], 0.9, 0.9, 0.9)
         GameTooltip:AddLine(" ", 1, 1, 1)
-        GameTooltip:AddLine("|cffd4af37GitHub:|r  github.com/Lichborne-AC/mod-levelsync", 0.6, 0.6, 0.6)
+        GameTooltip:AddLine("|cffd4af37" .. PBM_L["GitHub:"] .. "|r  github.com/Lichborne-AC/mod-levelsync", 0.6, 0.6, 0.6)
         GameTooltip:Show()
     end)
     levelSyncHelpBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2253,11 +2255,11 @@ local function OnFirstShow()
         return btn
     end
 
-    local optsTabChanges = MakeOptsTab("Recent Changes", 8)
-    local optsTabOptions = MakeOptsTab("Show/Hide",     112, 84)
-    local optsTabData    = MakeOptsTab("Data",           200, 84)
-    local optsTabGeneral = MakeOptsTab("Links",          288, 84)
-    local optsTabCredits = MakeOptsTab("Credits",        376, 84)
+    local optsTabChanges = MakeOptsTab(PBM_L["Recent Changes"], 8)
+    local optsTabOptions = MakeOptsTab(PBM_L["Show/Hide"],     112, 84)
+    local optsTabData    = MakeOptsTab(PBM_L["Data"],           200, 84)
+    local optsTabGeneral = MakeOptsTab(PBM_L["Links"],          288, 84)
+    local optsTabCredits = MakeOptsTab(PBM_L["Credits"],        376, 84)
 
     -- ── Options tab content ───────────────────────────────────────────
     local optsOptionsBox = CreateFrame("Frame", nil, optionsPanel)
@@ -2277,9 +2279,9 @@ local function OnFirstShow()
     -- Forward reference: assigned after confirmAll is created below
     if not StaticPopupDialogs["PBM_CLEAR_ALL_DATA"] then
         StaticPopupDialogs["PBM_CLEAR_ALL_DATA"] = {
-            text = "|cffd4af37Clear All Data|r\n\nThis permanently deletes ALL tracked characters,\ngear data, raid rosters, and the Overview list.\n|cffff4444This cannot be undone.|r",
-            button1 = "Yes, Clear All",
-            button2 = "Cancel",
+            text = "|cffd4af37" .. PBM_L["Clear All Data"] .. "|r\n\n" .. PBM_L["This permanently deletes ALL tracked characters,\ngear data, raid rosters, and the Overview list.\n|cffff4444This cannot be undone.|r"],
+            button1 = PBM_L["Yes, Clear All"],
+            button2 = PBM_L["Cancel"],
             OnAccept = function()
                 LichborneTrackerDB.rows        = {}
                 LichborneTrackerDB.raidRosters = {}
@@ -2292,7 +2294,7 @@ local function OnFirstShow()
                         LichborneTrackerDB.allGroups[g][i] = {name="",cls="",spec="",gs=0,realGs=0}
                     end
                 end
-                LichborneOutput("|cffC69B3APBM:|r |cffff4444All data wiped.|r", 1, 0.5, 0.5)
+                LichborneOutput("|cffC69B3APBM:|r |cffff4444" .. PBM_L["All data wiped."] .. "|r", 1, 0.5, 0.5)
                 PBM.RefreshRows()
                 if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
                 if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
@@ -2316,7 +2318,7 @@ local function OnFirstShow()
         optSecHdr:SetFont(OPT_FONT, 11, "OUTLINE")
         optSecHdr:SetPoint("TOPLEFT", optsOptionsBox, "TOPLEFT", OPT_MX, -14)
         optSecHdr:SetTextColor(OPT_GR, OPT_GG, OPT_GB)
-        optSecHdr:SetText("Data Management")
+        optSecHdr:SetText(PBM_L["Data Management"])
 
         local optSecDiv = optsOptionsBox:CreateTexture(nil, "ARTWORK")
         optSecDiv:SetPoint("TOPLEFT",  optsOptionsBox, "TOPLEFT",  OPT_MX, -28)
@@ -2350,8 +2352,8 @@ local function OnFirstShow()
         end
 
         OptActionBtn(-34,
-            "Export Data",
-            "Export all tracked character and raid data to a string.  Click Select All, then Ctrl+C to copy.",
+            PBM_L["Export Data"],
+            PBM_L["Export all tracked character and raid data to a string.  Click Select All, then Ctrl+C to copy."],
             0.04, 0.07, 0.14,
             function()
                 if exportPopup:IsShown() then exportPopup:Hide(); return end
@@ -2361,12 +2363,12 @@ local function OnFirstShow()
                 expEditBox:SetText(blob)
                 expEditBox:SetFocus(); expEditBox:HighlightText()
                 exportPopup:Show()
-                LichborneOutput("|cffC69B3APBM:|r |cffd4af37Export ready — click Select All, then press Ctrl+C.|r")
+                LichborneOutput("|cffC69B3APBM:|r |cffd4af37" .. PBM_L["Export ready — click Select All, then press Ctrl+C."] .. "|r")
             end)
 
         OptActionBtn(-104,
-            "Import Data",
-            "Load tracker data from a previously exported string.  Paste the export string and click Import.",
+            PBM_L["Import Data"],
+            PBM_L["Load tracker data from a previously exported string.  Paste the export string and click Import."],
             0.04, 0.07, 0.14,
             function()
                 if importPopup:IsShown() then importPopup:Hide(); return end
@@ -2379,8 +2381,8 @@ local function OnFirstShow()
             end)
 
         OptActionBtn(-174,
-            "Clear All Data",
-            "|cffff6666Permanently deletes ALL tracked characters, gear data,\nraid rosters, and the Overview list.  This cannot be undone.|r",
+            PBM_L["Clear All Data"],
+            PBM_L["|cffff6666Permanently deletes ALL tracked characters, gear data,\nraid rosters, and the Overview list.  This cannot be undone.|r"],
             0.22, 0.03, 0.03,
             function()
                 optionsPanel:Hide()
@@ -2475,27 +2477,27 @@ local function OnFirstShow()
         local btn = CreateFrame("Button", nil, linksChild, "UIPanelButtonTemplate")
         btn:SetSize(90, 22)
         btn:SetPoint("TOPLEFT", linksChild, "TOPLEFT", 8, y - 48)
-        btn:SetText("Select All")
+        btn:SetText(PBM_L["Select All"])
         btn:SetFrameLevel(lnkFL + 4)
         btn:SetScript("OnClick", function() eb:SetFocus(); eb:HighlightText() end)
 
         local hint = linksChild:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         hint:SetPoint("LEFT", btn, "RIGHT", 10, 0)
-        hint:SetText("|cffd4af37Ctrl+C to copy|r")
+        hint:SetText("|cffd4af37"..PBM_L["Ctrl+C to copy"].."|r")
 
         return y - 76  -- bottom y of this entry (label16 + box22 + btn22 + gap16)
     end
 
     local cy = -14
-    cy = LnkEntry("PlayerBot Manager:",                                    "https://github.com/Lichborne-AC/PlayerbotManager",           cy, "LichborneUpdateRepoBox")
+    cy = LnkEntry(PBM_L["PlayerBot Manager:"],                                    "https://github.com/Lichborne-AC/PlayerbotManager",           cy, "LichborneUpdateRepoBox")
     LnkSep(cy - 10); cy = cy - 30
-    cy = LnkEntry("mod-playerbots:",            "https://github.com/mod-playerbots/mod-playerbots",           cy, "PBMUpdatePlayerbotsBox")
+    cy = LnkEntry(PBM_L["mod-playerbots:"],            "https://github.com/mod-playerbots/mod-playerbots",           cy, "PBMUpdatePlayerbotsBox")
     LnkSep(cy - 10); cy = cy - 30
-    cy = LnkEntry("mod-levelsync:",             "https://github.com/Lichborne-AC/mod-levelsync",              cy, "PBMUpdateLevelSyncBox")
+    cy = LnkEntry(PBM_L["mod-levelsync:"],             "https://github.com/Lichborne-AC/mod-levelsync",              cy, "PBMUpdateLevelSyncBox")
     LnkSep(cy - 10); cy = cy - 30
-    cy = LnkEntry("mod-individual-progression:", "https://github.com/ZhengPeiRu21/mod-individual-progression", cy, "PBMUpdateIndivProgBox")
+    cy = LnkEntry(PBM_L["mod-individual-progression:"], "https://github.com/ZhengPeiRu21/mod-individual-progression", cy, "PBMUpdateIndivProgBox")
     LnkSep(cy - 10); cy = cy - 30
-    cy = LnkEntry("Multibot:",  "https://github.com/Wishmaster117/MultiBot-Chatless",         cy, "PBMUpdateMultibotBox")
+    cy = LnkEntry(PBM_L["Multibot:"],  "https://github.com/Wishmaster117/MultiBot-Chatless",         cy, "PBMUpdateMultibotBox")
     linksChild:SetHeight(math.abs(cy) + 20)
 
     -- ── Recent Changes tab content ────────────────────────────────────
@@ -2568,98 +2570,98 @@ local function OnFirstShow()
     end
     function CT.line(t) ChgLine(t, CT.y); CT.y = CT.y - 13 end
 
-    CT.title("|cffFF8C00Recent Changes|r")
+    CT.title("|cffFF8C00"..PBM_L["Recent Changes"].."|r")
 
     -- ── Release v1.4 ───────────────────────────────────────────────
-    CT.release("|cffd4af37Release v1.4|r  |cffFF8C00July 3, 2026|r")
-    CT.section("|cffC69B3AReorder Rows|r")
-    CT.line("|cff888888-|r  |cffffcc00Drag to reorder|r — grab the |cff888888#|r handle at the left of a")
-    CT.line("    row and drag. Works in |cffABD473Class|r, |cffFF8C00Raid|r, and |cffffcc00Group|r tabs")
-    CT.line("|cff888888-|r  Manual order is saved and clears the active column sort")
-    CT.section("|cffC69B3ALevelSync|r")
-    CT.line("|cff888888-|r  New |cffd4af37Export|r button (bottom-right) — copies synced")
-    CT.line("    characters |cff888888(name, class, level, IP tier)|r into the tracker")
-    CT.section("|cffC69B3AIndividual Progression|r")
-    CT.line("|cff888888-|r  New |cffd4af37.ip attune onyxia/blacktemple|r command added")
-    CT.line("    to the Commands list")
-    CT.section("|cffC69B3AClass Tabs|r")
-    CT.line("|cff888888-|r  Gear cells now |cffffcc00highlight on hover|r, matching the")
-    CT.line("    |cffffcc00Group|r tab")
-    CT.section("|cffC69B3ACC|r")
-    CT.line("|cff888888-|r  Added |cffC69B3ACC|r button to character sheet — toggles the |cffff8000cc|r")
-    CT.line("    strategy for |cff40C7EBMage|r, |cffFFFFFFPriest|r, |cff8787EDWarlock|r, and |cffFF7D0ADruid|r")
-    CT.line("|cff888888-|r  |cff40C7EBMage|r: |cffffcc00Polymorph|r")
-    CT.line("|cff888888-|r  |cffFFFFFFPriest|r: |cffffcc00Shackle Undead|r")
-    CT.line("|cff888888-|r  |cff8787EDWarlock|r: |cffffcc00Fear|r / |cffffcc00Banish|r")
-    CT.line("|cff888888-|r  |cffFF7D0ADruid|r: |cffffcc00Cyclone|r / |cffffcc00Hibernate|r / |cffffcc00Entangling Roots|r")
-    CT.section("|cffFF8C00Invite Raid|r")
-    CT.line("|cff888888-|r  Removed the 6th-member |cffffcc00pause/re-add|r workaround —")
-    CT.line("    party->raid conversion is now handled server-side by")
-    CT.line("    mod-playerbots |cff66ccffPR #2502|r")
+    CT.release("|cffd4af37"..PBM_L["Release v1.4"].."|r  |cffFF8C00"..PBM_L["July 3, 2026"].."|r")
+    CT.section("|cffC69B3A"..PBM_L["Reorder Rows"].."|r")
+    CT.line("|cff888888-|r  |cffffcc00"..PBM_L["Drag to reorder"].."|r — "..PBM_L["grab the"].." |cff888888#|r "..PBM_L["handle at the left of a"])
+    CT.line("    "..PBM_L["row and drag. Works in"].." |cffABD473"..PBM_L["Class"].."|r, |cffFF8C00"..PBM_L["Raid"].."|r, "..PBM_L["and"].." |cffffcc00"..PBM_L["Group"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Manual order is saved and clears the active column sort"])
+    CT.section("|cffC69B3A"..PBM_L["LevelSync"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["New"].." |cffd4af37"..PBM_L["Export"].."|r "..PBM_L["button (bottom-right) — copies synced"])
+    CT.line("    "..PBM_L["characters"].." |cff888888"..PBM_L["(name, class, level, IP tier)"].."|r "..PBM_L["into the tracker"])
+    CT.section("|cffC69B3A"..PBM_L["Individual Progression"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["New"].." |cffd4af37"..PBM_L[".ip attune onyxia/blacktemple"].."|r "..PBM_L["command added"])
+    CT.line("    "..PBM_L["to the Commands list"])
+    CT.section("|cffC69B3A"..PBM_L["Class Tabs"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Gear cells now"].." |cffffcc00"..PBM_L["highlight on hover"].."|r, "..PBM_L["matching the"])
+    CT.line("    |cffffcc00"..PBM_L["Group"].."|r "..PBM_L["tab"])
+    CT.section("|cffC69B3A"..PBM_L["CC"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Added"].." |cffC69B3A"..PBM_L["CC"].."|r "..PBM_L["button to character sheet — toggles the"].." |cffff8000cc|r")
+    CT.line("    "..PBM_L["strategy for"].." |cff40C7EB"..PBM_L["Mage"].."|r, |cffFFFFFF"..PBM_L["Priest"].."|r, |cff8787ED"..PBM_L["Warlock"].."|r, "..PBM_L["and"].." |cffFF7D0A"..PBM_L["Druid"].."|r")
+    CT.line("|cff888888-|r  |cff40C7EB"..PBM_L["Mage"].."|r: |cffffcc00"..PBM_L["Polymorph"].."|r")
+    CT.line("|cff888888-|r  |cffFFFFFF"..PBM_L["Priest"].."|r: |cffffcc00"..PBM_L["Shackle Undead"].."|r")
+    CT.line("|cff888888-|r  |cff8787ED"..PBM_L["Warlock"].."|r: |cffffcc00"..PBM_L["Fear"].."|r / |cffffcc00"..PBM_L["Banish"].."|r")
+    CT.line("|cff888888-|r  |cffFF7D0A"..PBM_L["Druid"].."|r: |cffffcc00"..PBM_L["Cyclone"].."|r / |cffffcc00"..PBM_L["Hibernate"].."|r / |cffffcc00"..PBM_L["Entangling Roots"].."|r")
+    CT.section("|cffFF8C00"..PBM_L["Invite Raid"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Removed the 6th-member"].." |cffffcc00"..PBM_L["pause/re-add"].."|r "..PBM_L["workaround —"])
+    CT.line("    "..PBM_L["party->raid conversion is now handled server-side by"])
+    CT.line("    "..PBM_L["mod-playerbots"].." |cff66ccff"..PBM_L["PR #2502"].."|r")
 
     -- ── Release v1.3 ───────────────────────────────────────────────
-    CT.release("|cffd4af37Release v1.3|r  |cffFF8C00June 5, 2026|r")
-    CT.section("|cffABD473Hunter|r")
-    CT.line("|cff888888-|r  Removed |cffABD473dps|r button from character sheet (CO)")
-    CT.line("|cff888888-|r  Removed |cffABD473dps debuff|r button from character sheet (CO)")
-    CT.line("|cff888888-|r  Removed |cffABD473bviper|r aspect from character sheet (CO + NC)")
-    CT.section("|cffF58CBAPaladin|r")
-    CT.line("|cff888888-|r  |cffF58CBABlessings renamed|r — mod-playerbots |cff66ccffPR #2432|r")
-    CT.line("|cff888888-|r  |cffd4af37bstats|r  ->  |cffF58CBAbkings   |cffF58CBA(Blessing of Kings)|r")
-    CT.line("|cff888888-|r  |cffd4af37bhealth|r  ->  |cffF58CBAbsanc   |cffF58CBA(Blessing of Sanctuary)|r")
-    CT.line("|cff888888-|r  |cffd4af37bmana|r  ->  |cffF58CBAbwisdom   |cffF58CBA(Blessing of Wisdom)|r")
-    CT.line("|cff888888-|r  |cffd4af37bdps|r  ->  |cffF58CBAbmight   |cffF58CBA(Blessing of Might)|r")
-    CT.section("|cffFFF569Rogue|r")
-    CT.line("|cff888888-|r  Added |cffFFF569Melee|r button — DPS column: DPS / Melee / Boost")
-    CT.line("|cff888888-|r  Combat section split into |cffFFF569DPS|r and |cffFFF569Stealth|r columns")
-    CT.section("|cffC69B3APlayerbots Tab|r")
-    CT.line("|cff888888-|r  Reset Instances now uses |cff66ccff.playerbots bot refresh=raid *|r")
-    CT.line("|cff888888-|r  Removed GM Reset Instances button")
-    CT.section("|cffC69B3ABug Fixes|r")
-    CT.line("|cff888888-|r  Fixed: |cffFF7D0ADruid|r offheal strategy showing up red in notes")
-    CT.section("|cffC69B3AUI|r")
-    CT.line("|cff888888-|r  New |cffffcc00Group|r tab added — shows current group members")
-    CT.line("|cff888888-|r  Character sheet: bag colors now correspond to how full the inventory is")
-    CT.section("|cffC69B3AFilters|r")
-    CT.line("|cff888888-|r  New filter: removes generated notes in the |cffFF8C00Raid|r tab — allows for manual entry")
-    CT.line("|cff888888-|r  New filter: removes generated roles in the |cffFF8C00Raid|r/|cffABD473Overview|r tab —")
-    CT.line("    allows for manual entry")
-    CT.line("|cff888888-|r  New filter: Show/Hide new |cffffcc00Group|r tab")
-    CT.line("|cff888888-|r  New filter: Show/Hide |cff66ccffStrategy|r responses in output box")
-    CT.line("|cff888888-|r  New filter: Show/Hide |cff66ccff+Add Target/Group Strategies|r buttons")
-    CT.line("|cff888888-|r  New filter: Show/Hide Who response (when opening character menus)")
-    CT.line("|cff888888-|r  New filter: |cffffcc00Hide Group Members|r — hides chars in your party")
-    CT.line("|cff888888-|r  New toggles: name-click char sheet — |cffffcc00Group|r + Class tabs")
-    CT.section("|cffC69B3AButtons|r")
-    CT.line("|cff888888-|r  Added |cffff8c00\"Does not work for rndbots.\"|r note in Invite Group & Raid buttons")
-    CT.section("|cffC69B3ATemplates|r")
-    CT.line("|cff888888-|r  |cffC41F3BDK:|r |cffC69B3ADbl Aura Blood PvE|r (43-26-2) added — spec \"double aura blood pve\"")
+    CT.release("|cffd4af37"..PBM_L["Release v1.3"].."|r  |cffFF8C00"..PBM_L["June 5, 2026"].."|r")
+    CT.section("|cffABD473"..PBM_L["Hunter"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Removed"].." |cffABD473dps|r "..PBM_L["button from character sheet (CO)"])
+    CT.line("|cff888888-|r  "..PBM_L["Removed"].." |cffABD473dps "..PBM_L["debuff"].."|r "..PBM_L["button from character sheet (CO)"])
+    CT.line("|cff888888-|r  "..PBM_L["Removed"].." |cffABD473bviper|r "..PBM_L["aspect from character sheet (CO + NC)"])
+    CT.section("|cffF58CBA"..PBM_L["Paladin"].."|r")
+    CT.line("|cff888888-|r  |cffF58CBA"..PBM_L["Blessings renamed"].."|r — "..PBM_L["mod-playerbots"].." |cff66ccff"..PBM_L["PR #2432"].."|r")
+    CT.line("|cff888888-|r  |cffd4af37bstats|r  ->  |cffF58CBAbkings   |cffF58CBA"..PBM_L["(Blessing of Kings)"].."|r")
+    CT.line("|cff888888-|r  |cffd4af37bhealth|r  ->  |cffF58CBAbsanc   |cffF58CBA"..PBM_L["(Blessing of Sanctuary)"].."|r")
+    CT.line("|cff888888-|r  |cffd4af37bmana|r  ->  |cffF58CBAbwisdom   |cffF58CBA"..PBM_L["(Blessing of Wisdom)"].."|r")
+    CT.line("|cff888888-|r  |cffd4af37bdps|r  ->  |cffF58CBAbmight   |cffF58CBA"..PBM_L["(Blessing of Might)"].."|r")
+    CT.section("|cffFFF569"..PBM_L["Rogue"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Added"].." |cffFFF569"..PBM_L["Melee"].."|r "..PBM_L["button — DPS column: DPS / Melee / Boost"])
+    CT.line("|cff888888-|r  "..PBM_L["Combat section split into"].." |cffFFF569DPS|r "..PBM_L["and"].." |cffFFF569"..PBM_L["Stealth"].."|r "..PBM_L["columns"])
+    CT.section("|cffC69B3A"..PBM_L["Playerbots Tab"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Reset Instances now uses"].." |cff66ccff"..PBM_L[".playerbots bot refresh=raid *"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Removed GM Reset Instances button"])
+    CT.section("|cffC69B3A"..PBM_L["Bug Fixes"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Fixed:"].." |cffFF7D0A"..PBM_L["Druid"].."|r "..PBM_L["offheal strategy showing up red in notes"])
+    CT.section("|cffC69B3A"..PBM_L["UI"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["New"].." |cffffcc00"..PBM_L["Group"].."|r "..PBM_L["Group tab added — shows current group members"])
+    CT.line("|cff888888-|r  "..PBM_L["Character sheet: bag colors now correspond to how full the inventory is"])
+    CT.section("|cffC69B3A"..PBM_L["Filters"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["New filter: removes generated notes in the"].." |cffFF8C00"..PBM_L["Raid"].."|r "..PBM_L["tab — allows for manual entry"])
+    CT.line("|cff888888-|r  "..PBM_L["New filter: removes generated roles in the"].." |cffFF8C00"..PBM_L["Raid"].."|r/|cffABD473"..PBM_L["Overview"].."|r "..PBM_L["tab —"])
+    CT.line("    "..PBM_L["allows for manual entry"])
+    CT.line("|cff888888-|r  "..PBM_L["New filter: Show/Hide new"].." |cffffcc00"..PBM_L["Group"].."|r "..PBM_L["tab"])
+    CT.line("|cff888888-|r  "..PBM_L["New filter: Show/Hide"].." |cff66ccff"..PBM_L["Strategy"].."|r "..PBM_L["responses in output box"])
+    CT.line("|cff888888-|r  "..PBM_L["New filter: Show/Hide"].." |cff66ccff"..PBM_L["+Add Target/Group Strategies"].."|r "..PBM_L["buttons"])
+    CT.line("|cff888888-|r  "..PBM_L["New filter: Show/Hide Who response (when opening character menus)"])
+    CT.line("|cff888888-|r  "..PBM_L["New filter:"].." |cffffcc00"..PBM_L["Hide Group Members"].."|r "..PBM_L["— hides chars in your party"])
+    CT.line("|cff888888-|r  "..PBM_L["New toggles: name-click char sheet —"].." |cffffcc00"..PBM_L["Group"].."|r + "..PBM_L["Class tabs"])
+    CT.section("|cffC69B3A"..PBM_L["Buttons"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Added"].." |cffff8c00"..PBM_L["\"Does not work for rndbots.\""].."|r "..PBM_L["note in Invite Group & Raid buttons"])
+    CT.section("|cffC69B3A"..PBM_L["Templates"].."|r")
+    CT.line("|cff888888-|r  |cffC41F3B"..PBM_L["DK:"].."|r |cffC69B3A"..PBM_L["Dbl Aura Blood PvE"].."|r "..PBM_L["(43-26-2) added — spec \"double aura blood pve\""])
 
     -- ── Release v1.2 ───────────────────────────────────────────────
-    CT.release("|cffd4af37Release v1.2|r  |cffFF8C00May 30, 2026|r")
-    CT.section("|cffC69B3ABug Fixes|r")
-    CT.line("|cff888888-|r  Fixed: Invite Raid no longer kicks and reinvites members in partial groups")
-    CT.line("|cff888888-|r  Stop Scan now stops |cffffcc00+Add IP Tiers|r mid-run")
-    CT.line("|cff888888-|r  Clear All no longer resets Raid tier/raid selection")
-    CT.section("|cffC69B3AUI|r")
-    CT.line("|cff888888-|r  Show/Hide menu added: toggle tab and button visibility per bot row")
-    CT.line("|cff888888-|r  Needs column restored — shares the Prof. column |cff888888(use either)|r")
-    CT.line("|cff888888-|r  Raid tab: note color brightened for readability")
-    CT.line("|cff888888-|r  Tracker section header renamed: |cffffcc00Admin:|r  ->  |cffffcc00Menu:|r")
-    CT.line("|cff888888-|r  Character sheet: name on its own line in class color")
-    CT.line("|cff888888-|r  PvP tooltip: moved above button, wording cleaned up")
-    CT.line("|cff888888-|r  Several AoE icons updated to Blizzard |cff888888(spell_frost_icestorm)|r")
-    CT.line("|cff888888-|r  Reset Instances: tooltips updated")
-    CT.section("|cffC69B3AClass Menus|r")
-    CT.line("|cff888888-|r  Removed ability rotation lines from all 10 class spec tooltips")
-    CT.line("    |cff999999Due to time restraints and constantly evolving Playerbot strategies.|r")
-    CT.line("|cff888888-|r  |cff8787EDWarlock:|r removed DPS toggle button, Combat row shrunk to 3 icons")
-    CT.line("|cff888888-|r  |cff8787EDWarlock|r & |cff0070DEShaman:|r increased vertical row spacing |cff888888(15 px gap)|r")
-    CT.line("|cff888888-|r  |cff0070DEShaman:|r Caster AoE + Melee AoE merged into single |cffffcc00AoE|r button")
-    CT.line("|cff888888-|r  |cff0070DEShaman|r Totem section removed — use |cffffcc00Multibot|r for totem functions")
-    CT.line("|cff888888-|r  |cffFF7D0ADruid:|r added |cffffcc00Tranquility|r, |cffffcc00Blanketing|r, and |cffffcc00Feral Charge|r strategies")
-    CT.section("|cffC69B3AButtons|r")
-    CT.line("|cff888888-|r  Buttons disabled while |cffffcc00+Add IP Tiers|r is running")
+    CT.release("|cffd4af37"..PBM_L["Release v1.2"].."|r  |cffFF8C00"..PBM_L["May 30, 2026"].."|r")
+    CT.section("|cffC69B3A"..PBM_L["Bug Fixes"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Fixed: Invite Raid no longer kicks and reinvites members in partial groups"])
+    CT.line("|cff888888-|r  "..PBM_L["Stop Scan now stops"].." |cffffcc00"..PBM_L["+Add IP Tiers"].."|r "..PBM_L["mid-run"])
+    CT.line("|cff888888-|r  "..PBM_L["Clear All no longer resets Raid tier/raid selection"])
+    CT.section("|cffC69B3A"..PBM_L["UI"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Show/Hide menu added: toggle tab and button visibility per bot row"])
+    CT.line("|cff888888-|r  "..PBM_L["Needs column restored — shares the Prof. column"].." |cff888888"..PBM_L["(use either)"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Raid tab: note color brightened for readability"])
+    CT.line("|cff888888-|r  "..PBM_L["Tracker section header renamed:"].." |cffffcc00"..PBM_L["Admin:"].."|r  ->  |cffffcc00"..PBM_L["Menu:"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Character sheet: name on its own line in class color"])
+    CT.line("|cff888888-|r  "..PBM_L["PvP tooltip: moved above button, wording cleaned up"])
+    CT.line("|cff888888-|r  "..PBM_L["Several AoE icons updated to Blizzard"].." |cff888888"..PBM_L["(spell_frost_icestorm)"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Reset Instances: tooltips updated"])
+    CT.section("|cffC69B3A"..PBM_L["Class Menus"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Removed ability rotation lines from all 10 class spec tooltips"])
+    CT.line("    |cff999999"..PBM_L["Due to time restraints and constantly evolving Playerbot strategies."].."|r")
+    CT.line("|cff888888-|r  |cff8787ED"..PBM_L["Warlock"].."|r: "..PBM_L["removed DPS toggle button, Combat row shrunk to 3 icons"])
+    CT.line("|cff888888-|r  |cff8787ED"..PBM_L["Warlock"].."|r "..PBM_L["&"].." |cff0070DE"..PBM_L["Shaman"].."|r: "..PBM_L["increased vertical row spacing"].." |cff888888"..PBM_L["(15 px gap)"].."|r")
+    CT.line("|cff888888-|r  |cff0070DE"..PBM_L["Shaman"].."|r: "..PBM_L["Caster AoE + Melee AoE merged into single"].." |cffffcc00"..PBM_L["AoE"].."|r "..PBM_L["button"])
+    CT.line("|cff888888-|r  |cff0070DE"..PBM_L["Shaman"].."|r "..PBM_L["Totem section removed — use"].." |cffffcc00"..PBM_L["Multibot"].."|r "..PBM_L["for totem functions"])
+    CT.line("|cff888888-|r  |cffFF7D0A"..PBM_L["Druid"].."|r: "..PBM_L["added"].." |cffffcc00"..PBM_L["Tranquility"].."|r, |cffffcc00"..PBM_L["Blanketing"].."|r, "..PBM_L["and"].." |cffffcc00"..PBM_L["Feral Charge"].."|r "..PBM_L["strategies"])
+    CT.section("|cffC69B3A"..PBM_L["Buttons"].."|r")
+    CT.line("|cff888888-|r  "..PBM_L["Buttons disabled while"].." |cffffcc00"..PBM_L["+Add IP Tiers"].."|r "..PBM_L["is running"])
 
     chgChild:SetHeight(-CT.y + 30)
 
@@ -2695,9 +2697,9 @@ local function OnFirstShow()
         t:SetTexture(0.78, 0.61, 0.23, 0.4)
     end
 
-    CreditsLine("|cffC69B3ACredits|r", -14, 14)
+    CreditsLine("|cffC69B3A"..PBM_L["Credits"].."|r", -14, 14)
     CreditsDivider(-34)
-    CreditsLine("|cffd4af37Special thanks to:|r", -60, nil, "CENTER")
+    CreditsLine("|cffd4af37"..PBM_L["Special thanks to:"].."|r", -60, nil, "CENTER")
     CreditsLine("|cffffffffDohtt|r",                                 -74, nil, "CENTER")
     CreditsLine("|cffffffffScarecr0w12 |cffaaaaaa- TheCGN.net|r",   -86, nil, "CENTER")
     CreditsLine("|cffffffffDreathean|r",                             -98, nil, "CENTER")
@@ -2709,10 +2711,10 @@ local function OnFirstShow()
     CreditsLine("|cffffffffGrimfeather|r",                          -170, nil, "CENTER")
     CreditsLine("|cffffffffKeleborn|r",                             -182, nil, "CENTER")
     CreditsLine("|cffffffffGromleq|r",                              -194, nil, "CENTER")
-    CreditsLine("|cffffffffPortions of PBM's character menu code were derived from Wishmaster117's Multibot.|r", -238, nil, "CENTER")
-    CreditsLine("|cffffffffThank you for the work.|r", -252, nil, "CENTER")
+    CreditsLine("|cffffffff"..PBM_L["Portions of PBM's character menu code were derived from Wishmaster117's Multibot."].."|r", -238, nil, "CENTER")
+    CreditsLine("|cffffffff"..PBM_L["Thank you for the work."].."|r", -252, nil, "CENTER")
     CreditsDivider(-270)
-    CreditsLine("|cffd4af37Questions & Support:|r  lichborne.wow@proton.me  —  |cffd4af37Discord:|r jared2219", -292, nil, "CENTER")
+    CreditsLine("|cffd4af37"..PBM_L["Questions & Support:"].."|r  lichborne.wow@proton.me  —  |cffd4af37"..PBM_L["Discord:"].."|r jared2219", -292, nil, "CENTER")
 
     -- ── Store bottom-button refs for Show/Hide menu ──────────────────
     PBM.State.trackerBtns = {
@@ -2807,7 +2809,7 @@ local function OnFirstShow()
         visHdr:SetFont(VIS_FONT, 11, "OUTLINE")
         visHdr:SetPoint("TOPLEFT", optsVisBox, "TOPLEFT", VIS_MX, -14)
         visHdr:SetTextColor(VIS_GR, VIS_GG, VIS_GB)
-        visHdr:SetText("Show/Hide")
+        visHdr:SetText(PBM_L["Show/Hide"])
 
         local visHdrDiv = optsVisBox:CreateTexture(nil, "ARTWORK")
         visHdrDiv:SetPoint("TOPLEFT",  optsVisBox, "TOPLEFT",  VIS_MX, -28)
@@ -2817,11 +2819,11 @@ local function OnFirstShow()
         visHdrDiv:SetVertexColor(VIS_GR, VIS_GG, VIS_GB, 0.5)
 
         local VIS_SECTIONS = {
-            {id = "Playerbots",            label = "Playerbots Tab"},
-            {id = "IndividualProgression", label = "Ind. Prog. Tab"},
-            {id = "LevelSync",             label = "LevelSync Tab"},
-            {id = "Notes",                 label = "Notes Tab"},
-            {id = "Group",                 label = "Group Tab"},
+            {id = "Playerbots",            label = PBM_L["Playerbots Tab"]},
+            {id = "IndividualProgression", label = PBM_L["Ind. Prog. Tab"]},
+            {id = "LevelSync",             label = PBM_L["LevelSync Tab"]},
+            {id = "Notes",                 label = PBM_L["Notes Tab"]},
+            {id = "Group",                 label = PBM_L["Group Tab"]},
         }
 
         PBM.State.visToggleBtns = {}
@@ -2849,10 +2851,10 @@ local function OnFirstShow()
                 local isHidden = PBMConfig.hiddenTabs and PBMConfig.hiddenTabs[sectionId]
                 if isHidden then
                     btn:SetBackdropColor(0.18, 0.04, 0.04, 1)
-                    stateLbl:SetText("|cffff6666Hidden|r")
+                    stateLbl:SetText("|cffff6666"..PBM_L["Hidden"].."|r")
                 else
                     btn:SetBackdropColor(0.04, 0.14, 0.06, 1)
-                    stateLbl:SetText("|cff55dd77Visible|r")
+                    stateLbl:SetText("|cff55dd77"..PBM_L["Visible"].."|r")
                 end
             end
             btn:Refresh()
@@ -2896,7 +2898,7 @@ local function OnFirstShow()
         -- Order: Add IP Tiers, Strategy Buttons, Strategy Whispers, Who Commands, Role Filter, Notes Filter
 
         -- (1) Add IP Tiers — tab/button visibility toggle, reuses MakeVisToggle
-        local ipTiersToggle = MakeVisToggle(-34, "IPTiers", "+Add IP Tiers (button)", COL2_X)
+        local ipTiersToggle = MakeVisToggle(-34, "IPTiers", PBM_L["+Add IP Tiers (button)"], COL2_X)
         PBM.State.visToggleBtns[#PBM.State.visToggleBtns + 1] = ipTiersToggle
 
         -- (2) Strategy Buttons show/hide toggle
@@ -2907,13 +2909,13 @@ local function OnFirstShow()
         stratVisBtn:SetBackdropBorderColor(VIS_GR, VIS_GG, VIS_GB, 0.85)
         stratVisBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
         local svNLbl = stratVisBtn:CreateFontString(nil,"OVERLAY"); svNLbl:SetFont(VIS_FONT,10,"OUTLINE")
-        svNLbl:SetPoint("LEFT",stratVisBtn,"LEFT",10,0); svNLbl:SetText("|cffd4af37+Add Strategy Buttons|r")
+        svNLbl:SetPoint("LEFT",stratVisBtn,"LEFT",10,0); svNLbl:SetText("|cffd4af37"..PBM_L["+Add Strategy Buttons"].."|r")
         local svSLbl = stratVisBtn:CreateFontString(nil,"OVERLAY"); svSLbl:SetFont(VIS_FONT,10,"OUTLINE")
         svSLbl:SetPoint("RIGHT",stratVisBtn,"RIGHT",-10,0)
         function stratVisBtn:Refresh()
             local hidden = PBMConfig and PBMConfig.hiddenButtons and PBMConfig.hiddenButtons.strategies
-            if hidden then stratVisBtn:SetBackdropColor(0.18,0.04,0.04,1); svSLbl:SetText("|cffff6666Hidden|r")
-            else            stratVisBtn:SetBackdropColor(0.04,0.14,0.06,1); svSLbl:SetText("|cff55dd77Visible|r") end
+            if hidden then stratVisBtn:SetBackdropColor(0.18,0.04,0.04,1); svSLbl:SetText("|cffff6666"..PBM_L["Hidden"].."|r")
+            else            stratVisBtn:SetBackdropColor(0.04,0.14,0.06,1); svSLbl:SetText("|cff55dd77"..PBM_L["Visible"].."|r") end
         end
         stratVisBtn:Refresh()
         stratVisBtn:SetScript("OnClick", function()
@@ -2925,9 +2927,9 @@ local function OnFirstShow()
         end)
         stratVisBtn:SetScript("OnEnter", function()
             GameTooltip:SetOwner(stratVisBtn, "ANCHOR_TOP")
-            GameTooltip:AddLine("+Add Strategy Buttons", 0.78, 0.61, 0.23)
-            GameTooltip:AddLine("Hides +Add Target/Group Strategies buttons", 0.7, 0.7, 0.7)
-            GameTooltip:AddLine("and expands the remaining buttons to fill the gap.", 0.7, 0.7, 0.7)
+            GameTooltip:AddLine(PBM_L["+Add Strategy Buttons"], 0.78, 0.61, 0.23)
+            GameTooltip:AddLine(PBM_L["Hides +Add Target/Group Strategies buttons"], 0.7, 0.7, 0.7)
+            GameTooltip:AddLine(PBM_L["and expands the remaining buttons to fill the gap."], 0.7, 0.7, 0.7)
             GameTooltip:Show()
         end)
         stratVisBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2948,7 +2950,7 @@ local function OnFirstShow()
         local stratNameLbl = stratBtn:CreateFontString(nil, "OVERLAY")
         stratNameLbl:SetFont(VIS_FONT, 10, "OUTLINE")
         stratNameLbl:SetPoint("LEFT", stratBtn, "LEFT", 10, 0)
-        stratNameLbl:SetText("|cffd4af37Strategy Whispers|r")
+        stratNameLbl:SetText("|cffd4af37"..PBM_L["Strategy Whispers"].."|r")
 
         local stratStateLbl = stratBtn:CreateFontString(nil, "OVERLAY")
         stratStateLbl:SetFont(VIS_FONT, 10, "OUTLINE")
@@ -2957,10 +2959,10 @@ local function OnFirstShow()
         function stratBtn:Refresh()
             if PBMConfig and PBMConfig.hideStrategyOutput then
                 stratBtn:SetBackdropColor(0.18, 0.04, 0.04, 1)
-                stratStateLbl:SetText("|cffff6666Hidden|r")
+                stratStateLbl:SetText("|cffff6666"..PBM_L["Hidden"].."|r")
             else
                 stratBtn:SetBackdropColor(0.04, 0.14, 0.06, 1)
-                stratStateLbl:SetText("|cff55dd77Visible|r")
+                stratStateLbl:SetText("|cff55dd77"..PBM_L["Visible"].."|r")
             end
         end
         stratBtn:Refresh()
@@ -2973,12 +2975,12 @@ local function OnFirstShow()
         end)
         stratBtn:SetScript("OnEnter", function()
             GameTooltip:SetOwner(stratBtn, "ANCHOR_TOP")
-            GameTooltip:AddLine("Strategy Whispers", 0.78, 0.61, 0.23)
-            GameTooltip:AddLine("Filters bot strategy replies from the", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("PBM output box when you open a bot menu.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Strategy Whispers"], 0.78, 0.61, 0.23)
+            GameTooltip:AddLine(PBM_L["Filters bot strategy replies from the"], 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["PBM output box when you open a bot menu."], 0.8, 0.8, 0.8)
             GameTooltip:AddLine(" ", 1, 1, 1)
-            GameTooltip:AddLine("Filtered messages:", 0.6, 0.6, 0.6)
-            GameTooltip:AddLine("|cffd4af37[Bot] whispers: Strategies: tank, heal ...|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Filtered messages:"], 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37"..PBM_L["[Bot] whispers: Strategies: tank, heal ..."].."|r", 0.8, 0.8, 0.8)
             GameTooltip:Show()
         end)
         stratBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2995,7 +2997,7 @@ local function OnFirstShow()
         local whoNameLbl = whoBtn:CreateFontString(nil, "OVERLAY")
         whoNameLbl:SetFont(VIS_FONT, 10, "OUTLINE")
         whoNameLbl:SetPoint("LEFT", whoBtn, "LEFT", 10, 0)
-        whoNameLbl:SetText("|cffd4af37Who Commands|r")
+        whoNameLbl:SetText("|cffd4af37"..PBM_L["Who Commands"].."|r")
 
         local whoStateLbl = whoBtn:CreateFontString(nil, "OVERLAY")
         whoStateLbl:SetFont(VIS_FONT, 10, "OUTLINE")
@@ -3004,10 +3006,10 @@ local function OnFirstShow()
         function whoBtn:Refresh()
             if PBMConfig and PBMConfig.hideWhoCommands then
                 whoBtn:SetBackdropColor(0.18, 0.04, 0.04, 1)
-                whoStateLbl:SetText("|cffff6666Hidden|r")
+                whoStateLbl:SetText("|cffff6666"..PBM_L["Hidden"].."|r")
             else
                 whoBtn:SetBackdropColor(0.04, 0.14, 0.06, 1)
-                whoStateLbl:SetText("|cff55dd77Visible|r")
+                whoStateLbl:SetText("|cff55dd77"..PBM_L["Visible"].."|r")
             end
         end
         whoBtn:Refresh()
@@ -3020,19 +3022,19 @@ local function OnFirstShow()
         end)
         whoBtn:SetScript("OnEnter", function()
             GameTooltip:SetOwner(whoBtn, "ANCHOR_TOP")
-            GameTooltip:AddLine("Who Commands", 0.78, 0.61, 0.23)
-            GameTooltip:AddLine("Filters the bot query commands and their", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("responses from your chat window.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Who Commands"], 0.78, 0.61, 0.23)
+            GameTooltip:AddLine(PBM_L["Filters the bot query commands and their"], 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["responses from your chat window."], 0.8, 0.8, 0.8)
             GameTooltip:AddLine(" ", 1, 1, 1)
-            GameTooltip:AddLine("Filtered outgoing:", 0.6, 0.6, 0.6)
-            GameTooltip:AddLine("|cffd4af37To [Bot]: co ?  /  nc ?  /  stats  /  who  /  ss ?|r", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("Filtered incoming:", 0.6, 0.6, 0.6)
-            GameTooltip:AddLine("|cffd4af37[Bot] whispers: stats, bag, durability line|r", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("|cffd4af37[Bot] whispers: race/class/level/GS line|r", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("|cffd4af37[Bot] whispers: Ignored spell list ...|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Filtered outgoing:"], 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37"..PBM_L["To [Bot]: co ?  /  nc ?  /  stats  /  who  /  ss ?"].."|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Filtered incoming:"], 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37"..PBM_L["[Bot] whispers: stats, bag, durability line"].."|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("|cffd4af37"..PBM_L["[Bot] whispers: race/class/level/GS line"].."|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("|cffd4af37"..PBM_L["[Bot] whispers: Ignored spell list ..."].."|r", 0.8, 0.8, 0.8)
             GameTooltip:AddLine(" ", 1, 1, 1)
-            GameTooltip:AddLine("|cffaaaaaa\"who\" is sent automatically when opening", 0.7, 0.7, 0.7)
-            GameTooltip:AddLine("|cffaaaaaaa character's strategy menu.|r", 0.7, 0.7, 0.7)
+            GameTooltip:AddLine("|cffaaaaaa"..PBM_L["\"who\" is sent automatically when opening"], 0.7, 0.7, 0.7)
+            GameTooltip:AddLine("|cffaaaaaa"..PBM_L["a character's strategy menu."].."|r", 0.7, 0.7, 0.7)
             GameTooltip:Show()
         end)
         whoBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -3048,15 +3050,15 @@ local function OnFirstShow()
         local talNameLbl = talBtn:CreateFontString(nil, "OVERLAY")
         talNameLbl:SetFont(VIS_FONT, 10, "OUTLINE")
         talNameLbl:SetPoint("LEFT", talBtn, "LEFT", 10, 0)
-        talNameLbl:SetText("|cffd4af37Talent Whispers|r")
+        talNameLbl:SetText("|cffd4af37"..PBM_L["Talent Whispers"].."|r")
         local talStateLbl = talBtn:CreateFontString(nil, "OVERLAY")
         talStateLbl:SetFont(VIS_FONT, 10, "OUTLINE")
         talStateLbl:SetPoint("RIGHT", talBtn, "RIGHT", -10, 0)
         function talBtn:Refresh()
             if PBMConfig and PBMConfig.hideTalentsOutput then
-                talBtn:SetBackdropColor(0.18, 0.04, 0.04, 1); talStateLbl:SetText("|cffff6666Hidden|r")
+                talBtn:SetBackdropColor(0.18, 0.04, 0.04, 1); talStateLbl:SetText("|cffff6666"..PBM_L["Hidden"].."|r")
             else
-                talBtn:SetBackdropColor(0.04, 0.14, 0.06, 1); talStateLbl:SetText("|cff55dd77Visible|r")
+                talBtn:SetBackdropColor(0.04, 0.14, 0.06, 1); talStateLbl:SetText("|cff55dd77"..PBM_L["Visible"].."|r")
             end
         end
         talBtn:Refresh()
@@ -3068,15 +3070,15 @@ local function OnFirstShow()
         end)
         talBtn:SetScript("OnEnter", function()
             GameTooltip:SetOwner(talBtn, "ANCHOR_TOP")
-            GameTooltip:AddLine("Talent Whispers", 0.78, 0.61, 0.23)
-            GameTooltip:AddLine("Filters the talents exchange triggered by the", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("Templates menu (same for all 10 classes).", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Talent Whispers"], 0.78, 0.61, 0.23)
+            GameTooltip:AddLine(PBM_L["Filters the talents exchange triggered by the"], 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Templates menu (same for all 10 classes)."], 0.8, 0.8, 0.8)
             GameTooltip:AddLine(" ", 1, 1, 1)
-            GameTooltip:AddLine("Filtered outgoing:", 0.6, 0.6, 0.6)
-            GameTooltip:AddLine("|cffd4af37To [Bot]: talents  /  talents spec list ...|r", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("Filtered incoming:", 0.6, 0.6, 0.6)
-            GameTooltip:AddLine("|cffd4af37[Bot] whispers: My current talent spec is ...|r", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("|cffd4af37[Bot] whispers: numbered spec list, Total N specs|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Filtered outgoing:"], 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37"..PBM_L["To [Bot]: talents  /  talents spec list ..."].."|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(PBM_L["Filtered incoming:"], 0.6, 0.6, 0.6)
+            GameTooltip:AddLine("|cffd4af37"..PBM_L["[Bot] whispers: My current talent spec is ..."].."|r", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("|cffd4af37"..PBM_L["[Bot] whispers: numbered spec list, Total N specs"].."|r", 0.8, 0.8, 0.8)
             GameTooltip:Show()
         end)
         talBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -3098,9 +3100,9 @@ local function OnFirstShow()
             sLbl:SetPoint("RIGHT",btn,"RIGHT",-10,0)
             function btn:Refresh()
                 if getState() then
-                    btn:SetBackdropColor(0.04,0.14,0.06,1); sLbl:SetText("|cff55dd77On|r")
+                    btn:SetBackdropColor(0.04,0.14,0.06,1); sLbl:SetText("|cff55dd77"..PBM_L["On"].."|r")
                 else
-                    btn:SetBackdropColor(0.18,0.04,0.04,1); sLbl:SetText("|cffff6666Off|r")
+                    btn:SetBackdropColor(0.18,0.04,0.04,1); sLbl:SetText("|cffff6666"..PBM_L["Off"].."|r")
                 end
             end
             btn:Refresh()
@@ -3117,7 +3119,7 @@ local function OnFirstShow()
             return btn
         end
 
-        MakeMenuFilterBtn(col2Y, "Role Filter",
+        MakeMenuFilterBtn(col2Y, PBM_L["Role Filter"],
             function() return PBM.State.LBFilter and PBM.State.LBFilter.raidRoleFilter end,
             function()
                 PBM.State.LBFilter.raidRoleFilter = not PBM.State.LBFilter.raidRoleFilter
@@ -3128,35 +3130,35 @@ local function OnFirstShow()
                 if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
                 if PBM.State.groupViewFrame then PBM.RefreshGroupViewRows() end
             end,
-            {{"Role Filter",0.78,0.61,0.23},{"Hides strategy roles in the Raid tab.",0.7,0.7,0.7},{"Allows manual role assignment per slot.",0.7,0.7,0.7}})
+            {{PBM_L["Role Filter"],0.78,0.61,0.23},{PBM_L["Hides strategy roles in the Raid tab."],0.7,0.7,0.7},{PBM_L["Allows manual role assignment per slot."],0.7,0.7,0.7}})
 
-        MakeMenuFilterBtn(col2Y - (VIS_BTN_H + 6), "Notes Filter",
+        MakeMenuFilterBtn(col2Y - (VIS_BTN_H + 6), PBM_L["Notes Filter"],
             function() return PBM.State.LBFilter and PBM.State.LBFilter.raidNotesFilter end,
             function()
                 PBM.State.LBFilter.raidNotesFilter = not PBM.State.LBFilter.raidNotesFilter
                 LichborneTrackerDB.raidNotesFilter = PBM.State.LBFilter.raidNotesFilter
                 if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
             end,
-            {{"Notes Filter",0.78,0.61,0.23},{"Hides strategy notes in the Raid tab.",0.7,0.7,0.7},{"Enables manual note entry per slot.",0.7,0.7,0.7}})
+            {{PBM_L["Notes Filter"],0.78,0.61,0.23},{PBM_L["Hides strategy notes in the Raid tab."],0.7,0.7,0.7},{PBM_L["Enables manual note entry per slot."],0.7,0.7,0.7}})
 
         -- Col1 slots 6 & 7: Char Sheet toggles (under Group Tab)
         -- Col1 step = VIS_BTN_H+6 = 36; 5 tabs placed, so next y = -34 - 36*5 = -214
-        MakeMenuFilterBtn(-214, "Group Tab: Char Sheet",
+        MakeMenuFilterBtn(-214, PBM_L["Group Tab: Char Sheet"],
             function() return PBM.State.LBFilter and PBM.State.LBFilter.gvCharSheet ~= false end,
             function()
                 PBM.State.LBFilter.gvCharSheet = not (PBM.State.LBFilter.gvCharSheet ~= false)
                 LichborneTrackerDB.gvCharSheet = PBM.State.LBFilter.gvCharSheet
             end,
-            {{"Group Tab: Char Sheet",0.78,0.61,0.23},{"Enable or disable clicking a name in the",0.7,0.7,0.7},{"Group tab to open their character sheet.",0.7,0.7,0.7}},
+            {{PBM_L["Group Tab: Char Sheet"],0.78,0.61,0.23},{PBM_L["Enable or disable clicking a name in the"],0.7,0.7,0.7},{PBM_L["Group tab to open their character sheet."],0.7,0.7,0.7}},
             VIS_MX)
 
-        MakeMenuFilterBtn(-250, "Class Tabs: Char Sheet",
+        MakeMenuFilterBtn(-250, PBM_L["Class Tabs: Char Sheet"],
             function() return PBM.State.LBFilter and PBM.State.LBFilter.classCharSheet ~= false end,
             function()
                 PBM.State.LBFilter.classCharSheet = not (PBM.State.LBFilter.classCharSheet ~= false)
                 LichborneTrackerDB.classCharSheet = PBM.State.LBFilter.classCharSheet
             end,
-            {{"Class Tabs: Char Sheet",0.78,0.61,0.23},{"Enable or disable clicking a name in any",0.7,0.7,0.7},{"class tab to open their character sheet.",0.7,0.7,0.7}},
+            {{PBM_L["Class Tabs: Char Sheet"],0.78,0.61,0.23},{PBM_L["Enable or disable clicking a name in any"],0.7,0.7,0.7},{PBM_L["class tab to open their character sheet."],0.7,0.7,0.7}},
             VIS_MX)
     end
 
@@ -3206,7 +3208,7 @@ local function OnFirstShow()
     local optsCloseBtn = CreateFrame("Button", nil, optionsPanel, "UIPanelButtonTemplate")
     optsCloseBtn:SetPoint("BOTTOMRIGHT", optionsPanel, "BOTTOMRIGHT", -8, 12)
     optsCloseBtn:SetSize(80, 24)
-    optsCloseBtn:SetText("Close")
+    optsCloseBtn:SetText(PBM_L["Close"])
     optsCloseBtn:SetFrameLevel(optionsPanel:GetFrameLevel() + 3)
     optsCloseBtn:SetScript("OnClick", function() optionsPanel:Hide() end)
 
@@ -3223,8 +3225,8 @@ local function OnFirstShow()
     settingsIcon:SetTexture("Interface\\Icons\\Trade_Engineering")
     settingsBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(settingsBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Menu", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Open the Playerbot Manager menu.", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["Menu:"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Open the Playerbot Manager menu."], 1, 1, 1)
         GameTooltip:Show()
     end)
     settingsBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -3261,8 +3263,8 @@ local function OnFirstShow()
     end
     groupFilterBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(groupFilterBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Party Filter", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Hides characters |cffFF8C00not|r in your group/raid.", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine(PBM_L["Party Filter"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Hides characters |cffFF8C00not|r in your group/raid."], 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     groupFilterBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -3306,8 +3308,8 @@ local function OnFirstShow()
     end
     hideRaidBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(hideRaidBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Raid Tab Filter", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Shows characters that have been added to the raid tab.", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine(PBM_L["Raid Tab Filter"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Shows characters that have been added to the raid tab."], 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     hideRaidBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -3349,8 +3351,8 @@ local function OnFirstShow()
     end
     hideGroupBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(hideGroupBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("Hide Group Members", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Hides characters in your current group.", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine(PBM_L["Hide Group Members"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Hides characters in your current group."], 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     hideGroupBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -3394,8 +3396,8 @@ local function OnFirstShow()
     end
     filterBtn2:SetScript("OnEnter", function()
         GameTooltip:SetOwner(filterBtn2, "ANCHOR_TOP")
-        GameTooltip:AddLine("Show Level", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Replaces row numbers with character level", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine(PBM_L["Show Level"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Replaces row numbers with character level"], 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     filterBtn2:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -3437,8 +3439,8 @@ local function OnFirstShow()
     end
     filterBtn3:SetScript("OnEnter", function()
         GameTooltip:SetOwner(filterBtn3, "ANCHOR_TOP")
-        GameTooltip:AddLine("Show IP Tiers", 0.78, 0.61, 0.23)
-        GameTooltip:AddLine("Replaces row numbers with IP tier (1-18)", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine(PBM_L["Show IP Tiers"], 0.78, 0.61, 0.23)
+        GameTooltip:AddLine(PBM_L["Replaces row numbers with IP tier (1-18)"], 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     filterBtn3:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -3491,8 +3493,8 @@ local function OnFirstShow()
     end
     tierKeyToggleBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(tierKeyToggleBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("|cffC69B3AIndividual Progression Tiers|r", 1, 1, 1)
-        GameTooltip:AddLine("Show or hide the tier key bar.", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine("|cffC69B3A"..PBM_L["Individual Progression Tiers"].."|r", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["Show or hide the tier key bar."], 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end)
     tierKeyToggleBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -3506,7 +3508,7 @@ local function OnFirstShow()
     -- Tier Key filter swatches (bottom bar)
     tkLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     tkLabel:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 15, 152)
-    tkLabel:SetText("|cffC69B3ATiers:|r")
+    tkLabel:SetText("|cffC69B3A"..PBM_L["Tiers:"].."|r")
 
     -- Single combined Tier Key button replacing T1–T17 individual swatches
     local tierKeyAllBtn = CreateFrame("Button", "LichborneTierKeyAllBtn", f)
@@ -3523,18 +3525,18 @@ local function OnFirstShow()
     table.insert(tierKeyFrames, tierKeyAllBtn)
     tierKeyAllBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(tierKeyAllBtn, "ANCHOR_TOP")
-        GameTooltip:AddLine("|cffC69B3AIndividual Progression Tiers|r", 1, 1, 1)
-        GameTooltip:AddLine("Level 60 Raids", 0.85, 0.85, 0.85)
+        GameTooltip:AddLine("|cffC69B3A"..PBM_L["Individual Progression Tiers"].."|r", 1, 1, 1)
+        GameTooltip:AddLine(PBM_L["Level 60 Raids"], 0.85, 0.85, 0.85)
         for t = 0, 6 do
             local c = PBM.TIER_COLORS[t] or {r=0.6,g=0.6,b=0.6}
             GameTooltip:AddLine("  "..(PBM.TIER_LABELS[t] or ("T"..t)), c.r, c.g, c.b)
         end
-        GameTooltip:AddLine("Level 70 Raids", 0.85, 0.85, 0.85)
+        GameTooltip:AddLine(PBM_L["Level 70 Raids"], 0.85, 0.85, 0.85)
         for t = 7, 12 do
             local c = PBM.TIER_COLORS[t] or {r=0.6,g=0.6,b=0.6}
             GameTooltip:AddLine("  "..(PBM.TIER_LABELS[t] or ("T"..t)), c.r, c.g, c.b)
         end
-        GameTooltip:AddLine("Level 80 Raids", 0.85, 0.85, 0.85)
+        GameTooltip:AddLine(PBM_L["Level 80 Raids"], 0.85, 0.85, 0.85)
         for t = 13, 18 do
             local c = PBM.TIER_COLORS[t] or {r=0.6,g=0.6,b=0.6}
             GameTooltip:AddLine("  "..(PBM.TIER_LABELS[t] or ("T"..t)), c.r, c.g, c.b)
@@ -3678,7 +3680,7 @@ local function BuildFrameBG()
     title:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -12)
     title:SetPoint("TOPRIGHT", f, "TOPRIGHT", -280, -12)
     title:SetJustifyH("LEFT")
-    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.4|r")
+    title:SetText("|cffC69B3A"..PBM_L["Playerbot Manager"].."|r |cffffffff"..PBM_L["- v1.4"].."|r")
     local closeBtn = CreateFrame("Button", "LichborneCloseBtn", f, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 2, 2)
     closeBtn:SetScript("OnClick", function() f:Hide() end)
@@ -3719,7 +3721,7 @@ local function BuildFrameBG()
         yBtn:SetBackdropColor(0.35,0.04,0.04,1); yBtn:SetBackdropBorderColor(1,0.2,0.2,0.9)
         yBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
         local yLbl=yBtn:CreateFontString(nil,"OVERLAY","GameFontNormal"); yLbl:SetAllPoints(yBtn); yLbl:SetJustifyH("CENTER")
-        yLbl:SetText("|cffff5555Yes, wipe it all|r")
+        yLbl:SetText("|cffff5555"..PBM_L["Yes, wipe it all"].."|r")
         yBtn:SetScript("OnClick",function() onConfirm(); cf:Hide() end)
 
         local nBtn = CreateFrame("Button",nil,cf)
@@ -3728,15 +3730,15 @@ local function BuildFrameBG()
         nBtn:SetBackdropColor(0.04,0.15,0.04,1); nBtn:SetBackdropBorderColor(0.2,0.8,0.2,0.9)
         nBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
         local nLbl=nBtn:CreateFontString(nil,"OVERLAY","GameFontNormal"); nLbl:SetAllPoints(nBtn); nLbl:SetJustifyH("CENTER")
-        nLbl:SetText("|cff44ff44Keep my data|r")
+        nLbl:SetText("|cff44ff44"..PBM_L["Keep my data"].."|r")
         nBtn:SetScript("OnClick",function() cf:Hide() end)
         return cf
     end
 
     -- Confirm: Clear ALL data (characters + all raids)
     local confirmAll = MakeDangerConfirm(
-        "⚠  Wipe Entire Database?",
-        "This permanently deletes ALL tracked characters,\ngear data, raid rosters, and the Overview list.",
+        PBM_L["⚠  Wipe Entire Database?"],
+        PBM_L["This permanently deletes ALL tracked characters,\ngear data, raid rosters, and the Overview list."],
         function()
             LichborneTrackerDB.rows = {}
             LichborneTrackerDB.raidRosters = {}
@@ -3749,7 +3751,7 @@ local function BuildFrameBG()
                     LichborneTrackerDB.allGroups[g][i] = {name="",cls="",spec="",gs=0,realGs=0}
                 end
             end
-            LichborneOutput("|cffC69B3APBM:|r |cffff4444All data wiped.|r", 1, 0.5, 0.5)
+            LichborneOutput("|cffC69B3A"..PBM_L["PBM:"].."|r |cffff4444"..PBM_L["All data wiped."].."|r", 1, 0.5, 0.5)
             PBM.RefreshRows()
             if PBM.State.LichborneOverviewFrame then PBM.RefreshOverviewRows() end
             if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
@@ -3765,14 +3767,14 @@ local function BuildFrameBG()
     clrAllBtn:SetBackdropColor(0.30,0.04,0.04,1); clrAllBtn:SetBackdropBorderColor(0.78,0.61,0.23,0.9)
     clrAllBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight","ADD")
     local clrAllLbl=clrAllBtn:CreateFontString(nil,"OVERLAY","GameFontNormalSmall"); clrAllLbl:SetAllPoints(clrAllBtn); clrAllLbl:SetJustifyH("CENTER")
-    clrAllLbl:SetText("|cffd4af37Clear All Data|r")
+    clrAllLbl:SetText("|cffd4af37"..PBM_L["Clear All Data"].."|r")
     clrAllBtn:SetScript("OnEnter",function()
         GameTooltip:SetOwner(clrAllBtn,"ANCHOR_BOTTOM")
-        GameTooltip:AddLine("|cffff2020Clear All Data|r",1,1,1)
-        GameTooltip:AddLine("Deletes ALL characters, gear data,",0.8,0.8,0.8)
-        GameTooltip:AddLine("raid rosters, and the Overview list.",0.8,0.8,0.8)
-        GameTooltip:AddLine("|cffFF8C00Does not clear LevelSync data.|r",1,1,1)
-        GameTooltip:AddLine("|cffff2020This cannot be undone.|r",1,1,1)
+        GameTooltip:AddLine("|cffff2020"..PBM_L["Clear All Data"].."|r",1,1,1)
+        GameTooltip:AddLine(PBM_L["Deletes ALL characters, gear data,"],0.8,0.8,0.8)
+        GameTooltip:AddLine(PBM_L["raid rosters, and the Overview list."],0.8,0.8,0.8)
+        GameTooltip:AddLine("|cffFF8C00"..PBM_L["Does not clear LevelSync data."].."|r",1,1,1)
+        GameTooltip:AddLine("|cffff2020"..PBM_L["This cannot be undone."].."|r",1,1,1)
         GameTooltip:Show()
     end)
     clrAllBtn:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -3880,4 +3882,3 @@ SlashCmdList["LICHBORNE"] = function(msg)
         LichborneTracker_Open()
     end
 end
-

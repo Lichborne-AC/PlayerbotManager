@@ -55,7 +55,7 @@ function PBM.BuildNotesPanel(pf, ctx)
         col:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.6)
 
         -- ── Column title (single-line, user-editable) ─────────
-        local HINT_TEXT  = "Column Title..."
+        local HINT_TEXT  = PBM_L["Column Title..."]
         local HINT_R, HINT_G, HINT_B = 0.38, 0.38, 0.38
         local REAL_R, REAL_G, REAL_B = 0.78, 0.61, 0.23
 
@@ -135,7 +135,7 @@ function PBM.BuildNotesPanel(pf, ctx)
         end)
 
         -- Multiline EditBox as scroll child
-        local NOTE_HINT  = "Click here to add a note..."
+        local NOTE_HINT  = PBM_L["Click here to add a note..."]
         local NOTE_HR, NOTE_HG, NOTE_HB = 0.38, 0.38, 0.38
         local NOTE_RR, NOTE_RG, NOTE_RB = 0.78, 0.61, 0.23
 

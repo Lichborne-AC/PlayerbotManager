@@ -126,7 +126,7 @@ function PBM.BuildBotSettingsFrame(parent, fl)
     hdrTitle:SetPoint("TOPRIGHT", hdr, "TOPRIGHT", 0, 0)
     hdrTitle:SetHeight(24)
     hdrTitle:SetJustifyH("CENTER"); hdrTitle:SetJustifyV("MIDDLE")
-    hdrTitle:SetText("|cff7799ffBot Settings|r")
+    hdrTitle:SetText("|cff7799ff" .. PBM_L["Bot Settings"] .. "|r")
 
     local BL = fl + 12   -- base frame level for content
     local ROW_START = 52   -- top padding below header
@@ -136,20 +136,20 @@ function PBM.BuildBotSettingsFrame(parent, fl)
     -- ============================================================
     local COL1_X = 35
 
-    MakeLabel(f, "Add RndBot", COL1_X, ROW_START, BL)
+    MakeLabel(f, PBM_L["Add RndBot"], COL1_X, ROW_START, BL)
     MakeDivider(f, COL1_X, ROW_START + 16, 220, BL)
 
     local CLASS_DEFS = {
-        { name = "Death Knight", cmd = "dk",      hex = "C41F3B", icon = ADDON_PATH .. "addclass_deathknight.blp" },
-        { name = "Druid",        cmd = "druid",   hex = "FF7D0A", icon = ADDON_PATH .. "addclass_druid.blp"       },
-        { name = "Hunter",       cmd = "hunter",  hex = "ABD473", icon = ADDON_PATH .. "addclass_hunter.blp"      },
-        { name = "Mage",         cmd = "mage",    hex = "3FC7EB", icon = ADDON_PATH .. "addclass_mage.blp"        },
-        { name = "Paladin",      cmd = "paladin", hex = "F58CBA", icon = ADDON_PATH .. "addclass_paladin.blp"     },
-        { name = "Priest",       cmd = "priest",  hex = "FFFFFF", icon = ADDON_PATH .. "addclass_priest.blp"      },
-        { name = "Rogue",        cmd = "rogue",   hex = "FFF569", icon = ADDON_PATH .. "addclass_rogue.blp"       },
-        { name = "Shaman",       cmd = "shaman",  hex = "0070DE", icon = ADDON_PATH .. "addclass_shaman.blp"      },
-        { name = "Warlock",      cmd = "warlock", hex = "8787ED", icon = ADDON_PATH .. "addclass_warlock.blp"     },
-        { name = "Warrior",      cmd = "warrior", hex = "C79C3B", icon = ADDON_PATH .. "addclass_warrior.blp"     },
+        { name = PBM_L["Death Knight"], cmd = "dk",      hex = "C41F3B", icon = ADDON_PATH .. "addclass_deathknight.blp" },
+        { name = PBM_L["Druid"],        cmd = "druid",   hex = "FF7D0A", icon = ADDON_PATH .. "addclass_druid.blp"       },
+        { name = PBM_L["Hunter"],       cmd = "hunter",  hex = "ABD473", icon = ADDON_PATH .. "addclass_hunter.blp"      },
+        { name = PBM_L["Mage"],         cmd = "mage",    hex = "3FC7EB", icon = ADDON_PATH .. "addclass_mage.blp"        },
+        { name = PBM_L["Paladin"],      cmd = "paladin", hex = "F58CBA", icon = ADDON_PATH .. "addclass_paladin.blp"     },
+        { name = PBM_L["Priest"],       cmd = "priest",  hex = "FFFFFF", icon = ADDON_PATH .. "addclass_priest.blp"      },
+        { name = PBM_L["Rogue"],        cmd = "rogue",   hex = "FFF569", icon = ADDON_PATH .. "addclass_rogue.blp"       },
+        { name = PBM_L["Shaman"],       cmd = "shaman",  hex = "0070DE", icon = ADDON_PATH .. "addclass_shaman.blp"      },
+        { name = PBM_L["Warlock"],      cmd = "warlock", hex = "8787ED", icon = ADDON_PATH .. "addclass_warlock.blp"     },
+        { name = PBM_L["Warrior"],      cmd = "warrior", hex = "C79C3B", icon = ADDON_PATH .. "addclass_warrior.blp"     },
     }
 
     local classRowY = ROW_START + 24
@@ -158,7 +158,7 @@ function PBM.BuildBotSettingsFrame(parent, fl)
         local classBtn = MakeIconBtn(f, COL1_X, classRowY,
             cd.icon,
             cd.name,
-            "Summon a random " .. cd.name .. " RndBot.", BL)
+            string.format(PBM_L["Summon a random %s RndBot."], cd.name), BL)
 
         local capturedCmd = cd.cmd
         classBtn:SetScript("OnClick", function()
@@ -177,7 +177,7 @@ function PBM.BuildBotSettingsFrame(parent, fl)
     -- ============================================================
     local COL2_X = 296
 
-    MakeLabel(f, "Bot Controls", COL2_X, ROW_START, BL)
+    MakeLabel(f, PBM_L["Bot Controls"], COL2_X, ROW_START, BL)
     MakeDivider(f, COL2_X, ROW_START + 16, 220, BL)
 
     local rowY = ROW_START + 24
@@ -185,104 +185,104 @@ function PBM.BuildBotSettingsFrame(parent, fl)
     -- ── Selfbot ──────────────────────────────────────────────
     local selfbotBtn = MakeIconBtn(f, COL2_X, rowY,
         ICON_PATH .. "inv_misc_head_clockworkgnome_01",
-        "Selfbot",
-        "Switches Selfbot mode on and off.\nLeft-click to toggle.", BL)
+        PBM_L["Selfbot"],
+        PBM_L["Switches Selfbot mode on and off.\nLeft-click to toggle."], BL)
     WireToggle(selfbotBtn,
         function() PBM.ActionToGroup("selfbot on")  end,
         function() PBM.ActionToGroup("selfbot off") end)
 
     local selfLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     selfLabel:SetPoint("LEFT", selfbotBtn, "RIGHT", 6, 0)
-    selfLabel:SetText("|cffccccccSelfbot|r")
+    selfLabel:SetText("|cffcccccc" .. PBM_L["Selfbot"] .. "|r")
 
     rowY = rowY + STEP
 
     -- ── GameMaster Toggle ─────────────────────────────────────
     local gmBtn = MakeIconBtn(f, COL2_X, rowY,
         ICON_PATH .. "mail_gmicon",
-        "GameMaster Switch",
-        "Enable or disable GameMaster control.\nRequires GM rights.", BL)
+        PBM_L["GameMaster Switch"],
+        PBM_L["Enable or disable GameMaster control.\nRequires GM rights."], BL)
     WireToggle(gmBtn,
         function() PBM.ActionToGroup("gm on")  end,
         function() PBM.ActionToGroup("gm off") end)
 
     local gmLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     gmLabel:SetPoint("LEFT", gmBtn, "RIGHT", 6, 0)
-    gmLabel:SetText("|cffccccccGameMaster|r")
+    gmLabel:SetText("|cffcccccc" .. PBM_L["GameMaster"] .. "|r")
 
     rowY = rowY + STEP
 
     -- ── RTSC Toggle ───────────────────────────────────────────
     local rtscBtn = MakeIconBtn(f, COL2_X, rowY,
         ICON_PATH .. "ability_hunter_markedfordeath",
-        "RTSC",
-        "Enable or disable RTSC.\nLeft-click to toggle.", BL)
+        PBM_L["RTSC"],
+        PBM_L["Enable or disable RTSC.\nLeft-click to toggle."], BL)
     WireToggle(rtscBtn,
         function() PBM.ActionToGroup("rtsc")       end,
         function() PBM.ActionToGroup("rtsc reset") end)
 
     local rtscLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     rtscLabel:SetPoint("LEFT", rtscBtn, "RIGHT", 6, 0)
-    rtscLabel:SetText("|cffccccccRTSC|r")
+    rtscLabel:SetText("|cffcccccc" .. PBM_L["RTSC"] .. "|r")
 
     rowY = rowY + STEP
 
     -- ── Auto Release ──────────────────────────────────────────
     local releaseBtn = MakeIconBtn(f, COL2_X, rowY,
         ICON_PATH .. "achievement_bg_xkills_avgraveyard",
-        "Auto Release",
-        "Toggle automatic spirit release on bot death.", BL)
+        PBM_L["Auto Release"],
+        PBM_L["Toggle automatic spirit release on bot death."], BL)
     WireToggle(releaseBtn,
         function() PBM.ActionToGroup("release")    end,
         function() PBM.ActionToGroup("no release") end)
 
     local relLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     relLabel:SetPoint("LEFT", releaseBtn, "RIGHT", 6, 0)
-    relLabel:SetText("|cffccccccAuto Release|r")
+    relLabel:SetText("|cffcccccc" .. PBM_L["Auto Release"] .. "|r")
 
     rowY = rowY + STEP
 
     -- ── Auto Stats ────────────────────────────────────────────
     local statsBtn = MakeIconBtn(f, COL2_X, rowY,
         ICON_PATH .. "inv_scroll_08",
-        "Auto Stats",
-        "Toggle automatic stats broadcast to group.", BL)
+        PBM_L["Auto Stats"],
+        PBM_L["Toggle automatic stats broadcast to group."], BL)
     WireToggle(statsBtn,
         function() PBM.ActionToGroup("stats on")  end,
         function() PBM.ActionToGroup("stats off") end)
 
     local statsLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     statsLabel:SetPoint("LEFT", statsBtn, "RIGHT", 6, 0)
-    statsLabel:SetText("|cffccccccAuto Stats|r")
+    statsLabel:SetText("|cffcccccc" .. PBM_L["Auto Stats"] .. "|r")
 
     rowY = rowY + STEP
 
     -- ── Reset Bot AI ──────────────────────────────────────────
     local resetAIBtn = MakeIconBtn(f, COL2_X, rowY,
         ICON_PATH .. "inv_misc_tournaments_symbol_gnome",
-        "Reset Bot AI",
-        "Reset AI for targeted bot or entire group.", BL)
+        PBM_L["Reset Bot AI"],
+        PBM_L["Reset AI for targeted bot or entire group."], BL)
     resetAIBtn:SetScript("OnClick", function()
         PBM.ActionToTargetOrGroup("reset botAI")
     end)
 
     local resetAILabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     resetAILabel:SetPoint("LEFT", resetAIBtn, "RIGHT", 6, 0)
-    resetAILabel:SetText("|cffccccccReset Bot AI|r")
+    resetAILabel:SetText("|cffcccccc" .. PBM_L["Reset Bot AI"] .. "|r")
 
     rowY = rowY + STEP
 
     -- ── Reset Action ──────────────────────────────────────────
     local resetActBtn = MakeIconBtn(f, COL2_X, rowY,
         ICON_PATH .. "inv_helmet_02",
-        "Reset Action",
-        "Reset actions for targeted bot or entire group.", BL)
+        PBM_L["Reset Action"],
+        PBM_L["Reset actions for targeted bot or entire group."], BL)
     resetActBtn:SetScript("OnClick", function()
         PBM.ActionToTargetOrGroup("reset")
     end)
 
     local resetActLabel = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     resetActLabel:SetPoint("LEFT", resetActBtn, "RIGHT", 6, 0)
-    resetActLabel:SetText("|cffccccccReset Action|r")
+    resetActLabel:SetText("|cffcccccc" .. PBM_L["Reset Action"] .. "|r")
 
 end

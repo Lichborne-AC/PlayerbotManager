@@ -2,12 +2,12 @@ PBM = PBM or {}
 
 -- Talent spec templates for the Set Talents menu
 local HUNTER_TALENT_SPECS = {
-    { label="Beast Mastery |cffffcc00PvE|r", spec="bm pve",   wowSpec="Beast Mastery", icon="Interface\\Icons\\Ability_Hunter_BeastTaming"  },
-    { label="Marksmanship |cffffcc00PvE|r",  spec="mm pve",   wowSpec="Marksmanship",  icon="Interface\\Icons\\Ability_Marksmanship"        },
-    { label="Survival |cffffcc00PvE|r",      spec="surv pve", wowSpec="Survival",      icon="Interface\\Icons\\Ability_Hunter_SwiftStrike"  },
-    { label="Beast Mastery |cffff4444PvP|r", spec="bm pvp",   wowSpec="Beast Mastery", icon="Interface\\Icons\\Ability_Hunter_BeastTaming"  },
-    { label="Marksmanship |cffff4444PvP|r",  spec="mm pvp",   wowSpec="Marksmanship",  icon="Interface\\Icons\\Ability_Marksmanship"        },
-    { label="Survival |cffff4444PvP|r",      spec="surv pvp", wowSpec="Survival",      icon="Interface\\Icons\\Ability_Hunter_SwiftStrike"  },
+    { label=PBM_L["Beast Mastery |cffffcc00PvE|r"], spec="bm pve",   wowSpec="Beast Mastery", icon="Interface\\Icons\\Ability_Hunter_BeastTaming"  },
+    { label=PBM_L["Marksmanship |cffffcc00PvE|r"],  spec="mm pve",   wowSpec="Marksmanship",  icon="Interface\\Icons\\Ability_Marksmanship"        },
+    { label=PBM_L["Survival |cffffcc00PvE|r"],      spec="surv pve", wowSpec="Survival",      icon="Interface\\Icons\\Ability_Hunter_SwiftStrike"  },
+    { label=PBM_L["Beast Mastery |cffff4444PvP|r"], spec="bm pvp",   wowSpec="Beast Mastery", icon="Interface\\Icons\\Ability_Hunter_BeastTaming"  },
+    { label=PBM_L["Marksmanship |cffff4444PvP|r"],  spec="mm pvp",   wowSpec="Marksmanship",  icon="Interface\\Icons\\Ability_Marksmanship"        },
+    { label=PBM_L["Survival |cffff4444PvP|r"],      spec="surv pvp", wowSpec="Survival",      icon="Interface\\Icons\\Ability_Hunter_SwiftStrike"  },
 }
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -159,128 +159,128 @@ function PBM.OpenHunterMenu(row)
         end
 
         -- ── Row 1: Specs ─────────────────────────────────────────────
-        MakeSpecBox(col1X, specBoxY, SPEC_COL_W, "Beast Mastery", "Interface\\Icons\\Ability_Hunter_BeastTaming")
-        MakeSpecBox(col2X, specBoxY, SPEC_COL_W, "Marksmanship",  "Interface\\Icons\\Ability_Marksmanship")
-        MakeSpecBox(col3X, specBoxY, SPEC_COL_W, "Survival",      "Interface\\Icons\\Ability_Hunter_SwiftStrike")
+        MakeSpecBox(col1X, specBoxY, SPEC_COL_W, PBM_L["Beast Mastery"], "Interface\\Icons\\Ability_Hunter_BeastTaming")
+        MakeSpecBox(col2X, specBoxY, SPEC_COL_W, PBM_L["Marksmanship"],  "Interface\\Icons\\Ability_Marksmanship")
+        MakeSpecBox(col3X, specBoxY, SPEC_COL_W, PBM_L["Survival"],      "Interface\\Icons\\Ability_Hunter_SwiftStrike")
 
         local treeBmBtn = MakeTreeBtn(col1X + ICON_OFF, specIconY,
             "Interface\\Icons\\Ability_Hunter_BeastTaming", function()
-            GameTooltip:SetText("|cffffcc00Beast Mastery|r |cff999999- |r|cffABD473bm|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Beast Mastery specialization|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF4444Mutually exclusive with Marksmanship, Survival.|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Beast Mastery|r |cff999999- |r|cffABD473bm|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Beast Mastery specialization|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["|cffFF4444Mutually exclusive with Marksmanship, Survival.|r"], 1, 1, 1)
         end)
         LichborneHunterMenu.treeBmBtn = treeBmBtn
 
         local treeMmBtn = MakeTreeBtn(col2X + ICON_OFF, specIconY,
             "Interface\\Icons\\Ability_Marksmanship", function()
-            GameTooltip:SetText("|cffffcc00Marksmanship|r |cff999999- |r|cffABD473mm|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Marksmanship specialization|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF4444Mutually exclusive with Beast Mastery, Survival.|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Marksmanship|r |cff999999- |r|cffABD473mm|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Marksmanship specialization|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["|cffFF4444Mutually exclusive with Beast Mastery, Survival.|r"], 1, 1, 1)
         end)
         LichborneHunterMenu.treeMmBtn = treeMmBtn
 
         local treeSurvBtn = MakeTreeBtn(col3X + ICON_OFF, specIconY,
             "Interface\\Icons\\Ability_Hunter_SwiftStrike", function()
-            GameTooltip:SetText("|cffffcc00Survival|r |cff999999- |r|cffABD473surv|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Survival specialization|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF4444Mutually exclusive with Beast Mastery, Marksmanship.|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Survival|r |cff999999- |r|cffABD473surv|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Survival specialization|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["|cffFF4444Mutually exclusive with Beast Mastery, Marksmanship.|r"], 1, 1, 1)
         end)
         LichborneHunterMenu.treeSurvBtn = treeSurvBtn
 
         -- ── Combat header (2-button wide, Trap Weave centred) ────────
-        MakeWideBox(combatHdrX, combatHdrY, combatBtnW, "Combat")
+        MakeWideBox(combatHdrX, combatHdrY, combatBtnW, PBM_L["Combat"])
 
         local treeTrapWeaveBtn = MakeTreeBtn(trapX, combatIconY,
             "Interface\\Icons\\ability_ensnare", function()
-            GameTooltip:SetText("|cffffcc00Trap Weave|r |cff999999- |r|cffABD473trap weave|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Melee trap rotation|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Trap Weave|r |cff999999- |r|cffABD473trap weave|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Melee trap rotation|r"], 1, 1, 1)
         end)
         LichborneHunterMenu.treeTrapWeaveBtn = treeTrapWeaveBtn
 
         -- ── Assist header (3-button wide, centred under Marksmanship) ─
-        MakeWideBox(assistHdrX, assistHdrY, assistBtnW, "Assist")
+        MakeWideBox(assistHdrX, assistHdrY, assistBtnW, PBM_L["Assist"])
 
         local treeTankAssistBtn = MakeTreeBtn(assistHdrX, assistIconY,
             "Interface\\Icons\\inv_shield_02", function()
-            GameTooltip:SetText("|cffffcc00Tank Assist|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r")
-            GameTooltip:AddLine("|cffffcc00Tank target focus|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Tank Assist|r |cff999999- |r|cffff8000tank assist|r |cffffcc00CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Tank target focus|r"], 1, 1, 1)
         end)
         LichborneHunterMenu.treeTankAssistBtn = treeTankAssistBtn
 
         local treeDpsAssistBtn = MakeTreeBtn(assistHdrX + 30, assistIconY,
             "Interface\\Icons\\Ability_Warrior_Challange", function()
-            GameTooltip:SetText("|cffffcc00DPS Assist|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r")
-            GameTooltip:AddLine("|cffffcc00Assists the main assist target|r", 1, 1, 1)
-            GameTooltip:AddLine("Attacks the assist leader's target.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00DPS Assist|r |cff999999- |r|cffff8000dps assist|r |cffffcc00CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Assists the main assist target|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Attacks the assist leader's target."], 1, 1, 1)
         end)
         LichborneHunterMenu.treeDpsAssistBtn = treeDpsAssistBtn
 
         local treeDpsAoeBtn = MakeTreeBtn(assistHdrX + 60, assistIconY,
             "Interface\\Icons\\Spell_Shadow_RainOfFire", function()
-            GameTooltip:SetText("|cffffcc00DPS AoE|r |cff999999- |r|cffABD473aoe|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Cross-role AoE mode|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00DPS AoE|r |cff999999- |r|cffABD473aoe|r |cffee4433CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Cross-role AoE mode|r"], 1, 1, 1)
         end)
         LichborneHunterMenu.treeDpsAoeBtn = treeDpsAoeBtn
 
         -- ── Aspects: master header + CO/NC sub-headers ──────────────
-        MakeWideBox(coX, aspectsHdrY, aspectColTotalW, "Aspects")
-        MakeSpecBox(coX, coNcHdrY, EXT_ICON_SIZE, "CO")
+        MakeWideBox(coX, aspectsHdrY, aspectColTotalW, PBM_L["Aspects"])
+        MakeSpecBox(coX, coNcHdrY, EXT_ICON_SIZE, PBM_L["CO"])
 
         local treeCADragonhawkBtn = MakeTreeBtn(coX, aspectIcon1Y,
             "Interface\\Icons\\Ability_Hunter_Pet_DragonHawk", function()
-            GameTooltip:SetText("|cffffcc00Dragonhawk|r |cff999999- |r|cffffff00bdps|r |cffff8000CO|r")
-            GameTooltip:AddLine("|cffffcc00Aspect of the Dragonhawk|r", 1, 1, 1)
-            GameTooltip:AddLine("Increases ranged |cffFF9900attack power|r", 1, 1, 1)
-            GameTooltip:AddLine("and |cffFF9900dodge rating.|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Dragonhawk|r |cff999999- |r|cffffff00bdps|r |cffff8000CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Aspect of the Dragonhawk|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Increases ranged |cffFF9900attack power|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["and |cffFF9900dodge rating.|r"], 1, 1, 1)
         end)
         LichborneHunterMenu.treeCADragonhawkBtn = treeCADragonhawkBtn
 
         local treeCAPackBtn = MakeTreeBtn(coX, aspectIcon2Y,
             "Interface\\Icons\\Ability_Mount_WhiteTiger", function()
-            GameTooltip:SetText("|cffffcc00Pack|r |cff999999- |r|cffffff00bspeed|r |cffff8000CO|r")
-            GameTooltip:AddLine("|cffffcc00Aspect of the Pack|r", 1, 1, 1)
-            GameTooltip:AddLine("Increases group |cffFF9900movement speed|r", 1, 1, 1)
-            GameTooltip:AddLine("while in combat.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Pack|r |cff999999- |r|cffffff00bspeed|r |cffff8000CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Aspect of the Pack|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Increases group |cffFF9900movement speed|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["while in combat."], 1, 1, 1)
         end)
         LichborneHunterMenu.treeCAPackBtn = treeCAPackBtn
 
         local treeCAWildBtn = MakeTreeBtn(coX, aspectIcon3Y,
             "Interface\\Icons\\Spell_Nature_ProtectionformNature", function()
-            GameTooltip:SetText("|cffffcc00Wild|r |cff999999- |r|cffffff00rnature|r |cffff8000CO|r")
-            GameTooltip:AddLine("|cffffcc00Aspect of the Wild|r", 1, 1, 1)
-            GameTooltip:AddLine("Increases group |cff1EFF00Nature resistance|r", 1, 1, 1)
-            GameTooltip:AddLine("while in combat.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Wild|r |cff999999- |r|cffffff00rnature|r |cffff8000CO|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Aspect of the Wild|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Increases group |cff1EFF00Nature resistance|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["while in combat."], 1, 1, 1)
         end)
         LichborneHunterMenu.treeCAWildBtn = treeCAWildBtn
 
         -- ── NC aspect column ─────────────────────────────────────────
-        MakeSpecBox(ncX, coNcHdrY, EXT_ICON_SIZE, "NC")
+        MakeSpecBox(ncX, coNcHdrY, EXT_ICON_SIZE, PBM_L["NC"])
 
         local treeNCADragonhawkBtn = MakeTreeBtn(ncX, aspectIcon1Y,
             "Interface\\Icons\\Ability_Hunter_Pet_DragonHawk", function()
-            GameTooltip:SetText("|cffffcc00Dragonhawk|r |cff999999- |r|cffffff00bdps|r |cffff8000NC|r")
-            GameTooltip:AddLine("|cffffcc00Aspect of the Dragonhawk|r", 1, 1, 1)
-            GameTooltip:AddLine("Default out-of-combat aspect.", 1, 1, 1)
-            GameTooltip:AddLine("Maintains ranged |cffFF9900attack power|r", 1, 1, 1)
-            GameTooltip:AddLine("and |cffFF9900dodge rating.|r", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Dragonhawk|r |cff999999- |r|cffffff00bdps|r |cffff8000NC|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Aspect of the Dragonhawk|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Default out-of-combat aspect."], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Maintains ranged |cffFF9900attack power|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["and |cffFF9900dodge rating.|r"], 1, 1, 1)
         end)
         LichborneHunterMenu.treeNCADragonhawkBtn = treeNCADragonhawkBtn
 
         local treeNCACheetahBtn = MakeTreeBtn(ncX, aspectIcon2Y,
             "Interface\\Icons\\Ability_Mount_WhiteTiger", function()
-            GameTooltip:SetText("|cffffcc00Cheetah|r |cff999999- |r|cffffff00bspeed|r |cffff8000NC|r")
-            GameTooltip:AddLine("|cffffcc00Aspect of the Cheetah|r", 1, 1, 1)
-            GameTooltip:AddLine("Increases |cffFF9900movement speed|r when", 1, 1, 1)
-            GameTooltip:AddLine("not in combat.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Cheetah|r |cff999999- |r|cffffff00bspeed|r |cffff8000NC|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Aspect of the Cheetah|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Increases |cffFF9900movement speed|r when"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["not in combat."], 1, 1, 1)
         end)
         LichborneHunterMenu.treeNCACheetahBtn = treeNCACheetahBtn
 
         local treeNCAWildBtn = MakeTreeBtn(ncX, aspectIcon3Y,
             "Interface\\Icons\\Spell_Nature_ProtectionformNature", function()
-            GameTooltip:SetText("|cffffcc00Wild|r |cff999999- |r|cffffff00rnature|r |cffff8000NC|r")
-            GameTooltip:AddLine("|cffffcc00Aspect of the Wild|r", 1, 1, 1)
-            GameTooltip:AddLine("Provides group |cff1EFF00Nature resistance|r", 1, 1, 1)
-            GameTooltip:AddLine("between encounters.", 1, 1, 1)
+            GameTooltip:SetText(PBM_L["|cffffcc00Wild|r |cff999999- |r|cffffff00rnature|r |cffff8000NC|r"])
+            GameTooltip:AddLine(PBM_L["|cffffcc00Aspect of the Wild|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["Provides group |cff1EFF00Nature resistance|r"], 1, 1, 1)
+            GameTooltip:AddLine(PBM_L["between encounters."], 1, 1, 1)
         end)
         LichborneHunterMenu.treeNCAWildBtn = treeNCAWildBtn
 

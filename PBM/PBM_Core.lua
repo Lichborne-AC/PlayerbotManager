@@ -409,7 +409,7 @@ local function ColorizeStrategies(msg, cls)
             parts[#parts + 1] = "|cff" .. color .. name .. "|r"
         end
     end
-    return "|cffd4af37Strategies:|r " .. table.concat(parts, "|cff666666, |r")
+    return "|cffd4af37" .. PBM_L["Strategies:"] .. "|r " .. table.concat(parts, "|cff666666, |r")
 end
 
 -- Map lowercased spec names from bot login messages to PBM spec names
@@ -644,7 +644,7 @@ function PBM.CreateModuleFrame(name, key, width, height)
     titleStr:SetTextColor(0.9, 0.9, 0.9, 1)
 
     -- Close button
-    local closeBtn = CreateFrame("Button", nil, header)
+    closeBtn = CreateFrame("Button", nil, header)
     closeBtn:SetSize(14, 14)
     closeBtn:SetPoint("RIGHT", header, "RIGHT", -2, 0)
     closeBtn:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
