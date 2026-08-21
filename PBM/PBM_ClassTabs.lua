@@ -1,4 +1,4 @@
-﻿PBM = PBM or {}
+PBM = PBM or {}
 PBM.State = PBM.State or {}
 
 -- ── Class-tab drag-to-reorder state (mirrors LichborneTracker) ────
@@ -344,6 +344,12 @@ function PBM.OpenNameMenu(row)
     -- class (unscanned/empty) simply have no menu.
     local _rd = row.dbIndex and LichborneTrackerDB.rows[row.dbIndex]
     if not _rd then return end
+    if not _rd.name or _rd.name == "" then
+        if LichborneAddStatus then
+            LichborneAddStatus:SetText("|cffffaa44Empty slot. Sync the roster or add a target/group first.|r")
+        end
+        return
+    end
     local opener = CLASS_MENU_OPEN[_rd.cls]
     if not (opener and PBM[opener]) then return end
 
@@ -918,8 +924,12 @@ function PBM.RefreshRows()
             -- Delete
             row.delBtn:SetScript("OnClick", function()
                 local srcData = LichborneTrackerDB.rows[di]
-                if not srcData or not srcData.name or srcData.name == "" then return end
-                PBM.RemoveCharacterReferences(srcData.name)
+                if not srcData then return end
+                if srcData.name and srcData.name ~= "" then
+                    PBM.RemoveCharacterReferences(srcData.name)
+                else
+                    table.remove(LichborneTrackerDB.rows, di)
+                end
                 PBM.RefreshRows()
                 if PBM.State.overviewRowFrames and #PBM.State.overviewRowFrames > 0 then PBM.RefreshOverviewRows() end
                 if PBM.State.raidRowFrames and #PBM.State.raidRowFrames > 0 then PBM.RefreshRaidRows() end
