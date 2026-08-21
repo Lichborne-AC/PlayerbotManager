@@ -39,6 +39,13 @@ function PBM.InitConfig()
         PBMConfig.hiddenTabs = {}
     end
 
+    -- One-time migration: Strategy Whispers now defaults to Hidden (off).
+    -- Runs once ever so existing users' saved toggle state isn't clobbered afterward.
+    if not PBMConfig.stratWhisperDefaultApplied then
+        PBMConfig.hideStrategyOutput = true
+        PBMConfig.stratWhisperDefaultApplied = true
+    end
+
 end
 
 function PBM.SaveFramePos(key, frame)

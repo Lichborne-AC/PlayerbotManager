@@ -478,7 +478,10 @@ end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", function(_, _, msg, sender)
     if not msg:match("^Strategies:") then return end
-    if LichborneOutput and not (PBMConfig and PBMConfig.hideStrategyOutput) then
+    if PBMConfig and PBMConfig.hideStrategyOutput then
+        return  -- Hidden: no filtering at all, let it fall through to WoW chat
+    end
+    if LichborneOutput then
         local prefix = "[" .. sender .. "]:"
         if LichborneTrackerDB and LichborneTrackerDB.rows and PBM.CLASS_COLORS then
             for _, row in ipairs(LichborneTrackerDB.rows) do
@@ -500,7 +503,7 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", function(_, _, msg, sender)
         end
         LichborneOutput(prefix .. " " .. ColorizeStrategies(msg, senderCls))
     end
-    return true  -- suppress from regular chat
+    return true  -- Visible: routed to addon, suppress from WoW chat
 end)
 
 -- Filter bot stats/who/ss responses from regular chat

@@ -2,7 +2,7 @@
 ## Title: PlayerBot Manager
 ## Notes: Manage and configure playerbot strategies, specs, and profiles.
 ## Author: Lichborne
-## Version: 1.4
+## Version: 1.41
 ## SavedVariables: LichborneTrackerDB, LichborneMinimapIconDB, PBMConfig
 
 # Libraries
