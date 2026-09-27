@@ -313,10 +313,10 @@ function PBM.OpenDruidMenu(row)
         LichborneDruidMenu.treeDpsAoeBtn = treeDpsAoeBtn
 
 
-        -- ── Left-side Buff header + button (below PvP in universal panel) ────────
+        -- ── Left-side Buff header + 2 buttons (below PvP in universal panel) ────────
         local buffSideHdrBox = CreateFrame("Frame", nil, LichborneDruidMenu)
-        buffSideHdrBox:SetSize(EXT_ICON_SIZE + 8, 18)
-        buffSideHdrBox:SetPoint("TOPLEFT", LichborneDruidMenu.treePvpBtn, "BOTTOMLEFT", -4, -8)
+        buffSideHdrBox:SetSize(2 * EXT_ICON_SIZE + 12, 18)   -- 2×26px buttons + 4px gap + 8px margin
+        buffSideHdrBox:SetPoint("TOP", LichborneDruidMenu.treePvpBtn, "BOTTOM", 0, -8)
         buffSideHdrBox:SetBackdrop(SPEC_BOX_BD)
         buffSideHdrBox:SetBackdropColor(0.08, 0.10, 0.28, 0.95)
         buffSideHdrBox:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
@@ -343,10 +343,25 @@ function PBM.OpenDruidMenu(row)
         treeSideBuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
         LichborneDruidMenu.treeSideBuffBtn = treeSideBuffBtn
 
+        local treeSideRebuffBtn = MakeTreeBtn(LichborneDruidMenu, treeSideBuffBtn, "TOPRIGHT", 4, 0,
+            "Interface\\Icons\\INV_Misc_PocketWatch_01")
+        treeSideRebuffBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichborneDruidMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00Force Rebuff|r |cff999999- |r|cffffff00force rebuff|r |cffff8000NC|r")
+            GameTooltip:AddLine("|cffffcc00Aggressively refreshes buffs|r", 1, 1, 1)
+            GameTooltip:AddLine("Rebuffs immediately on a raid ready check, or on the", 1, 1, 1)
+            GameTooltip:AddLine("manual |cffFFFFFF.rebuff|r command, while out of combat.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeSideRebuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneDruidMenu.treeSideRebuffBtn = treeSideRebuffBtn
+
         -- ── Left-side CC header + button (below Buff) ─────────────────
         local ccSideHdrBox = CreateFrame("Frame", nil, LichborneDruidMenu)
         ccSideHdrBox:SetSize(EXT_ICON_SIZE + 8, 18)
-        ccSideHdrBox:SetPoint("TOPLEFT", treeSideBuffBtn, "BOTTOMLEFT", -4, -8)
+        ccSideHdrBox:SetPoint("TOP", buffSideHdrBox, "BOTTOM", 0, -(1 + EXT_ICON_SIZE + 8))
         ccSideHdrBox:SetBackdrop(SPEC_BOX_BD)
         ccSideHdrBox:SetBackdropColor(0.08, 0.10, 0.28, 0.95)
         ccSideHdrBox:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
@@ -389,7 +404,7 @@ function PBM.OpenDruidMenu(row)
             IconOff(treeHealerDpsBtn);  IconOff(treeOffhealBtn)
             IconOff(treeAoeBtn);        IconOff(treeChargeBtn)
             IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
-            IconOff(treeSideBuffBtn);   IconOff(treeCCBtn)
+            IconOff(treeSideBuffBtn);   IconOff(treeSideRebuffBtn); IconOff(treeCCBtn)
 
             -- resetAllIcons extends the shared base (Food/Loot/Gather)
             local _baseReset = LichborneDruidMenu.resetSharedIcons
@@ -401,7 +416,7 @@ function PBM.OpenDruidMenu(row)
                 IconOff(treeHealerDpsBtn);  IconOff(treeOffhealBtn)
                 IconOff(treeAoeBtn);        IconOff(treeChargeBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
-                IconOff(treeSideBuffBtn);   IconOff(treeCCBtn)
+                IconOff(treeSideBuffBtn);   IconOff(treeSideRebuffBtn); IconOff(treeCCBtn)
             end
 
             -- ── Row 1: Spec buttons (mutually exclusive) ──────────────
@@ -562,6 +577,16 @@ function PBM.OpenDruidMenu(row)
                 end
             end)
 
+            treeSideRebuffBtn:SetScript("OnClick", function()
+                local bot = LichborneDruidMenu.botName or ""
+                LichborneDruidMenu._specUserSet = true
+                if treeSideRebuffBtn.state then
+                    PBM.SendToBot("nc -force rebuff,?", bot); IconOff(treeSideRebuffBtn)
+                else
+                    PBM.SendToBot("nc +force rebuff,?", bot); IconOn(treeSideRebuffBtn)
+                end
+            end)
+
             treeCCBtn:SetScript("OnClick", function()
                 local bot = LichborneDruidMenu.botName or ""
                 LichborneDruidMenu._specUserSet = true
@@ -594,6 +619,7 @@ function PBM.OpenDruidMenu(row)
                         if activeSet["cc"]           then IconOn(treeCCBtn)         else IconOff(treeCCBtn)         end
                     elseif stratType == "nc" then
                         if activeSet["buff"] then IconOn(treeSideBuffBtn) else IconOff(treeSideBuffBtn) end
+                        if activeSet["force rebuff"] then IconOn(treeSideRebuffBtn) else IconOff(treeSideRebuffBtn) end
                     end
                 end
             end

@@ -2254,7 +2254,7 @@ local function OnFirstShow()
     end
 
     local optsTabChanges = MakeOptsTab("Recent Changes", 8)
-    local optsTabOptions = MakeOptsTab("Show/Hide",     112, 84)
+    local optsTabOptions = MakeOptsTab("Filters",       112, 84)
     local optsTabData    = MakeOptsTab("Data",           200, 84)
     local optsTabGeneral = MakeOptsTab("Links",          288, 84)
     local optsTabCredits = MakeOptsTab("Credits",        376, 84)
@@ -2569,6 +2569,19 @@ local function OnFirstShow()
     function CT.line(t) ChgLine(t, CT.y); CT.y = CT.y - 13 end
 
     CT.title("|cffFF8C00Recent Changes|r")
+
+    -- ── Release v1.42 ──────────────────────────────────────────────
+    CT.release("|cffd4af37Release v1.42|r  |cffFF8C00September 26, 2026|r")
+    CT.section("|cffC69B3AForce Rebuff|r")
+    CT.line("|cff888888-|r  Added |cffd4af37Force Rebuff|r button to all classes")
+
+    -- ── Release v1.41 ──────────────────────────────────────────────
+    CT.release("|cffd4af37Release v1.41|r  |cffFF8C00August 21, 2026|r")
+    CT.section("|cffC69B3ABug Fixes|r")
+    CT.line("|cff888888-|r  Fixed: |cff66ccffco ?|r and |cff66ccffnc ?|r strategy-whisper filters")
+    CT.line("    defaulted to hidden in the PBM output box")
+    CT.line("|cff888888-|r  To display |cff66ccffco ?|r and |cff66ccffnc ?|r, open the |cffffcc00Filters|r")
+    CT.line("    tab and set |cffd4af37Strategy Whispers|r to |cff55dd77Visible|r")
 
     -- ── Release v1.4 ───────────────────────────────────────────────
     CT.release("|cffd4af37Release v1.4|r  |cffFF8C00July 3, 2026|r")
@@ -3678,7 +3691,7 @@ local function BuildFrameBG()
     title:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -12)
     title:SetPoint("TOPRIGHT", f, "TOPRIGHT", -280, -12)
     title:SetJustifyH("LEFT")
-    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.41|r")
+    title:SetText("|cffC69B3APlayerbot Manager|r |cffffffff- v1.42|r")
     local closeBtn = CreateFrame("Button", "LichborneCloseBtn", f, "UIPanelCloseButton")
     closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", 2, 2)
     closeBtn:SetScript("OnClick", function() f:Hide() end)

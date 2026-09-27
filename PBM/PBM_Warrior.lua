@@ -201,6 +201,47 @@ function PBM.OpenWarriorMenu(row)
             end)
         LichborneWarriorMenu.treeDpsAssistBtn = treeDpsAssistBtn
 
+        -- ── Buff header + Force Rebuff (below PvP; universal NC strategy) ──
+        local buffHdrBox = CreateFrame("Frame", nil, LichborneWarriorMenu)
+        buffHdrBox:SetSize(EXT_ICON_SIZE + 8, 18)
+        buffHdrBox:SetPoint("TOP", LichborneWarriorMenu.treePvpBtn, "BOTTOM", 0, -8)
+        buffHdrBox:SetBackdrop({
+            bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true, tileSize = 16, edgeSize = 8,
+            insets = {left=2, right=2, top=2, bottom=2},
+        })
+        buffHdrBox:SetBackdropColor(0.08, 0.10, 0.28, 0.95)
+        buffHdrBox:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
+        local buffHdrLbl = buffHdrBox:CreateFontString(nil, "OVERLAY")
+        buffHdrLbl:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+        buffHdrLbl:SetTextColor(0.78, 0.61, 0.23, 1)
+        buffHdrLbl:SetAllPoints(); buffHdrLbl:SetJustifyH("CENTER")
+        buffHdrLbl:SetText("Buff")
+
+        local treeSideRebuffBtn = CreateFrame("Button", nil, LichborneWarriorMenu)
+        treeSideRebuffBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
+        treeSideRebuffBtn:SetPoint("TOP", buffHdrBox, "BOTTOM", 0, -1)
+        local treeSideRebuffTex = treeSideRebuffBtn:CreateTexture(nil, "ARTWORK")
+        treeSideRebuffTex:SetAllPoints()
+        treeSideRebuffTex:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+        treeSideRebuffBtn.icon = treeSideRebuffTex
+        treeSideRebuffBtn.state = false
+        treeSideRebuffTex:SetDesaturated(true)
+        treeSideRebuffBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+        treeSideRebuffBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichborneWarriorMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00Force Rebuff|r |cff999999- |r|cffffff00force rebuff|r |cffff8000NC|r")
+            GameTooltip:AddLine("|cffffcc00Aggressively refreshes buffs|r", 1, 1, 1)
+            GameTooltip:AddLine("Rebuffs immediately on a raid ready check, or on the", 1, 1, 1)
+            GameTooltip:AddLine("manual |cffFFFFFF.rebuff|r command, while out of combat.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeSideRebuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneWarriorMenu.treeSideRebuffBtn = treeSideRebuffBtn
+
         -- ── Wire ────────────────────────────────────────────────────────
         do
             local function IconOn(btn)
@@ -283,11 +324,22 @@ function PBM.OpenWarriorMenu(row)
                 end
             end)
 
+            treeSideRebuffBtn:SetScript("OnClick", function()
+                local bot = LichborneWarriorMenu.botName or ""
+                LichborneWarriorMenu._specUserSet = true
+                if treeSideRebuffBtn.state then
+                    PBM.SendToBot("nc -force rebuff,?", bot); IconOff(treeSideRebuffBtn)
+                else
+                    PBM.SendToBot("nc +force rebuff,?", bot); IconOn(treeSideRebuffBtn)
+                end
+            end)
+
             local _baseReset = LichborneWarriorMenu.resetSharedIcons
             LichborneWarriorMenu.resetAllIcons = function()
                 if _baseReset then _baseReset() end
                 IconOff(treeArmsBtn); IconOff(treeFuryBtn); IconOff(treeTankBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
+                IconOff(treeSideRebuffBtn)
             end
 
             local _baseSU = LichborneWarriorMenu.onStrategyUpdate
@@ -301,6 +353,8 @@ function PBM.OpenWarriorMenu(row)
                         if activeSet["tank assist"] then IconOn(treeTankAssistBtn)  else IconOff(treeTankAssistBtn)  end
                         if activeSet["dps assist"]  then IconOn(treeDpsAssistBtn)   else IconOff(treeDpsAssistBtn)   end
                         if activeSet["aoe"]         then IconOn(treeDpsAoeBtn)      else IconOff(treeDpsAoeBtn)      end
+                    elseif stratType == "nc" then
+                        if activeSet["force rebuff"] then IconOn(treeSideRebuffBtn) else IconOff(treeSideRebuffBtn) end
                     end
                 end
             end

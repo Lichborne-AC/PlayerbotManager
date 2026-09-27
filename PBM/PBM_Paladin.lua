@@ -365,6 +365,47 @@ function PBM.OpenPaladinMenu(row)
             "party members.")
         end); tBdps:SetScript("OnLeave", TL)
 
+        -- ── Buff header + Force Rebuff (below PvP; universal NC strategy) ──
+        local buffHdrBox = CreateFrame("Frame", nil, LichbornePaladinMenu)
+        buffHdrBox:SetSize(EXT_ICON_SIZE + 8, 18)
+        buffHdrBox:SetPoint("TOP", LichbornePaladinMenu.treePvpBtn, "BOTTOM", 0, -8)
+        buffHdrBox:SetBackdrop({
+            bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true, tileSize = 16, edgeSize = 8,
+            insets = {left=2, right=2, top=2, bottom=2},
+        })
+        buffHdrBox:SetBackdropColor(0.08, 0.10, 0.28, 0.95)
+        buffHdrBox:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
+        local buffHdrLbl = buffHdrBox:CreateFontString(nil, "OVERLAY")
+        buffHdrLbl:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+        buffHdrLbl:SetTextColor(0.78, 0.61, 0.23, 1)
+        buffHdrLbl:SetAllPoints(); buffHdrLbl:SetJustifyH("CENTER")
+        buffHdrLbl:SetText("Buff")
+
+        local treeSideRebuffBtn = CreateFrame("Button", nil, LichbornePaladinMenu)
+        treeSideRebuffBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
+        treeSideRebuffBtn:SetPoint("TOP", buffHdrBox, "BOTTOM", 0, -1)
+        local treeSideRebuffTex = treeSideRebuffBtn:CreateTexture(nil, "ARTWORK")
+        treeSideRebuffTex:SetAllPoints()
+        treeSideRebuffTex:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+        treeSideRebuffBtn.icon = treeSideRebuffTex
+        treeSideRebuffBtn.state = false
+        treeSideRebuffTex:SetDesaturated(true)
+        treeSideRebuffBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+        treeSideRebuffBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichbornePaladinMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00Force Rebuff|r |cff999999- |r|cffffff00force rebuff|r |cffff8000NC|r")
+            GameTooltip:AddLine("|cffffcc00Aggressively refreshes buffs|r", 1, 1, 1)
+            GameTooltip:AddLine("Rebuffs immediately on a raid ready check, or on the", 1, 1, 1)
+            GameTooltip:AddLine("manual |cffFFFFFF.rebuff|r command, while out of combat.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeSideRebuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichbornePaladinMenu.treeSideRebuffBtn = treeSideRebuffBtn
+
         -- ── Toggle wire block ────────────────────────────────────────
         do
             local function IconOn(btn)
@@ -387,6 +428,17 @@ function PBM.OpenPaladinMenu(row)
             IconOff(tNcSpeed); IconOff(tNcArmor); IconOff(tNcCast); IconOff(tNcBaoe)
             IconOff(tNcFire); IconOff(tNcFrost); IconOff(tNcShadow)
             IconOff(tBstats); IconOff(tBhealth); IconOff(tBmana); IconOff(tBdps)
+            IconOff(treeSideRebuffBtn)
+
+            treeSideRebuffBtn:SetScript("OnClick", function()
+                local bot = LichbornePaladinMenu.botName or ""
+                LichbornePaladinMenu._specUserSet = true
+                if treeSideRebuffBtn.state then
+                    PBM.SendToBot("nc -force rebuff,?", bot); IconOff(treeSideRebuffBtn)
+                else
+                    PBM.SendToBot("nc +force rebuff,?", bot); IconOn(treeSideRebuffBtn)
+                end
+            end)
 
             local _baseReset = LichbornePaladinMenu.resetSharedIcons
             LichbornePaladinMenu.resetAllIcons = function()
@@ -399,6 +451,7 @@ function PBM.OpenPaladinMenu(row)
                 IconOff(tNcSpeed); IconOff(tNcArmor); IconOff(tNcCast); IconOff(tNcBaoe)
                 IconOff(tNcFire); IconOff(tNcFrost); IconOff(tNcShadow)
                 IconOff(tBstats); IconOff(tBhealth); IconOff(tBmana); IconOff(tBdps)
+                IconOff(treeSideRebuffBtn)
             end
 
             -- ── State restore from co?/nc? query ──────────────────────
@@ -434,6 +487,7 @@ function PBM.OpenPaladinMenu(row)
                         if activeSet["bsanc"]   then IconOn(tBhealth) else IconOff(tBhealth) end
                         if activeSet["bwisdom"] then IconOn(tBmana)   else IconOff(tBmana)   end
                         if activeSet["bmight"]  then IconOn(tBdps)    else IconOff(tBdps)    end
+                        if activeSet["force rebuff"] then IconOn(treeSideRebuffBtn) else IconOff(treeSideRebuffBtn) end
                     end
                 end
             end

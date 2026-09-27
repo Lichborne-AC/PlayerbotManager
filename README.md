@@ -2,9 +2,15 @@
 
 **A World of Warcraft WotLK 3.3.5a Addon for AzerothCore Private Servers that tracks gear score, iLvL, gear slots, specs, strategies, and raid composition for your entire playerbot roster.**
 
-**Version 1.4**
+**Version 1.42**
 
 ---
+
+## Recent Changes — v1.42 (September 26, 2026)
+
+### Rogue Strategy Rename *(mod-playerbots PR #2766)*
+
+* Updated the Rogue tab and strategy list to match upstream's renamed spec strategies: Combat's `dps` strategy is now `combat`, and Assassination/Subtlety's `melee` strategy is now `assassin`
 
 ## Recent Changes — v1.4 (July 3, 2026)
 

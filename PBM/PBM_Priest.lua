@@ -405,8 +405,8 @@ function PBM.OpenPriestMenu(row)
         treeTankAssistBtn.icon:SetDesaturated(true)
         LichbornePriestMenu.treeTankAssistBtn = treeTankAssistBtn
 
-        -- ── Left-side Buff header + 2 buttons (below PvP) ─────────
-        local BUFF_HDR_W = 56   -- wide enough for 2×26px buttons + 4px gap
+        -- ── Left-side Buff header + 3 buttons (below PvP) ─────────
+        local BUFF_HDR_W = 86   -- wide enough for 3×26px buttons + 2×4px gap
         local buffSideHdrBox = CreateFrame("Frame", nil, LichbornePriestMenu)
         buffSideHdrBox:SetSize(BUFF_HDR_W, 18)
         buffSideHdrBox:SetPoint("TOP", LichbornePriestMenu.treePvpBtn, "BOTTOM", 0, -8)
@@ -468,6 +468,29 @@ function PBM.OpenPriestMenu(row)
         treeSideResBtn.state = false
         treeSideResBtn.icon:SetDesaturated(true)
         LichbornePriestMenu.treeSideResBtn = treeSideResBtn
+
+        local treeSideRebuffBtn = CreateFrame("Button", nil, LichbornePriestMenu)
+        treeSideRebuffBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
+        treeSideRebuffBtn:SetPoint("TOPLEFT", treeSideResBtn, "TOPRIGHT", 4, 0)
+        local treeSideRebuffTex = treeSideRebuffBtn:CreateTexture(nil, "ARTWORK")
+        treeSideRebuffTex:SetAllPoints()
+        treeSideRebuffTex:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+        treeSideRebuffBtn.icon = treeSideRebuffTex
+        treeSideRebuffBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+        treeSideRebuffBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichbornePriestMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00Force Rebuff|r |cff999999- |r|cffffff00force rebuff|r |cffff8000NC|r")
+            GameTooltip:AddLine("|cffffcc00Aggressively refreshes buffs|r", 1, 1, 1)
+            GameTooltip:AddLine("Rebuffs immediately on a raid ready check, or on the", 1, 1, 1)
+            GameTooltip:AddLine("manual |cffFFFFFF.rebuff|r command, while out of combat.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeSideRebuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        treeSideRebuffBtn.state = false
+        treeSideRebuffBtn.icon:SetDesaturated(true)
+        LichbornePriestMenu.treeSideRebuffBtn = treeSideRebuffBtn
 
         -- ── Left-side CC header+button (below Buff) ───────────────────
         local CC_HDR_W = EXT_ICON_SIZE + 8
@@ -531,7 +554,7 @@ function PBM.OpenPriestMenu(row)
             IconOff(treeHealBtn); IconOff(treeHolyHealBtn); IconOff(treeHealerDpsBtn); IconOff(treeHolyDpsBtn); IconOff(treeShadowDpsBtn)
             IconOff(treeDpsAoeBtn); IconOff(treeShadowAoeBtn)
             IconOff(treeDpsDebuffBtn); IconOff(treeShadowDebuffBtn)
-            IconOff(treeSideBuffBtn); IconOff(treeSideResBtn); IconOff(treeCCBtn)
+            IconOff(treeSideBuffBtn); IconOff(treeSideResBtn); IconOff(treeSideRebuffBtn); IconOff(treeCCBtn)
             IconOff(treeTankAssistBtn)
 
             -- Expose reset so OpenPriestMenu can clear all icons before each query
@@ -543,7 +566,7 @@ function PBM.OpenPriestMenu(row)
                 IconOff(treeShadowDpsBtn); IconOff(treeHealerDpsBtn)
                 IconOff(treeDpsAoeBtn); IconOff(treeShadowAoeBtn)
                 IconOff(treeDpsDebuffBtn); IconOff(treeShadowDebuffBtn)
-                IconOff(treeSideBuffBtn); IconOff(treeSideResBtn); IconOff(treeCCBtn); IconOff(treeTankAssistBtn)
+                IconOff(treeSideBuffBtn); IconOff(treeSideResBtn); IconOff(treeSideRebuffBtn); IconOff(treeCCBtn); IconOff(treeTankAssistBtn)
             end
 
             -- TREE: Heal (Discipline column)
@@ -681,6 +704,19 @@ function PBM.OpenPriestMenu(row)
                 end
             end)
 
+            -- LEFT-SIDE: Force Rebuff
+            treeSideRebuffBtn:SetScript("OnClick", function()
+                local bot = LichbornePriestMenu.botName or ""
+                LichbornePriestMenu._specUserSet = true
+                if treeSideRebuffBtn.state then
+                    PBM.SendToBot("nc -force rebuff,?", bot)
+                    IconOff(treeSideRebuffBtn)
+                else
+                    PBM.SendToBot("nc +force rebuff,?", bot)
+                    IconOn(treeSideRebuffBtn)
+                end
+            end)
+
             -- LEFT-SIDE: CC — co +cc / co -cc, independent
             treeCCBtn:SetScript("OnClick", function()
                 local bot = LichbornePriestMenu.botName or ""
@@ -747,6 +783,7 @@ function PBM.OpenPriestMenu(row)
                     elseif stratType == "nc" then
                         if activeSet["buff"]    then IconOn(treeSideBuffBtn)  else IconOff(treeSideBuffBtn)  end
                         if activeSet["rshadow"] then IconOn(treeSideResBtn)   else IconOff(treeSideResBtn)   end
+                        if activeSet["force rebuff"] then IconOn(treeSideRebuffBtn) else IconOff(treeSideRebuffBtn) end
                     end
                 end
             end

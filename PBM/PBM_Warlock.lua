@@ -174,7 +174,7 @@ function PBM.OpenWarlockMenu(row)
         local curseIcon4Y = curseIcon3Y - EXT_ICON_SIZE - 3
         local curseIcon5Y = curseIcon4Y - EXT_ICON_SIZE - 3
         local curseIcon6Y = curseIcon5Y - EXT_ICON_SIZE - 3
-        local stonesColW  = 2 * EXT_ICON_SIZE + 4
+        local stonesColW  = 3 * EXT_ICON_SIZE + 8
 
         -- ── Row 1: Spec columns ──────────────────────────────────────
         MakeSpecBox(col1X, specBoxY, SPEC_COL_W, "Affliction",
@@ -311,7 +311,7 @@ function PBM.OpenWarlockMenu(row)
             end)
         LichborneWarlockMenu.treeCurseTonguesBtn = treeCurseTonguesBtn
 
-        -- ── Left-side Stones header + 2 buttons (below PvP toggle) ──
+        -- ── Left-side Buff header + 3 buttons (below PvP toggle) ──
         local stonesHdrBox = CreateFrame("Frame", nil, LichborneWarlockMenu)
         stonesHdrBox:SetSize(stonesColW, 18)
         stonesHdrBox:SetPoint("TOP", LichborneWarlockMenu.treePvpBtn, "BOTTOM", 0, -8)
@@ -322,7 +322,7 @@ function PBM.OpenWarlockMenu(row)
         stonesHdrLbl:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
         stonesHdrLbl:SetTextColor(0.78, 0.61, 0.23, 1)
         stonesHdrLbl:SetAllPoints(); stonesHdrLbl:SetJustifyH("CENTER")
-        stonesHdrLbl:SetText("Stones")
+        stonesHdrLbl:SetText("Buff")
 
         local treeStoneSpellBtn = CreateFrame("Button", nil, LichborneWarlockMenu)
         treeStoneSpellBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
@@ -368,7 +368,30 @@ function PBM.OpenWarlockMenu(row)
         treeStoneFireBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
         LichborneWarlockMenu.treeStoneFireBtn = treeStoneFireBtn
 
-        -- ── Left-side CC header + button (below Stones) ─────────────
+        local treeSideRebuffBtn = CreateFrame("Button", nil, LichborneWarlockMenu)
+        treeSideRebuffBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
+        treeSideRebuffBtn:SetPoint("TOPLEFT", treeStoneFireBtn, "TOPRIGHT", 4, 0)
+        local treeSideRebuffTex = treeSideRebuffBtn:CreateTexture(nil, "ARTWORK")
+        treeSideRebuffTex:SetAllPoints()
+        treeSideRebuffTex:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+        treeSideRebuffBtn.icon = treeSideRebuffTex
+        treeSideRebuffBtn.state = false
+        treeSideRebuffTex:SetDesaturated(true)
+        treeSideRebuffBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+        treeSideRebuffBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichborneWarlockMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00Force Rebuff|r |cff999999- |r|cffffff00force rebuff|r |cffff8000NC|r")
+            GameTooltip:AddLine("|cffffcc00Aggressively refreshes buffs|r", 1, 1, 1)
+            GameTooltip:AddLine("Rebuffs immediately on a raid ready check, or on the", 1, 1, 1)
+            GameTooltip:AddLine("manual |cffFFFFFF.rebuff|r command, while out of combat.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeSideRebuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneWarlockMenu.treeSideRebuffBtn = treeSideRebuffBtn
+
+        -- ── Left-side CC header + button (below Buff) ─────────────
         local CC_HDR_W = EXT_ICON_SIZE + 8
         local ccSideHdrBox = CreateFrame("Frame", nil, LichborneWarlockMenu)
         ccSideHdrBox:SetSize(CC_HDR_W, 18)
@@ -574,7 +597,18 @@ function PBM.OpenWarlockMenu(row)
                 IconOff(treeSSSelfBtn); IconOff(treeSSMasterBtn)
                 IconOff(treeSSTankBtn); IconOff(treeSSHealerBtn)
                 IconOff(treeCCBtn)
+                IconOff(treeSideRebuffBtn)
             end
+
+            treeSideRebuffBtn:SetScript("OnClick", function()
+                local bot = LichborneWarlockMenu.botName or ""
+                LichborneWarlockMenu._specUserSet = true
+                if treeSideRebuffBtn.state then
+                    PBM.SendToBot("nc -force rebuff,?", bot); IconOff(treeSideRebuffBtn)
+                else
+                    PBM.SendToBot("nc +force rebuff,?", bot); IconOn(treeSideRebuffBtn)
+                end
+            end)
 
             -- ── Row 1: Specs (mutually exclusive CO) ──────────────────
             local specList = {
@@ -802,6 +836,7 @@ function PBM.OpenWarlockMenu(row)
                         for _, e in ipairs(petList)   do if activeSet[e.cmd] then IconOn(e.btn) end end
                         for _, e in ipairs(stoneList) do if activeSet[e.cmd] then IconOn(e.btn) end end
                         for _, e in ipairs(ssList)    do if activeSet[e.cmd] then IconOn(e.btn) end end
+                        if activeSet["force rebuff"] then IconOn(treeSideRebuffBtn) else IconOff(treeSideRebuffBtn) end
                     end
                 end
             end

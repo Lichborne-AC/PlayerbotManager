@@ -79,9 +79,10 @@ function PBM.OpenRogueMenu(row)
         local specBoxY   = TREE_TOP_Y - 16
         local specIconY  = specBoxY - 18 - 4
 
-        -- DPS section (3-wide, 1 row) — centred under spec columns
-        local dpsSectionW  = 3 * EXT_ICON_SIZE + 2 * BTN_GAP              -- 86px
+        -- DPS section (1-wide, 1 row) — centred under spec columns
+        local dpsSectionW  = 46
         local dpsHdrX      = TREE_X + math.floor((TREE_TOTAL_W - dpsSectionW) / 2)
+        local dpsBtnX      = dpsHdrX + math.floor((dpsSectionW - EXT_ICON_SIZE) / 2)
         local dpsHdrY      = specIconY - EXT_ICON_SIZE - 15
         local dpsIconY     = dpsHdrY - 18 - 4
 
@@ -178,7 +179,7 @@ function PBM.OpenRogueMenu(row)
 
         local treeAsBtn = MakeTreeBtn(col1X + ICON_OFF, specIconY,
             "Interface\\Icons\\Ability_Rogue_Eviscerate", function()
-            GameTooltip:SetText("|cffffcc00Assassination|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r")
+            GameTooltip:SetText("|cffffcc00Assassination|r |cff999999- |r|cffFFF569assassin|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Assassination DoT specialization|r", 1, 1, 1)
             GameTooltip:AddLine("|cffFF4444Mutually exclusive with Combat, Subtlety.|r", 1, 1, 1)
         end)
@@ -186,7 +187,7 @@ function PBM.OpenRogueMenu(row)
 
         local treeCombatBtn = MakeTreeBtn(col2X + ICON_OFF, specIconY,
             "Interface\\Icons\\Ability_BackStab", function()
-            GameTooltip:SetText("|cffffcc00Combat|r |cff999999- |r|cffFFF569dps|r |cffee4433CO|r")
+            GameTooltip:SetText("|cffffcc00Combat|r |cff999999- |r|cffFFF569combat|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Combat sustained DPS|r", 1, 1, 1)
             GameTooltip:AddLine("|cffFF4444Mutually exclusive with Assassination, Subtlety.|r", 1, 1, 1)
         end)
@@ -194,34 +195,19 @@ function PBM.OpenRogueMenu(row)
 
         local treeSubtletyBtn = MakeTreeBtn(col3X + ICON_OFF, specIconY,
             "Interface\\Icons\\Ability_Stealth", function()
-            GameTooltip:SetText("|cffffcc00Subtlety|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r")
+            GameTooltip:SetText("|cffffcc00Subtlety|r |cff999999- |r|cffFFF569assassin|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Subtlety burst from Stealth|r", 1, 1, 1)
-            GameTooltip:AddLine("|cffFF4444Mutually exclusive with Assassination, Combat.|r", 1, 1, 1)
+            GameTooltip:AddLine("|cff888888mod-playerbots has a SubtletyRogueStrategy class,|r", 1, 1, 1)
+            GameTooltip:AddLine("|cff888888but its factory registration is commented out server-side,|r", 1, 1, 1)
+            GameTooltip:AddLine("|cff888888so Subtlety bots currently run the Assassination strategy.|r", 1, 1, 1)
         end)
         LichborneRogueMenu.treeSubtletyBtn = treeSubtletyBtn
+        treeSubtletyBtn:SetHighlightTexture(nil)
 
-        -- ── DPS section (3-wide, 1 row): DPS | Melee | Boost ────────────
+        -- ── DPS section (1-wide, 1 row): Boost ──────────────────────────
         MakeWideBox(dpsHdrX, dpsHdrY, dpsSectionW, "DPS")
 
-        local treeDpsBtn = MakeTreeBtn(dpsHdrX, dpsIconY,
-            "Interface\\Icons\\inv_sword_27", function()
-            GameTooltip:SetText("|cffffcc00Dps|r |cff999999- |r|cffFFF569dps|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Single-target DPS mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Uses the standard Combat rotation", 1, 1, 1)
-            GameTooltip:AddLine("on the current target.", 1, 1, 1)
-        end)
-        LichborneRogueMenu.treeDpsBtn = treeDpsBtn
-
-        local treeMeleeBtn = MakeTreeBtn(dpsHdrX + 30, dpsIconY,
-            "Interface\\Icons\\inv_sword_35", function()
-            GameTooltip:SetText("|cffffcc00Melee|r |cff999999- |r|cffFFF569melee|r |cffee4433CO|r")
-            GameTooltip:AddLine("|cffffcc00Melee DPS mode|r", 1, 1, 1)
-            GameTooltip:AddLine("Core melee attack mode for", 1, 1, 1)
-            GameTooltip:AddLine("Assassination and Subtlety.", 1, 1, 1)
-        end)
-        LichborneRogueMenu.treeMeleeBtn = treeMeleeBtn
-
-        local treeBoostBtn = MakeTreeBtn(dpsHdrX + 60, dpsIconY,
+        local treeBoostBtn = MakeTreeBtn(dpsBtnX, dpsIconY,
             "Interface\\Icons\\Ability_Mage_PotentSpirit", function()
             GameTooltip:SetText("|cffffcc00Boost|r |cff999999- |r|cffFFF569boost|r |cffee4433CO|r")
             GameTooltip:AddLine("|cffffcc00Offensive cooldown burst|r", 1, 1, 1)
@@ -276,6 +262,42 @@ function PBM.OpenRogueMenu(row)
         end)
         LichborneRogueMenu.treeDpsAoeBtn = treeDpsAoeBtn
 
+        -- ── Buff header + Force Rebuff (below PvP; universal NC strategy) ──
+        local buffHdrBox = CreateFrame("Frame", nil, LichborneRogueMenu)
+        buffHdrBox:SetSize(EXT_ICON_SIZE + 8, 18)
+        buffHdrBox:SetPoint("TOP", LichborneRogueMenu.treePvpBtn, "BOTTOM", 0, -8)
+        buffHdrBox:SetBackdrop(SPEC_BOX_BD)
+        buffHdrBox:SetBackdropColor(0.08, 0.10, 0.28, 0.95)
+        buffHdrBox:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
+        local buffHdrLbl = buffHdrBox:CreateFontString(nil, "OVERLAY")
+        buffHdrLbl:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+        buffHdrLbl:SetTextColor(0.78, 0.61, 0.23, 1)
+        buffHdrLbl:SetAllPoints(); buffHdrLbl:SetJustifyH("CENTER")
+        buffHdrLbl:SetText("Buff")
+
+        local treeSideRebuffBtn = CreateFrame("Button", nil, LichborneRogueMenu)
+        treeSideRebuffBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
+        treeSideRebuffBtn:SetPoint("TOP", buffHdrBox, "BOTTOM", 0, -1)
+        local treeSideRebuffTex = treeSideRebuffBtn:CreateTexture(nil, "ARTWORK")
+        treeSideRebuffTex:SetAllPoints()
+        treeSideRebuffTex:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+        treeSideRebuffBtn.icon = treeSideRebuffTex
+        treeSideRebuffBtn.state = false
+        treeSideRebuffTex:SetDesaturated(true)
+        treeSideRebuffBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+        treeSideRebuffBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichborneRogueMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00Force Rebuff|r |cff999999- |r|cffffff00force rebuff|r |cffff8000NC|r")
+            GameTooltip:AddLine("|cffffcc00Aggressively refreshes buffs|r", 1, 1, 1)
+            GameTooltip:AddLine("Rebuffs immediately on a raid ready check, or on the", 1, 1, 1)
+            GameTooltip:AddLine("manual |cffFFFFFF.rebuff|r command, while out of combat.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeSideRebuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneRogueMenu.treeSideRebuffBtn = treeSideRebuffBtn
+
         -- ── Wire: toggle logic ────────────────────────────────────────────
         do
             local function IconOn(btn)
@@ -288,10 +310,10 @@ function PBM.OpenRogueMenu(row)
             end
 
             -- Spec radio (mutually exclusive CO)
+            -- Subtlety excluded: its strategy is unregistered server-side (see tooltip), button is disabled
             local specList = {
-                { cmd="melee", btn=treeAsBtn       },
-                { cmd="dps",   btn=treeCombatBtn   },
-                { cmd="melee", btn=treeSubtletyBtn },
+                { cmd="assassin", btn=treeAsBtn       },
+                { cmd="combat",   btn=treeCombatBtn   },
             }
             for _, entry in ipairs(specList) do
                 local btn = entry.btn
@@ -346,29 +368,6 @@ function PBM.OpenRogueMenu(row)
                 end
             end)
 
-            -- Melee (independent CO)
-            treeMeleeBtn:SetScript("OnClick", function()
-                local bot = LichborneRogueMenu.botName or ""
-                LichborneRogueMenu._specUserSet = true
-                if treeMeleeBtn.state then
-                    PBM.SendToBot("co -melee,?", bot); IconOff(treeMeleeBtn)
-                else
-                    PBM.SendToBot("co +melee,?", bot); IconOn(treeMeleeBtn)
-                end
-            end)
-
-            -- Dps: clears Stealthed
-            treeDpsBtn:SetScript("OnClick", function()
-                local bot = LichborneRogueMenu.botName or ""
-                LichborneRogueMenu._specUserSet = true
-                if treeDpsBtn.state then
-                    PBM.SendToBot("co -dps,?", bot); IconOff(treeDpsBtn)
-                else
-                    PBM.SendToBot("co +dps,?", bot); IconOn(treeDpsBtn)
-                    IconOff(treeStealthedBtn)
-                end
-            end)
-
             -- Stealth (independent CO)
             treeStealthBtn:SetScript("OnClick", function()
                 local bot = LichborneRogueMenu.botName or ""
@@ -380,7 +379,7 @@ function PBM.OpenRogueMenu(row)
                 end
             end)
 
-            -- Stealthed: exclusive with Dps, DpsAoe, DpsAssist
+            -- Stealthed: exclusive with DpsAoe, DpsAssist
             treeStealthedBtn:SetScript("OnClick", function()
                 local bot = LichborneRogueMenu.botName or ""
                 LichborneRogueMenu._specUserSet = true
@@ -388,7 +387,7 @@ function PBM.OpenRogueMenu(row)
                     PBM.SendToBot("co -stealthed,?", bot); IconOff(treeStealthedBtn)
                 else
                     PBM.SendToBot("co +stealthed,?", bot); IconOn(treeStealthedBtn)
-                    IconOff(treeDpsBtn); IconOff(treeDpsAoeBtn); IconOff(treeDpsAssistBtn)
+                    IconOff(treeDpsAoeBtn); IconOff(treeDpsAssistBtn)
                 end
             end)
 
@@ -410,9 +409,20 @@ function PBM.OpenRogueMenu(row)
                 -- class-specific tree buttons only (food/loot/gather handled by base)
                 IconOff(treeAsBtn); IconOff(treeCombatBtn); IconOff(treeSubtletyBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
-                IconOff(treeDpsBtn); IconOff(treeMeleeBtn); IconOff(treeBoostBtn)
+                IconOff(treeBoostBtn)
                 IconOff(treeStealthBtn); IconOff(treeStealthedBtn)
+                IconOff(treeSideRebuffBtn)
             end
+
+            treeSideRebuffBtn:SetScript("OnClick", function()
+                local bot = LichborneRogueMenu.botName or ""
+                LichborneRogueMenu._specUserSet = true
+                if treeSideRebuffBtn.state then
+                    PBM.SendToBot("nc -force rebuff,?", bot); IconOff(treeSideRebuffBtn)
+                else
+                    PBM.SendToBot("nc +force rebuff,?", bot); IconOn(treeSideRebuffBtn)
+                end
+            end)
 
             -- onStrategyUpdate
             local _baseSU = LichborneRogueMenu.onStrategyUpdate
@@ -421,18 +431,18 @@ function PBM.OpenRogueMenu(row)
                 if not LichborneRogueMenu._specUserSet then
                     if stratType == "co" then
                         -- Specs: full two-way
-                        if activeSet["melee"] then IconOn(treeAsBtn)       else IconOff(treeAsBtn)       end
-                        if activeSet["dps"]   then IconOn(treeCombatBtn)   else IconOff(treeCombatBtn)   end
-                        if activeSet["melee"] then IconOn(treeSubtletyBtn) else IconOff(treeSubtletyBtn) end
+                        if activeSet["assassin"] then IconOn(treeAsBtn)       else IconOff(treeAsBtn)       end
+                        if activeSet["combat"]   then IconOn(treeCombatBtn)   else IconOff(treeCombatBtn)   end
+                        -- Subtlety intentionally excluded: disabled, always grey (see tooltip)
                         -- Combat: full two-way
                         if activeSet["tank assist"] then IconOn(treeTankAssistBtn) else IconOff(treeTankAssistBtn) end
                         if activeSet["dps assist"]  then IconOn(treeDpsAssistBtn)  else IconOff(treeDpsAssistBtn)  end
                         if activeSet["aoe"]         then IconOn(treeDpsAoeBtn)     else IconOff(treeDpsAoeBtn)     end
-                        if activeSet["dps"]         then IconOn(treeDpsBtn)        else IconOff(treeDpsBtn)        end
-                        if activeSet["melee"]       then IconOn(treeMeleeBtn)      else IconOff(treeMeleeBtn)      end
                         if activeSet["stealth"]     then IconOn(treeStealthBtn)    else IconOff(treeStealthBtn)    end
                         if activeSet["stealthed"]   then IconOn(treeStealthedBtn)  else IconOff(treeStealthedBtn)  end
                         if activeSet["boost"]       then IconOn(treeBoostBtn)      else IconOff(treeBoostBtn)      end
+                    elseif stratType == "nc" then
+                        if activeSet["force rebuff"] then IconOn(treeSideRebuffBtn) else IconOff(treeSideRebuffBtn) end
                     end
                 end
             end

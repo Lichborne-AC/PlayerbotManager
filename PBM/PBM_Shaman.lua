@@ -294,6 +294,47 @@ function PBM.OpenShamanMenu(row)
         treeCureBtn.icon:SetDesaturated(true)
         LichborneShamanMenu.treeCureBtn = treeCureBtn
 
+        -- ── Buff header + Force Rebuff (below Cure; universal NC strategy) ──
+        local buffHdrBox = CreateFrame("Frame", nil, LichborneShamanMenu)
+        buffHdrBox:SetSize(EXT_ICON_SIZE + 8, 18)
+        buffHdrBox:SetPoint("TOP", treeCureBtn, "BOTTOM", 0, -8)
+        buffHdrBox:SetBackdrop({
+            bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true, tileSize = 16, edgeSize = 8,
+            insets = {left=2, right=2, top=2, bottom=2},
+        })
+        buffHdrBox:SetBackdropColor(0.08, 0.10, 0.28, 0.95)
+        buffHdrBox:SetBackdropBorderColor(0.78, 0.61, 0.23, 0.9)
+        local buffHdrLbl = buffHdrBox:CreateFontString(nil, "OVERLAY")
+        buffHdrLbl:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+        buffHdrLbl:SetTextColor(0.78, 0.61, 0.23, 1)
+        buffHdrLbl:SetAllPoints(); buffHdrLbl:SetJustifyH("CENTER")
+        buffHdrLbl:SetText("Buff")
+
+        local treeSideRebuffBtn = CreateFrame("Button", nil, LichborneShamanMenu)
+        treeSideRebuffBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
+        treeSideRebuffBtn:SetPoint("TOP", buffHdrBox, "BOTTOM", 0, -1)
+        local treeSideRebuffTex = treeSideRebuffBtn:CreateTexture(nil, "ARTWORK")
+        treeSideRebuffTex:SetAllPoints()
+        treeSideRebuffTex:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+        treeSideRebuffBtn.icon = treeSideRebuffTex
+        treeSideRebuffBtn.state = false
+        treeSideRebuffTex:SetDesaturated(true)
+        treeSideRebuffBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+        treeSideRebuffBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichborneShamanMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00Force Rebuff|r |cff999999- |r|cffffff00force rebuff|r |cffff8000NC|r")
+            GameTooltip:AddLine("|cffffcc00Aggressively refreshes buffs|r", 1, 1, 1)
+            GameTooltip:AddLine("Rebuffs immediately on a raid ready check, or on the", 1, 1, 1)
+            GameTooltip:AddLine("manual |cffFFFFFF.rebuff|r command, while out of combat.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeSideRebuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        LichborneShamanMenu.treeSideRebuffBtn = treeSideRebuffBtn
+
         -- ══════════════════════════════════════════════════════════════
         -- Wire Shaman toggle logic
         -- ══════════════════════════════════════════════════════════════
@@ -312,6 +353,7 @@ function PBM.OpenShamanMenu(row)
             IconOff(treeAoeBtn);  IconOff(treeHealerDpsBtn)
             IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
             IconOff(treeCureBtn)
+            IconOff(treeSideRebuffBtn)
 
             local _baseReset = LichborneShamanMenu.resetSharedIcons
             LichborneShamanMenu.resetAllIcons = function()
@@ -321,7 +363,18 @@ function PBM.OpenShamanMenu(row)
                 IconOff(treeAoeBtn);  IconOff(treeHealerDpsBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
                 IconOff(treeCureBtn)
+                IconOff(treeSideRebuffBtn)
             end
+
+            treeSideRebuffBtn:SetScript("OnClick", function()
+                local bot = LichborneShamanMenu.botName or ""
+                LichborneShamanMenu._specUserSet = true
+                if treeSideRebuffBtn.state then
+                    PBM.SendToBot("nc -force rebuff,?", bot); IconOff(treeSideRebuffBtn)
+                else
+                    PBM.SendToBot("nc +force rebuff,?", bot); IconOn(treeSideRebuffBtn)
+                end
+            end)
 
             -- ── Row 1: Spec (mutually exclusive) ──────────────────────
 
@@ -462,6 +515,8 @@ function PBM.OpenShamanMenu(row)
                         if activeSet["dps assist"]  then IconOn(treeDpsAssistBtn)  else IconOff(treeDpsAssistBtn)  end
                         if activeSet["aoe"]         then IconOn(treeDpsAoeBtn)     else IconOff(treeDpsAoeBtn)     end
                         if activeSet["cure"]        then IconOn(treeCureBtn)       else IconOff(treeCureBtn)       end
+                    elseif stratType == "nc" then
+                        if activeSet["force rebuff"] then IconOn(treeSideRebuffBtn) else IconOff(treeSideRebuffBtn) end
                     end
                 end
             end

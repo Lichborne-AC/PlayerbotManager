@@ -181,8 +181,8 @@ PBM.CLASS_STRAT_LIST = {
 
     -- ── Rogue ────────────────────────────────────────────────────
     ["Rogue"] = {
-        {n="dps",         lab="CO", t=1},
-        {n="melee",       lab="CO", t=1},
+        {n="combat",      lab="CO", t=1},
+        {n="assassin",    lab="CO", t=1},
         {n="aoe",         lab="CO", t=1},
         {n="dps aoe",     lab="CO", t=1},
         {n="stealth",     lab="CO", t=1},

@@ -491,11 +491,11 @@ function PBM.OpenMageMenu(row)
         treeDpsAoeBtn:Hide()
         LichborneMageMenu.treeDpsAoeBtn = treeDpsAoeBtn
 
-        -- ── Left-side Buff header+button (below PvP) ─────────────────
-        local BUFF_HDR_W = EXT_ICON_SIZE + 8
+        -- ── Left-side Buff header + 2 buttons (below PvP) ─────────────
+        local BUFF_HDR_W = 2 * EXT_ICON_SIZE + 12   -- 2×26px buttons + 4px gap + 8px margin
         local buffSideHdrBox = CreateFrame("Frame", nil, LichborneMageMenu)
         buffSideHdrBox:SetSize(BUFF_HDR_W, 18)
-        buffSideHdrBox:SetPoint("TOPLEFT", LichborneMageMenu.treePvpBtn, "BOTTOMLEFT", -4, -8)
+        buffSideHdrBox:SetPoint("TOP", LichborneMageMenu.treePvpBtn, "BOTTOM", 0, -8)
         buffSideHdrBox:SetBackdrop({
             bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -512,8 +512,7 @@ function PBM.OpenMageMenu(row)
 
         local treeSideBuffBtn = CreateFrame("Button", nil, LichborneMageMenu)
         treeSideBuffBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
-        treeSideBuffBtn:SetPoint("TOPLEFT", buffSideHdrBox, "BOTTOMLEFT",
-            math.floor((BUFF_HDR_W - EXT_ICON_SIZE) / 2), -1)
+        treeSideBuffBtn:SetPoint("TOPLEFT", buffSideHdrBox, "BOTTOMLEFT", 4, -1)
         local treeSideBuffTex = treeSideBuffBtn:CreateTexture(nil, "ARTWORK")
         treeSideBuffTex:SetAllPoints()
         treeSideBuffTex:SetTexture("Interface\\Icons\\Spell_Holy_MagicalSentry")
@@ -534,11 +533,34 @@ function PBM.OpenMageMenu(row)
         treeSideBuffBtn.icon:SetDesaturated(true)
         LichborneMageMenu.treeSideBuffBtn = treeSideBuffBtn
 
+        local treeSideRebuffBtn = CreateFrame("Button", nil, LichborneMageMenu)
+        treeSideRebuffBtn:SetSize(EXT_ICON_SIZE, EXT_ICON_SIZE)
+        treeSideRebuffBtn:SetPoint("TOPLEFT", treeSideBuffBtn, "TOPRIGHT", 4, 0)
+        local treeSideRebuffTex = treeSideRebuffBtn:CreateTexture(nil, "ARTWORK")
+        treeSideRebuffTex:SetAllPoints()
+        treeSideRebuffTex:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+        treeSideRebuffBtn.icon = treeSideRebuffTex
+        treeSideRebuffBtn:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+        treeSideRebuffBtn:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetFrameLevel(LichborneMageMenu:GetFrameLevel() + 20)
+            GameTooltip:ClearLines()
+            GameTooltip:SetText("|cffffcc00Force Rebuff|r |cff999999- |r|cffffff00force rebuff|r |cffff8000NC|r")
+            GameTooltip:AddLine("|cffffcc00Aggressively refreshes buffs|r", 1, 1, 1)
+            GameTooltip:AddLine("Rebuffs immediately on a raid ready check, or on the", 1, 1, 1)
+            GameTooltip:AddLine("manual |cffFFFFFF.rebuff|r command, while out of combat.", 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        treeSideRebuffBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        treeSideRebuffBtn.state = false
+        treeSideRebuffBtn.icon:SetDesaturated(true)
+        LichborneMageMenu.treeSideRebuffBtn = treeSideRebuffBtn
+
         -- ── Left-side CC header+button (below Buff) ──────────────────
         local CC_HDR_W = EXT_ICON_SIZE + 8
         local ccSideHdrBox = CreateFrame("Frame", nil, LichborneMageMenu)
         ccSideHdrBox:SetSize(CC_HDR_W, 18)
-        ccSideHdrBox:SetPoint("TOPLEFT", treeSideBuffBtn, "BOTTOMLEFT", -4, -8)
+        ccSideHdrBox:SetPoint("TOP", buffSideHdrBox, "BOTTOM", 0, -(1 + EXT_ICON_SIZE + 8))
         ccSideHdrBox:SetBackdrop({
             bgFile   = "Interface\\ChatFrame\\ChatFrameBackground",
             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -591,7 +613,7 @@ function PBM.OpenMageMenu(row)
             -- Start all toggleable icons desaturated (OFF)
             IconOff(treeFirestarterBtn)
             IconOff(treeMageArmorBtn); IconOff(treeMoltenArmorBtn)
-            IconOff(treeSideBuffBtn); IconOff(treeCCBtn)
+            IconOff(treeSideBuffBtn); IconOff(treeSideRebuffBtn); IconOff(treeCCBtn)
             IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
 
             -- Expose reset so OpenMageMenu can clear all icons before each query
@@ -603,7 +625,7 @@ function PBM.OpenMageMenu(row)
                 IconOff(treeFrostBtn); IconOff(treeFrostFireBtn)
                 IconOff(treeAoeBtn); IconOff(treeFirestarterBtn)
                 IconOff(treeMageArmorBtn); IconOff(treeMoltenArmorBtn)
-                IconOff(treeSideBuffBtn); IconOff(treeCCBtn)
+                IconOff(treeSideBuffBtn); IconOff(treeSideRebuffBtn); IconOff(treeCCBtn)
                 IconOff(treeTankAssistBtn); IconOff(treeDpsAssistBtn); IconOff(treeDpsAoeBtn)
             end
 
@@ -716,6 +738,19 @@ function PBM.OpenMageMenu(row)
                 end
             end)
 
+            -- LEFT-SIDE: Force Rebuff — nc +force rebuff / nc -force rebuff, independent
+            treeSideRebuffBtn:SetScript("OnClick", function()
+                local bot = LichborneMageMenu.botName or ""
+                LichborneMageMenu._specUserSet = true
+                if treeSideRebuffBtn.state then
+                    PBM.SendToBot("nc -force rebuff,?", bot)
+                    IconOff(treeSideRebuffBtn)
+                else
+                    PBM.SendToBot("nc +force rebuff,?", bot)
+                    IconOn(treeSideRebuffBtn)
+                end
+            end)
+
             -- LEFT-SIDE: CC — co +cc / co -cc, independent
             treeCCBtn:SetScript("OnClick", function()
                 local bot = LichborneMageMenu.botName or ""
@@ -824,6 +859,7 @@ function PBM.OpenMageMenu(row)
                         if activeSet["bmana"] then IconOn(treeMageArmorBtn)   else IconOff(treeMageArmorBtn)   end
                         if activeSet["bdps"]  then IconOn(treeMoltenArmorBtn) else IconOff(treeMoltenArmorBtn) end
                         if activeSet["buff"]  then IconOn(treeSideBuffBtn)    else IconOff(treeSideBuffBtn)    end
+                        if activeSet["force rebuff"] then IconOn(treeSideRebuffBtn) else IconOff(treeSideRebuffBtn) end
                     end
                 end
             end
