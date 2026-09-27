@@ -8,6 +8,15 @@
 
 ## Recent Changes — v1.42 (September 26, 2026)
 
+### Force Rebuff
+
+* Added a Force Rebuff button to all classes
+
+### Strategy Whispers — Both State
+
+* The Filters tab's Strategy Whispers toggle now has a third state, Both, alongside Hidden and Visible — shows bot strategy replies in WoW chat and the PBM output box at the same time
+* Both is now the default
+
 ### Rogue Strategy Rename *(mod-playerbots PR #2766)*
 
 * Updated the Rogue tab and strategy list to match upstream's renamed spec strategies: Combat's `dps` strategy is now `combat`, and Assassination/Subtlety's `melee` strategy is now `assassin`

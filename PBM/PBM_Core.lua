@@ -478,7 +478,8 @@ end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", function(_, _, msg, sender)
     if not msg:match("^Strategies:") then return end
-    if PBMConfig and PBMConfig.hideStrategyOutput then
+    local mode = PBMConfig and PBMConfig.strategyWhisperMode or "both"
+    if mode == "hidden" then
         return  -- Hidden: no filtering at all, let it fall through to WoW chat
     end
     if LichborneOutput then
@@ -502,6 +503,9 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", function(_, _, msg, sender)
             end
         end
         LichborneOutput(prefix .. " " .. ColorizeStrategies(msg, senderCls))
+    end
+    if mode == "both" then
+        return  -- Both: routed to addon AND falls through to WoW chat
     end
     return true  -- Visible: routed to addon, suppress from WoW chat
 end)

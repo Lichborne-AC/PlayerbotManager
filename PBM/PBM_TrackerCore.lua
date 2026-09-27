@@ -2574,6 +2574,10 @@ local function OnFirstShow()
     CT.release("|cffd4af37Release v1.42|r  |cffFF8C00September 26, 2026|r")
     CT.section("|cffC69B3AForce Rebuff|r")
     CT.line("|cff888888-|r  Added |cffd4af37Force Rebuff|r button to all classes")
+    CT.section("|cffC69B3AStrategy Whispers|r")
+    CT.line("|cff888888-|r  Added a third |cffFF8C00Both|r state to the |cffffcc00Filters|r tab's")
+    CT.line("    |cffd4af37Strategy Whispers|r toggle — shows replies in WoW chat")
+    CT.line("    |cff888888and|r the PBM output box at the same time. Now the default.")
 
     -- ── Release v1.41 ──────────────────────────────────────────────
     CT.release("|cffd4af37Release v1.41|r  |cffFF8C00August 21, 2026|r")
@@ -2968,27 +2972,36 @@ local function OnFirstShow()
         stratStateLbl:SetPoint("RIGHT", stratBtn, "RIGHT", -10, 0)
 
         function stratBtn:Refresh()
-            if PBMConfig and PBMConfig.hideStrategyOutput then
+            local mode = PBMConfig and PBMConfig.strategyWhisperMode or "both"
+            if mode == "hidden" then
                 stratBtn:SetBackdropColor(0.18, 0.04, 0.04, 1)
                 stratStateLbl:SetText("|cffff6666Hidden|r")
-            else
+            elseif mode == "visible" then
                 stratBtn:SetBackdropColor(0.04, 0.14, 0.06, 1)
                 stratStateLbl:SetText("|cff55dd77Visible|r")
+            else
+                stratBtn:SetBackdropColor(0.22, 0.12, 0.01, 1)
+                stratStateLbl:SetText("|cffFF8C00Both|r")
             end
         end
         stratBtn:Refresh()
         PBM.State.visToggleBtns[#PBM.State.visToggleBtns + 1] = stratBtn
 
+        local STRAT_WHISPER_NEXT = { hidden = "visible", visible = "both", both = "hidden" }
         stratBtn:SetScript("OnClick", function()
             if not PBMConfig then PBMConfig = {} end
-            PBMConfig.hideStrategyOutput = (not PBMConfig.hideStrategyOutput) or nil
+            local mode = PBMConfig.strategyWhisperMode or "both"
+            PBMConfig.strategyWhisperMode = STRAT_WHISPER_NEXT[mode]
             stratBtn:Refresh()
         end)
         stratBtn:SetScript("OnEnter", function()
             GameTooltip:SetOwner(stratBtn, "ANCHOR_TOP")
             GameTooltip:AddLine("Strategy Whispers", 0.78, 0.61, 0.23)
-            GameTooltip:AddLine("Filters bot strategy replies from the", 0.8, 0.8, 0.8)
-            GameTooltip:AddLine("PBM output box when you open a bot menu.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("Controls where bot strategy replies show up.", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine(" ", 1, 1, 1)
+            GameTooltip:AddLine("|cffff6666Hidden|r - WoW chat only", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("|cff55dd77Visible|r - PBM output box only", 0.8, 0.8, 0.8)
+            GameTooltip:AddLine("|cffFF8C00Both|r - WoW chat and PBM output box", 0.8, 0.8, 0.8)
             GameTooltip:AddLine(" ", 1, 1, 1)
             GameTooltip:AddLine("Filtered messages:", 0.6, 0.6, 0.6)
             GameTooltip:AddLine("|cffd4af37[Bot] whispers: Strategies: tank, heal ...|r", 0.8, 0.8, 0.8)
